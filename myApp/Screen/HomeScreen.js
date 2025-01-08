@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, ImageBackground, TouchableOpacity, Image, ScrollView } from 'react-native';import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../components/Header.js'; // Ensure the path to Header is correct
-import BottomNavigationBar from '../components/BottomNavigationBar'; // Import the BottomNavigationBar component
+import React from 'react';
+import { View, StyleSheet, StatusBar, ImageBackground, ScrollView, Platform } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../components/Header';
+import BottomNavigationBar from '../components/BottomNavigationBar';
 import Body from '../components/Body';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
 const HomeScreen = () => {
   const handleMenuPress = () => {
     console.log('Menu button pressed');
@@ -15,21 +16,29 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaProvider>
+      {/* Background Image */}
       <ImageBackground
-        source={require('../assets/BackGround.jpeg')} // Keeping the background image
+        source={require('../assets/BackGround.jpeg')}
         style={styles.background}
-        imageStyle={{ opacity: 0.3 }} // Adjust opacity as needed
+        imageStyle={{ opacity: 0.3 }}
       >
-        <SafeAreaView style={styles.container} edges={['left', 'right']}>
+        {/* SafeAreaView */}
+        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
           {/* StatusBar */}
-          <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+          <StatusBar
+            backgroundColor="#fff" // White background for Android
+            barStyle="dark-content" // Dark text/icons for iOS
+            translucent={Platform.OS === 'android'} // Transparent for Android
+          />
 
           {/* Header */}
           <View style={styles.headerContainer}>
             <Header onMenuPress={handleMenuPress} onProfilePress={handleProfilePress} />
           </View>
+        </SafeAreaView>
 
-          {/* Body (Content inside ScrollView to avoid overflow issues) */}
+        {/* Body */}
+        <SafeAreaView style={styles.contentContainer} edges={['left', 'right']}>
           <ScrollView contentContainerStyle={styles.bodyContainer}>
             <Body />
           </ScrollView>
@@ -46,20 +55,22 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  container: {
+  safeArea: {
+    backgroundColor: '#fff', // White background for the status bar area
+  },
+  contentContainer: {
     flex: 1,
+    backgroundColor: 'transparent', // Ensure the image shows through
   },
   headerContainer: {
     width: '100%',
-    // Optionally set height for the header, if not already defined inside Header component
-    height: 80, // Set to the height of your Header component
+    backgroundColor: '#fff', // Match the status bar background
   },
   bodyContainer: {
-    flexGrow: 1, // Allow the body to take available space
-    paddingBottom: 60, // Padding to ensure it doesn't overlap with the bottom navigation bar
-    paddingTop: 20, // Padding from the top to avoid overlap with header
+    flexGrow: 1,
+    paddingBottom: 60,
+    paddingTop: 20,
   },
 });
-
 
 export default HomeScreen;

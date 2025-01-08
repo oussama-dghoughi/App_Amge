@@ -1,8 +1,9 @@
 import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './Screen/HomeScreen';
-import RegistrationScreen from './Screen/RegistrationScreen';
-
 
 export default function App() {
-  return <RegistrationScreen />;
+  return (
+      <HomeScreen />
+  );
 }

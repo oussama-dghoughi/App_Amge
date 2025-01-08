@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const BottomNavigationBar = () => {
   return (
@@ -9,7 +10,7 @@ const BottomNavigationBar = () => {
         <Icon name="home" size={24} color="#9b59b6" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer}>
-        <Icon name="map-marker" size={24} color="#9b59b6" />
+        <FontAwesome name="location-arrow" size={24} color="#9b59b6" />
       </TouchableOpacity>
       <TouchableOpacity style={[styles.iconContainer, styles.qrIcon]}>
         <Icon name="qrcode-scan" size={24} color="#000" />
