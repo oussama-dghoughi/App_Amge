@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, ImageBackground, ScrollView, Platform } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../components/Header';
-import BottomNavigationBar from '../components/BottomNavigationBar';
-import Body from '../components/Body';
+import Header from '../components/HomeScreen/Header';
+import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
+import Body from '../components/HomeScreen/Body';
 
 const HomeScreen = () => {
   const handleMenuPress = () => {

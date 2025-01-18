@@ -119,9 +119,10 @@ const RegistrationScreen = () => {
       <View style={styles.contactBar}>
         <Text style={styles.contactText}>Contact</Text>
         <View style={styles.iconsContainer}>
-          <FontAwesome name="instagram" size={24} color="black" style={styles.icon} />
-          <FontAwesome name="envelope" size={24} color="black" style={styles.icon} />
-          <FontAwesome name="linkedin" size={24} color="black" style={styles.icon} />
+          <FontAwesome name="instagram" size={24} color="#000" style={styles.icon} />
+          <FontAwesome name="facebook" size={24} color="#000" style={styles.icon} />
+          <FontAwesome name="envelope" size={24} color="#000" style={styles.icon} />
+          <FontAwesome name="linkedin" size={24} color="#000" style={styles.icon} />
         </View>
       </View>
     </ScrollView>

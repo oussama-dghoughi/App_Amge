@@ -36,10 +36,10 @@ const handleRegisterPress = () => {
 // Image Carousel (Slide Images every 5 seconds)
 const [currentIndex, setCurrentIndex] = useState(0);
 const images = [
-  require('../assets/image1.jpeg'),
-  require('../assets/image1.png'),
-  require('../assets/image2.png'),
-  require('../assets/image3.png'), // Add more images here
+  require('../../assets/image1.jpeg'),
+  require('../../assets/image1.png'),
+  require('../../assets/image2.png'),
+  require('../../assets/image3.png'), // Add more images here
 ];
 
 useEffect(() => {

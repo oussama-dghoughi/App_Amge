@@ -12,7 +12,7 @@ const Header = ({ onMenuPress, onProfilePress }) => {
 
       {/* Logo */}
       <Image
-        source={require('../assets/logo.png')} // Ensure the path matches
+        source={require('../../assets/logo.png')} // Ensure the path matches
         style={styles.logo}
         resizeMode="contain"
       />
