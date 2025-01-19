@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -40,6 +41,7 @@ const FindAccountScreen = () => {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          placeholderTextColor="#7d8e98" // Soft gray placeholder text
         />
 
         {/* Submit Button */}
@@ -86,12 +88,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   header: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 26, // Larger font size for header
+    fontWeight: '600',
     color: '#005f73', // Matching blue color
     marginBottom: 20, // Increased margin to add space
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Use system fonts for iOS and Android
   },
   subHeader: {
     fontSize: 16, // Slightly larger font size for readability
@@ -102,12 +114,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    height: 40,
+    height: 45, // Increased height for better interaction
     marginBottom: 20, // Increased margin for more space between input and button
-    paddingLeft: 8,
+    paddingLeft: 15,
     backgroundColor: '#eaf3f9', // Light blue input field background
-    borderRadius: 5,
-    fontSize: 14,
+    borderRadius: 8,
+    fontSize: 15,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Consistent with the header font
   },
   inputBorder: {
     borderWidth: 0,
@@ -116,7 +129,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: '#005f73', // Deep blue button
-    borderRadius: 5,
+    borderRadius: 8,
     paddingVertical: 12, // Added padding for a larger button
     paddingHorizontal: 24, // Added padding for a larger button
     alignItems: 'center',

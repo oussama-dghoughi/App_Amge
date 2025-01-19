@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Platform
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -41,6 +42,7 @@ const ChangePasswordScreen = () => {
           value={oldPassword}
           onChangeText={setOldPassword}
           secureTextEntry
+          placeholderTextColor="#7d8e98"
         />
 
         {/* New Password Input */}
@@ -50,6 +52,7 @@ const ChangePasswordScreen = () => {
           value={newPassword}
           onChangeText={setNewPassword}
           secureTextEntry
+          placeholderTextColor="#7d8e98"
         />
 
         {/* Confirm New Password Input */}
@@ -59,6 +62,7 @@ const ChangePasswordScreen = () => {
           value={confirmNewPassword}
           onChangeText={setConfirmNewPassword}
           secureTextEntry
+          placeholderTextColor="#7d8e98"
         />
 
         {/* Submit Button */}
@@ -96,7 +100,7 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     width: '100%',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f0f0f0',  // Soft light gray background for content box
     borderRadius: 10,
     padding: 30,
     alignItems: 'center',
@@ -105,35 +109,46 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#005f73',
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#005f73', // Header color
     marginBottom: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Use system fonts for iOS and Android
   },
   input: {
     width: '100%',
-    height: 40,
-    marginBottom: 20,
-    paddingLeft: 8,
-    backgroundColor: '#eaf3f9',
-    borderRadius: 5,
-    fontSize: 14,
+    height: 45,
+    marginBottom: 18,
+    paddingLeft: 15,
+    backgroundColor: '#eaf3f9', // Soft blue input background
+    borderRadius: 8,
+    fontSize: 15,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Same as header font family
   },
   inputBorder: {
     borderWidth: 0,
     borderBottomWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', // Light gray border
   },
   submitButton: {
-    backgroundColor: '#005f73',
-    borderRadius: 5,
+    backgroundColor: '#005f73', // Button color
+    borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
     alignItems: 'center',
     width: '100%',
-    marginTop: 20,
+    marginTop: 25,
   },
   submitButtonText: {
     color: '#fff',

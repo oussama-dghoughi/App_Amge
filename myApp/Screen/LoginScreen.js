@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -37,6 +38,7 @@ const LoginScreen = ({ onForgotAccount, onSignUp }) => {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          placeholderTextColor="#7d8e98" // Soft gray placeholder text
         />
 
         {/* Password Input */}
@@ -46,6 +48,7 @@ const LoginScreen = ({ onForgotAccount, onSignUp }) => {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          placeholderTextColor="#7d8e98" // Soft gray placeholder text
         />
 
         {/* Login Button */}
@@ -81,7 +84,7 @@ const LoginScreen = ({ onForgotAccount, onSignUp }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // Set background to white
+    backgroundColor: '#fff', // White background
     alignItems: 'center',
     padding: 16,
   },
@@ -95,28 +98,39 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#f0f0f0', // Light gray background for the box
     borderRadius: 10,
-    padding: 20,
+    padding: 30, // Increased padding for more space
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   header: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 26, // Larger font size for header
+    fontWeight: '600',
     color: '#005f73', // Matching blue color for the title
-    marginBottom: 20,
+    marginBottom: 20, // Increased margin to add space
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Use system fonts for iOS and Android
   },
   input: {
     width: '100%',
-    height: 40,
-    marginBottom: 15,
-    paddingLeft: 8,
+    height: 45, // Increased height for better interaction
+    marginBottom: 20, // Increased margin for more space between input and button
+    paddingLeft: 15,
     backgroundColor: '#eaf3f9', // Light blue input field background
-    borderRadius: 5,
-    fontSize: 14,
+    borderRadius: 8,
+    fontSize: 15,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Consistent with the header font
   },
   inputBorder: {
     borderWidth: 0,
@@ -125,12 +139,12 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#005f73', // Deep blue button
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: 8,
+    paddingVertical: 12, // Added padding for a larger button
+    paddingHorizontal: 24, // Added padding for a larger button
     alignItems: 'center',
     width: '100%',
-    marginTop: 10,
+    marginTop: 20, // Increased margin for more spacing
   },
   loginButtonText: {
     color: '#fff', // White text for button
@@ -141,7 +155,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 20,
+    marginTop: 20, // Increased margin for more spacing
   },
   linkText: {
     color: '#005f73', // Deep blue for links

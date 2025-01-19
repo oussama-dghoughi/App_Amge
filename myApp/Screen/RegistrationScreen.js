@@ -38,7 +38,7 @@ const RegistrationScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <Image
+      <Image
         source={require('../assets/logo.png')} // Ensure the path matches
         style={styles.logo}
         resizeMode="contain"
@@ -144,37 +144,38 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    padding: 20,
+    padding: 25, // Increased padding for better spacing
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 5,
     elevation: 3,
     marginBottom: 30,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 26, // Increased font size for header
+    fontWeight: '600',
+    marginBottom: 25,
     textAlign: 'center',
     color: '#005f73',
+    fontFamily: 'Roboto',
   },
   input: {
     borderWidth: 0,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 15,
+    marginBottom: 18, // Increased margin between input fields
     backgroundColor: 'transparent',
   },
   adjustedInput: {
-    fontSize: 14,
-    paddingVertical: 10,
+    fontSize: 16,
+    paddingVertical: 12,
   },
   picker: {
     borderWidth: 0,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    marginBottom: -1,
+    marginBottom: 20, // Adjusted bottom margin for better spacing
     backgroundColor: 'transparent',
   },
   uploadButtonLarge: {
@@ -184,13 +185,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 20,
-    marginBottom: 20,
+    padding: 18, // Reduced padding for the upload button
+    marginBottom: 22,
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 5,
     elevation: 3,
   },
   cvUploadText: {
@@ -201,33 +202,33 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   signUpButton: {
-    backgroundColor: '#005f73',
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: '#005f73', // Button background color
+    padding: 16, // Increased padding for a more comfortable button size
+    borderRadius: 8,
     alignItems: 'center',
   },
   signUpButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   contactBar: {
     alignItems: 'center',
-    marginTop: 10,
-    padding: 10,
+    marginTop: 15,
+    padding: 12,
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
   contactText: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   iconsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
   },
   icon: {
-    marginHorizontal: 10,
+    marginHorizontal: 12,
   },
 });
 
