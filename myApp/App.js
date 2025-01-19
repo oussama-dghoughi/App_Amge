@@ -1,7 +1,6 @@
 import React from 'react';
-import HomeScreen from './Screen/HomeScreen';
-
+import Contact from './Screen/Contact'; // Adjust the path if necessary
 
 export default function App() {
-  return <HomeScreen />;
+  return <Contact />;
 }
