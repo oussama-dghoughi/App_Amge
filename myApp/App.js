@@ -7,6 +7,6 @@ import FindAccountScreen from './Screen/FindAccount';
 import ChangePasswordScreen from './Screen/ChangePassword';
 export default function App() {
   return (
-      <RegistrationScreen />
+      <HomeScreen />
   );
 }
