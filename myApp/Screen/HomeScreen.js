@@ -35,7 +35,7 @@ const HomeScreen = () => {
 
   const MenuContent = () => (
     <View style={styles.menuContent}>
-      {/* Log out button at the top right of the menu */}
+      {/* Log in button at the top right of the menu */}
       <TouchableOpacity style={styles.logginContainer}>
         <Icon name="login" size={24} color="#333" />
         <Text style={styles.loggingText}>Se connecter</Text>

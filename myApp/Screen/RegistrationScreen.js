@@ -21,9 +21,13 @@ const RegistrationScreen = () => {
   const [domain, setDomain] = useState('');
   const [track, setTrack] = useState('');
   const [cvFile, setCvFile] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleSignUp = () => {
-    // Handle sign-up logic here
+    if (!isChecked) {
+      alert('You must agree to the legal conditions before signing up.');
+      return;
+    }
     console.log({ name, surname, email, password, status, domain, track, cvFile });
   };
 
@@ -35,6 +39,8 @@ const RegistrationScreen = () => {
       setCvFile(result);
     }
   };
+
+  const toggleCheckbox = () => setIsChecked(!isChecked);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -111,6 +117,14 @@ const RegistrationScreen = () => {
           <FontAwesome name="cloud-upload" size={30} color="gray" style={styles.uploadIcon} />
         </TouchableOpacity>
 
+        {/* Legal Conditions Checkbox */}
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity style={styles.checkbox} onPress={toggleCheckbox}>
+            {isChecked && <View style={styles.checked} />}
+          </TouchableOpacity>
+          <Text style={styles.checkboxLabel}>By checking this box, you are agreeing to our terms of service.</Text>
+        </View>
+
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
           <Text style={styles.signUpButtonText}>Sign up</Text>
         </TouchableOpacity>
@@ -144,7 +158,7 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    padding: 25, // Increased padding for better spacing
+    padding: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -153,7 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   header: {
-    fontSize: 26, // Increased font size for header
+    fontSize: 26,
     fontWeight: '600',
     marginBottom: 25,
     textAlign: 'center',
@@ -164,7 +178,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 18, // Increased margin between input fields
+    marginBottom: 18,
     backgroundColor: 'transparent',
   },
   adjustedInput: {
@@ -175,7 +189,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 20, // Adjusted bottom margin for better spacing
+    marginBottom: 20,
     backgroundColor: 'transparent',
   },
   uploadButtonLarge: {
@@ -185,7 +199,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 18, // Reduced padding for the upload button
+    padding: 18,
     marginBottom: 22,
     backgroundColor: 'white',
     shadowColor: '#000',
@@ -202,8 +216,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   signUpButton: {
-    backgroundColor: '#005f73', // Button background color
-    padding: 16, // Increased padding for a more comfortable button size
+    backgroundColor: '#005f73',
+    padding: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -229,6 +243,31 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 12,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start', // Aligns the checkbox and text to the top
+    marginBottom: 20,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    color: '#333',
+    flexWrap: 'wrap', // Ensures the text wraps to a new line if it's too long
+    maxWidth: '85%', // Adjust this to control how far the text extends
+  },
+  checked: {
+    width: 16,
+    height: 16,
+    backgroundColor: '#005f73',
   },
 });
 
