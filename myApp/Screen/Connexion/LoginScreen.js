@@ -7,10 +7,13 @@ import {
   Image,
   StyleSheet,
   Platform,
+  SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
-const LoginScreen = ({ onForgotAccount, onSignUp }) => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -18,75 +21,92 @@ const LoginScreen = ({ onForgotAccount, onSignUp }) => {
     console.log(`Email: ${email}, Password: ${password}`);
   };
 
+  const handleForgotAccount = () => {
+    navigation.navigate('FindAccount'); // Navigate to Find Account screen
+  };
+
+  const handleSignUp = () => {
+    navigation.navigate('Registration'); // Navigate to Registration screen
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Logo */}
-      <Image
-        source={require('../assets/logo.png')} // Replace with your actual logo
-        style={styles.logo}
-        resizeMode="contain"
-      />
-
-      {/* Login Box */}
-      <View style={styles.loginBox}>
-        <Text style={styles.header}>Log in</Text>
-
-        {/* Email Input */}
-        <TextInput
-          style={[styles.input, styles.inputBorder]}
-          placeholder="Adresse mail *"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          placeholderTextColor="#7d8e98" // Soft gray placeholder text
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Logo */}
+        <Image
+          source={require('../../assets/logo.png')} // Replace with your actual logo
+          style={styles.logo}
+          resizeMode="contain"
         />
 
-        {/* Password Input */}
-        <TextInput
-          style={[styles.input, styles.inputBorder]}
-          placeholder="Mot de passe *"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          placeholderTextColor="#7d8e98" // Soft gray placeholder text
-        />
+        {/* Login Box */}
+        <View style={styles.loginBox}>
+          <Text style={styles.header}>Log in</Text>
 
-        {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Log in</Text>
-        </TouchableOpacity>
+          {/* Email Input */}
+          <TextInput
+            style={[styles.input, styles.inputBorder]}
+            placeholder="Adresse mail *"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            placeholderTextColor="#7d8e98" // Soft gray placeholder text
+          />
 
-        {/* Footer Links */}
-        <View style={styles.footerLinks}>
-          <TouchableOpacity onPress={onForgotAccount}>
-            <Text style={styles.linkText}>Forgot account?</Text>
+          {/* Password Input */}
+          <TextInput
+            style={[styles.input, styles.inputBorder]}
+            placeholder="Mot de passe *"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor="#7d8e98" // Soft gray placeholder text
+          />
+
+          {/* Login Button */}
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Log in</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onSignUp}>
-            <Text style={styles.linkText}>Sign up?</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Contact</Text>
-        <View style={styles.socialIcons}>
-          <FontAwesome name="instagram" size={24} color="#000" style={styles.icon} />
-          <FontAwesome name="facebook" size={24} color="#000" style={styles.icon} />
-          <FontAwesome name="envelope" size={24} color="#000" style={styles.icon} />
-          <FontAwesome name="linkedin" size={24} color="#000" style={styles.icon} />
+          {/* Footer Links */}
+          <View style={styles.footerLinks}>
+            <TouchableOpacity onPress={handleForgotAccount}>
+              <Text style={styles.linkText}>Forgot account?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignUp}>
+              <Text style={styles.linkText}>Sign up?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Contact</Text>
+          <View style={styles.socialIcons}>
+            <FontAwesome name="instagram" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="facebook" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="envelope" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="linkedin" size={24} color="#000" style={styles.icon} />
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Navigation Bar */}
+      <BottomNavigationBar />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#fff', // White background
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    paddingBottom: 80, // Add padding to avoid overlap with BottomNavigationBar
   },
   logo: {
     width: 150,
@@ -95,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginBox: {
-    width: '100%',
+    width: '90%',
     backgroundColor: '#f0f0f0', // Light gray background for the box
     borderRadius: 10,
     padding: 30, // Increased padding for more space
@@ -163,9 +183,9 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   footer: {
-    position: 'absolute',
-    bottom: 20,
     alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
   },
   footerText: {
     fontSize: 14,

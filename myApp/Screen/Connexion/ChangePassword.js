@@ -6,42 +6,63 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Platform,
+  Platform
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const FindAccountScreen = () => {
-  const [email, setEmail] = useState('');
+const ChangePasswordScreen = () => {
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   const handleSubmit = () => {
-    console.log(`Email: ${email}`);
-    // Handle account recovery logic
+    console.log(`Old Password: ${oldPassword}`);
+    console.log(`New Password: ${newPassword}`);
+    console.log(`Confirm New Password: ${confirmNewPassword}`);
+    // Handle password change logic
   };
 
   return (
     <View style={styles.container}>
       {/* Logo */}
       <Image
-        source={require('../assets/logo.png')} // Replace with your actual logo
+        source={require('../../assets/logo.png')} // Replace with your actual logo
         style={styles.logo}
         resizeMode="contain"
       />
 
       {/* Content Box */}
       <View style={styles.contentBox}>
-        <Text style={styles.header}>Find your account</Text>
-        <Text style={styles.subHeader}>
-          Please enter your email to search for your account.
-        </Text>
+        <Text style={styles.header}>Change your password</Text>
 
-        {/* Email Input */}
+        {/* Old Password Input */}
         <TextInput
           style={[styles.input, styles.inputBorder]}
-          placeholder="Adresse mail *"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          placeholderTextColor="#7d8e98" // Soft gray placeholder text
+          placeholder="Ancien mot de passe *"
+          value={oldPassword}
+          onChangeText={setOldPassword}
+          secureTextEntry
+          placeholderTextColor="#7d8e98"
+        />
+
+        {/* New Password Input */}
+        <TextInput
+          style={[styles.input, styles.inputBorder]}
+          placeholder="Nouveau mot de passe *"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry
+          placeholderTextColor="#7d8e98"
+        />
+
+        {/* Confirm New Password Input */}
+        <TextInput
+          style={[styles.input, styles.inputBorder]}
+          placeholder="Confirmer votre nouveau mot de passe *"
+          value={confirmNewPassword}
+          onChangeText={setConfirmNewPassword}
+          secureTextEntry
+          placeholderTextColor="#7d8e98"
         />
 
         {/* Submit Button */}
@@ -67,7 +88,7 @@ const FindAccountScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // White background
+    backgroundColor: '#fff',
     alignItems: 'center',
     padding: 16,
   },
@@ -79,9 +100,9 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     width: '100%',
-    backgroundColor: '#f0f0f0', // Light gray background for the box
+    backgroundColor: '#f0f0f0',  // Soft light gray background for content box
     borderRadius: 10,
-    padding: 30, // Increased padding for more space
+    padding: 30,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -99,45 +120,38 @@ const styles = StyleSheet.create({
     }),
   },
   header: {
-    fontSize: 26, // Larger font size for header
+    fontSize: 26,
     fontWeight: '600',
-    color: '#005f73', // Matching blue color
-    marginBottom: 20, // Increased margin to add space
+    color: '#005f73', // Header color
+    marginBottom: 20,
     fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Use system fonts for iOS and Android
-  },
-  subHeader: {
-    fontSize: 16, // Slightly larger font size for readability
-    color: '#666', // Softer gray color for a sleek look
-    fontStyle: 'italic', // Adds an elegant italic style
-    fontFamily: 'Roboto-Light', // Use a light font variant for a modern look
-    marginBottom: 30, // Increased margin to add space
   },
   input: {
     width: '100%',
-    height: 45, // Increased height for better interaction
-    marginBottom: 20, // Increased margin for more space between input and button
+    height: 45,
+    marginBottom: 18,
     paddingLeft: 15,
-    backgroundColor: '#eaf3f9', // Light blue input field background
+    backgroundColor: '#eaf3f9', // Soft blue input background
     borderRadius: 8,
     fontSize: 15,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Consistent with the header font
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Same as header font family
   },
   inputBorder: {
     borderWidth: 0,
     borderBottomWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', // Light gray border
   },
   submitButton: {
-    backgroundColor: '#005f73', // Deep blue button
+    backgroundColor: '#005f73', // Button color
     borderRadius: 8,
-    paddingVertical: 12, // Added padding for a larger button
-    paddingHorizontal: 24, // Added padding for a larger button
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     alignItems: 'center',
     width: '100%',
-    marginTop: 20, // Increased margin for more spacing
+    marginTop: 25,
   },
   submitButtonText: {
-    color: '#fff', // White text
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -161,4 +175,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FindAccountScreen;
+export default ChangePasswordScreen;

@@ -2,22 +2,35 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const BottomNavigationBar = () => {
+  const navigation = useNavigation(); // Use this hook to get navigation
+  
   return (
     <View style={styles.footer}>
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity 
+        style={styles.iconContainer} 
+        onPress={() => navigation.navigate('Home')}
+      >
         <Icon name="home" size={24} color="#9b59b6" />
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.iconContainer}>
         <FontAwesome name="location-arrow" size={24} color="#9b59b6" />
       </TouchableOpacity>
+
       <TouchableOpacity style={[styles.iconContainer, styles.qrIcon]}>
         <Icon name="qrcode-scan" size={24} color="#000" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer}>
+
+      <TouchableOpacity 
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate('CompanyList')}
+      >
         <Icon name="notebook" size={24} color="#9b59b6" />
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.iconContainer}>
         <Icon name="calendar" size={24} color="#9b59b6" />
       </TouchableOpacity>
