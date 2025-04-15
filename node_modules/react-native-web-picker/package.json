@@ -1,0 +1,42 @@
+{
+	"name": "react-native-web-picker",
+	"version": "0.1.0",
+	"description": "React Native for Web implementation of @react-native-picker/picker",
+	"main": "dist/index.js",
+	"main-es": "src/index.js",
+	"repository": "https://github.com/sawa-zen/react-native-web-picker",
+	"author": "sawa-zen",
+	"license": "MIT",
+	"keywords": [
+		"react-native",
+		"react-native-web",
+		"@react-native-picker/picker"
+	],
+	"scripts": {
+		"prepublish": "yarn build",
+		"build": "mkdir -p dist && babel src/index.js --out-file dist/index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"babel": {
+		"presets": [
+			"react-native"
+		]
+	},
+	"files": [
+		"src",
+		"dist",
+		"yarn.lock"
+	],
+	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-core": "^6.26.0",
+		"babel-loader": "^7.1.2",
+		"babel-preset-react-native": "^4.0.0",
+		"react": "^16.0.0",
+		"react-dom": "^16.0.0",
+		"react-native-web": "^0.1.1"
+	},
+	"peerDependencies": {
+		"react-native-web": "*"
+	}
+}

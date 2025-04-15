@@ -8,11 +8,16 @@ import {
   ScrollView,
   Image,
   Alert,
+  Platform,
+  ImageBackground,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // Add this import
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Contact = () => {
+const Contact = ({ navigation }) => {
   const [nom, setNom] = useState('');
   const [email, setEmail] = useState('');
   const [sujet, setSujet] = useState('');
@@ -34,13 +39,7 @@ const Contact = () => {
       return;
     }
 
-    console.log({
-      nom,
-      email,
-      sujet,
-      message,
-    });
-
+    console.log({ nom, email, sujet, message });
     showCustomAlert('Succès', 'Votre message a été envoyé avec succès!');
     setNom('');
     setEmail('');
@@ -49,164 +48,259 @@ const Contact = () => {
   };
 
   const showCustomAlert = (title, message) => {
-    Alert.alert(
-      title,
-      message,
-      [
-        {
-          text: 'OK',
-          style: 'default',
-        },
-      ],
-      { cancelable: true }
-    );
+    Alert.alert(title, message, [{ text: 'OK', style: 'default' }], { cancelable: true });
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Logo Section */}
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+    <SafeAreaProvider>
+      <View style={styles.mainContainer}>
+        <View style={styles.headerContainer}>
+          <HeaderMenu navigation={navigation} />
         </View>
-        <Text style={styles.headerText}>Contactez-nous</Text>
 
-        {/* Input Fields - NOW RESTORED */}
-        <TextInput
-          style={styles.input}
-          placeholder="Nom"
-          value={nom}
-          onChangeText={(text) => setNom(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Sujet"
-          value={sujet}
-          onChangeText={(text) => setSujet(text)}
-        />
-        <TextInput
-          style={[styles.input, styles.textarea]}
-          placeholder="Message"
-          value={message}
-          onChangeText={(text) => setMessage(text)}
-          multiline
-        />
+        <ImageBackground
+          source={require('../../assets/BackGround.jpeg')}
+          style={styles.background}
+          imageStyle={{ opacity: 0.15 }}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header Section */}
+            <LinearGradient
+              colors={['#A34392', '#8a348a']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.headerGradient}
+            >
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/logo.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={styles.headerText}>Contactez-nous</Text>
+            </LinearGradient>
 
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Envoyer</Text>
-        </TouchableOpacity>
+            {/* Form Container */}
+            <View style={styles.formContainer}>
+              {/* Input Fields */}
+              <View style={styles.inputGroup}>
+                <Icon name="account" size={20} color="#8a348a" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nom"
+                  value={nom}
+                  onChangeText={(text) => setNom(text)}
+                  placeholderTextColor="#666"
+                />
+              </View>
 
-        {/* Contact Information */}
-        <View style={styles.contactInfo}>
-          <Text style={styles.contactHeader}>Autres moyens de nous contacter</Text>
-          <Text style={styles.contactText}>
-            📧 <Text style={styles.contactLabel}>Email:</Text> fhm@amge-caravane.com
-          </Text>
-          <Text style={styles.contactText}>
-            📍 <Text style={styles.contactLabel}>Adresse:</Text> 66 Avenue des Champs-Élysées lot 47, 75008 Paris, France
-          </Text>
+              <View style={styles.inputGroup}>
+                <Icon name="email" size={20} color="#8a348a" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
+                  keyboardType="email-address"
+                  placeholderTextColor="#666"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Icon name="format-title" size={20} color="#8a348a" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Sujet"
+                  value={sujet}
+                  onChangeText={(text) => setSujet(text)}
+                  placeholderTextColor="#666"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Icon name="message-text" size={20} color="#8a348a" style={styles.inputIcon} />
+                <TextInput
+                  style={[styles.input, styles.textarea]}
+                  placeholder="Message"
+                  value={message}
+                  onChangeText={(text) => setMessage(text)}
+                  multiline
+                  placeholderTextColor="#666"
+                />
+              </View>
+
+              {/* Submit Button */}
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <LinearGradient
+                  colors={['#A34392', '#8a348a']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.buttonGradient}
+                >
+                  <Text style={styles.buttonText}>Envoyer</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              {/* Contact Information */}
+              <View style={styles.contactInfo}>
+                <Text style={styles.contactHeader}>Autres moyens de nous contacter</Text>
+                
+                <View style={styles.contactItem}>
+                  <Icon name="email" size={24} color="#8a348a" />
+                  <Text style={styles.contactText}>
+                    <Text style={styles.contactLabel}>Email: </Text>
+                    fhm@amge-caravane.com
+                  </Text>
+                </View>
+
+                <View style={styles.contactItem}>
+                  <Icon name="map-marker" size={24} color="#8a348a" />
+                  <Text style={styles.contactText}>
+                    <Text style={styles.contactLabel}>Adresse: </Text>
+                    66 Avenue des Champs-Élysées lot 47, 75008 Paris, France
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </ImageBackground>
+
+        {/* Bottom Navigation Bar */}
+        <View style={styles.navBarContainer}>
+          <SafeAreaView edges={['bottom']}>
+            <BottomNavigationBar navigation={navigation} />
+          </SafeAreaView>
         </View>
-      </ScrollView>
-
-      {/* Bottom Navigation Bar */}
-      <View style={styles.navBarContainer}>
-        <SafeAreaView edges={['bottom']}>
-          <BottomNavigationBar />
-        </SafeAreaView>
       </View>
-    </View>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: '#fff',
   },
+  headerContainer: {
+    marginTop: Platform.OS === 'ios' ? 45 : 25,
+  },
+  background: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
-    paddingBottom: 100, // Space for navigation bar
+    paddingBottom: 100,
   },
-  // Keep all your original styles
+  headerGradient: {
+    paddingVertical: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    marginBottom: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#8a348a',
+    color: '#fff',
     textAlign: 'center',
-    marginBottom: 20,
+  },
+  formContainer: {
+    paddingHorizontal: 20,
+  },
+  inputGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
+    flex: 1,
     height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
+    color: '#333',
+    fontSize: 16,
   },
   textarea: {
-    height: 100,
+    height: 120,
     textAlignVertical: 'top',
+    paddingTop: 15,
   },
   button: {
-    height: 50,
-    backgroundColor: '#8a348a',
-    justifyContent: 'center',
+    marginVertical: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  buttonGradient: {
+    paddingVertical: 15,
     alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 20,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   contactInfo: {
     marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    paddingTop: 20,
-    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   contactHeader: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8a348a',
-    marginBottom: 10,
+    marginBottom: 15,
     textAlign: 'center',
   },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
   contactText: {
+    flex: 1,
     fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
-    textAlign: 'center',
+    color: '#333',
+    marginLeft: 10,
   },
   contactLabel: {
     fontWeight: 'bold',
+    color: '#8a348a',
   },
   navBarContainer: {
     position: 'absolute',

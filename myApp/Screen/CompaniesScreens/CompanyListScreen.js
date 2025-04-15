@@ -10,12 +10,18 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  Linking
+  Linking,
+  Dimensions
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../../components/HomeScreen/Header.js';
 import { companies } from '../../data/companies.js';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar.js';
+import { Ionicons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const { width, height } = Dimensions.get('window');
 
 const CompanyListScreen = ({ navigation }) => { 
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,12 +44,54 @@ const CompanyListScreen = ({ navigation }) => {
     );
   };
 
+  const getFieldIcon = (field) => {
+    const icons = {
+      'Banking': 'bank',
+      'Insurance': 'shield-check',
+      'Technology': 'laptop',
+      'Consulting': 'briefcase',
+      'Engineering': 'engine',
+      'Investment': 'chart-line',
+      'Construction': 'home',
+      'Telecommunications': 'phone',
+      'Energy': 'flash',
+      'Retail': 'store',
+      'Aviation': 'airplane',
+      'Mining': 'pickaxe',
+      'Food & Beverage': 'food',
+      'Pharmaceuticals': 'medical-bag',
+      'Logistics': 'truck',
+      'Agriculture': 'sprout',
+    };
+    return icons[field] || 'office-building';
+  };
+
   const renderCompanyItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.companyItem}
+      style={styles.companyCard}
       onPress={() => setSelectedCompany(item)}
     >
-      <Text style={styles.companyName}>{item.name}</Text>
+      <LinearGradient
+        colors={['#8a348a', '#C76B98']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.cardGradient}
+      >
+        <View style={styles.cardHeader}>
+          <Icon name={getFieldIcon(item.field)} size={30} color="#fff" style={styles.fieldIcon} />
+          <View style={styles.cardHeaderText}>
+            <Text style={styles.companyName}>{item.name}</Text>
+            <Text style={styles.fieldName}>{item.field}</Text>
+          </View>
+        </View>
+        <Text style={styles.companyPreview} numberOfLines={2}>
+          {item.details}
+        </Text>
+        <View style={styles.cardFooter}>
+          <Text style={styles.viewMore}>Voir plus</Text>
+          <Icon name="chevron-right" size={20} color="#fff" />
+        </View>
+      </LinearGradient>
     </TouchableOpacity>
   );
 
@@ -54,83 +102,81 @@ const CompanyListScreen = ({ navigation }) => {
         style={styles.background}
         imageStyle={{ opacity: 0.3 }}
       >
-      <SafeAreaView style={styles.safeAreaHeader} edges={['top', 'left', 'right']}>
-        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-          
-          {/* Header */}
+        <SafeAreaView style={styles.safeAreaHeader} edges={['top', 'left', 'right']}>
+          <StatusBar backgroundColor="#fff" barStyle="dark-content" />
           <View style={styles.headerContainer}>
-            <Header />
+            <Header navigation={navigation} />
           </View>
         </SafeAreaView>
+
         <SafeAreaView style={styles.container} edges={['left', 'right']}>
-
-
           {selectedCompany ? (
-            // Company Details View
-            <View style={styles.detailsContainer}>
-              <Text style={styles.title}>{selectedCompany.name}</Text>
-
-              <Text style={styles.field}>
-                {'\u2022'} <Text style={styles.boldText}>Domaine:</Text> {selectedCompany.field}
-              </Text>
-
-              <Text style={styles.details}>
-                {'\u2022'} <Text style={styles.boldText}>Description:</Text> {selectedCompany.details}
-              </Text>
-
-              {selectedCompany.website && (
-                <TouchableOpacity
-                  style={styles.websiteButton}
-                  onPress={() => handleWebsitePress(selectedCompany.website)}
-                >
-                  <Text style={styles.websiteButtonText}>Visiter le site web</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => setSelectedCompany(null)}
+            <ScrollView style={styles.detailsContainer}>
+              <LinearGradient
+                colors={['#8a348a', '#C76B98']}
+                style={styles.detailsHeader}
               >
-                <Text style={styles.backButtonText}>Retour</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            // Company List View
-            <>
-              <Text style={styles.mainText}>Liste des Entreprises</Text>
+                <Icon name={getFieldIcon(selectedCompany.field)} size={50} color="#fff" />
+                <Text style={styles.detailsTitle}>{selectedCompany.name}</Text>
+                <Text style={styles.detailsField}>{selectedCompany.field}</Text>
+              </LinearGradient>
 
-              {/* Search and Filter Row */}
-              <View style={styles.searchFilterRow}>
-                <TextInput
-                  style={styles.searchBar}
-                  placeholder="Rechercher une entreprise"
-                  placeholderTextColor="#aaa"
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
+              <View style={styles.detailsContent}>
+                <View style={styles.detailsSection}>
+                  <Text style={styles.sectionTitle}>À propos</Text>
+                  <Text style={styles.detailsText}>{selectedCompany.details}</Text>
+                </View>
+
+                {selectedCompany.website && (
+                  <TouchableOpacity
+                    style={styles.websiteButton}
+                    onPress={() => handleWebsitePress(selectedCompany.website)}
+                  >
+                    <Icon name="web" size={24} color="#fff" style={styles.websiteIcon} />
+                    <Text style={styles.websiteButtonText}>Visiter le site web</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => setSelectedCompany(null)}
+                >
+                  <Icon name="arrow-left" size={24} color="#fff" style={styles.backIcon} />
+                  <Text style={styles.backButtonText}>Retour à la liste</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          ) : (
+            <>
+              <View style={styles.searchContainer}>
+                <View style={styles.searchInputContainer}>
+                  <Icon name="magnify" size={24} color="#8a348a" style={styles.searchIcon} />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Rechercher une entreprise"
+                    placeholderTextColor="#666"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                  />
+                </View>
                 <TouchableOpacity
                   style={styles.filterButton}
                   onPress={() => setShowFieldModal(true)}
                 >
-                  <Text style={styles.filterButtonText}>
-                    {selectedField === '' || selectedField === 'Toutes les catégories'
-                      ? 'Catégories'
-                      : selectedField}
-                  </Text>
+                  <Icon name="filter-variant" size={24} color="#fff" />
                 </TouchableOpacity>
               </View>
 
-              {/* Company List */}
               <FlatList
                 data={filteredCompanies}
                 keyExtractor={(item) => item.id}
                 renderItem={renderCompanyItem}
                 contentContainerStyle={styles.companyList}
+                showsVerticalScrollIndicator={false}
               />
             </>
           )}
 
-          {/* Category Modal */}
           <Modal
             transparent={true}
             visible={showFieldModal}
@@ -139,23 +185,29 @@ const CompanyListScreen = ({ navigation }) => {
           >
             <View style={styles.modalBackground}>
               <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Choisissez une catégorie</Text>
+                <Text style={styles.modalTitle}>Filtrer par secteur</Text>
                 <ScrollView style={styles.fieldsList}>
                   {fields.map((field, index) => (
                     <TouchableOpacity
                       key={index}
-                      style={styles.fieldItem}
+                      style={[
+                        styles.fieldItem,
+                        selectedField === field && styles.fieldItemSelected
+                      ]}
                       onPress={() => {
                         setSelectedField(field === 'Toutes les catégories' ? '' : field);
                         setShowFieldModal(false);
                       }}
                     >
-                      <Text
-                        style={[
-                          styles.fieldItemText,
-                          selectedField === field && styles.fieldItemTextSelected,
-                        ]}
-                      >
+                      <Icon 
+                        name={field === 'Toutes les catégories' ? 'view-grid' : getFieldIcon(field)} 
+                        size={24} 
+                        color={selectedField === field ? '#fff' : '#8a348a'} 
+                      />
+                      <Text style={[
+                        styles.fieldItemText,
+                        selectedField === field && styles.fieldItemTextSelected
+                      ]}>
                         {field}
                       </Text>
                     </TouchableOpacity>
@@ -179,10 +231,7 @@ const CompanyListScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   safeAreaHeader: {
-    backgroundColor: '#fff', // White background for the status bar area
-  },
-  HeaderContainer: {
-    backgroundColor: '#fff', // White background for the status bar area
+    backgroundColor: '#fff',
   },
   background: {
     flex: 1,
@@ -194,168 +243,229 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
   },
-  mainText: {
-    color: '#8a348a',
-    fontSize: 18,
-    fontFamily: 'Josefin Sans',
-    fontWeight: '500',
-    fontStyle: 'italic',
-    lineHeight: 23,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  searchFilterRow: {
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    gap: 10,
   },
-  searchBar: {
+  searchInputContainer: {
     flex: 1,
-    height: 40,
-    borderColor: '#8a348a',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 45,
     color: '#000',
+    fontSize: 16,
   },
   filterButton: {
-    marginLeft: 10,
     backgroundColor: '#8a348a',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-  },
-  filterButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+    width: 45,
+    height: 45,
+    borderRadius: 23,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   companyList: {
-    paddingHorizontal: 20,
-    marginTop: 20,
+    padding: 10,
   },
-  companyItem: {
+  companyCard: {
+    marginHorizontal: 10,
+    marginVertical: 8,
+    borderRadius: 15,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  cardGradient: {
+    borderRadius: 15,
     padding: 15,
-    backgroundColor: '#8a348a',
-    borderRadius: 10,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
-  companyName: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  fieldIcon: {
+    marginRight: 10,
   },
-  // Details Screen Styles
+  cardHeaderText: {
+    flex: 1,
+  },
+  companyName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  fieldName: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  companyPreview: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  viewMore: {
+    fontSize: 14,
+    color: '#fff',
+    marginRight: 5,
+  },
   detailsContainer: {
     flex: 1,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: 20,
+  },
+  detailsHeader: {
+    padding: 30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    alignItems: 'center',
+  },
+  detailsTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 15,
+  },
+  detailsField: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 5,
+  },
+  detailsContent: {
     padding: 20,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    marginBottom: 45,
-    textAlign: 'center',
-    fontFamily: 'Josefin Sans',
-    fontStyle: 'italic',
+  detailsSection: {
+    marginBottom: 25,
   },
-  field: {
+  sectionTitle: {
     fontSize: 20,
-    color: '#8a348a',
-    marginBottom: 15,
-    textAlign: 'left',
-    fontFamily: 'Josefin Sans',
-    fontStyle: 'italic',
-  },
-  details: {
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 15,
-    lineHeight: 26,
-    textAlign: 'left',
-    fontFamily: 'Josefin Sans',
-  },
-  boldText: {
     fontWeight: 'bold',
+    color: '#8a348a',
+    marginBottom: 10,
+  },
+  detailsText: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
   },
   websiteButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#8a348a',
-    borderRadius: 10,
-    marginTop: 20,
-    alignSelf: 'center',
+    padding: 15,
+    borderRadius: 25,
+    marginBottom: 15,
+  },
+  websiteIcon: {
+    marginRight: 10,
   },
   websiteButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Josefin Sans',
   },
   backButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#8a348a',
-    borderRadius: 10,
-    marginTop: 30,
-    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#C76B98',
+    padding: 15,
+    borderRadius: 25,
+  },
+  backIcon: {
+    marginRight: 10,
   },
   backButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Josefin Sans',
   },
-  // Modal Styles
   modalBackground: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
+    width: width * 0.9,
     backgroundColor: '#fff',
+    borderRadius: 20,
     padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
+    maxHeight: height * 0.8,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8a348a',
+    textAlign: 'center',
     marginBottom: 20,
   },
   fieldsList: {
-    width: '100%',
-    maxHeight: 300,
+    maxHeight: 400,
   },
   fieldItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
     marginVertical: 5,
-    borderRadius: 10,
-    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    backgroundColor: 'rgba(138, 52, 138, 0.1)',
+  },
+  fieldItemSelected: {
+    backgroundColor: '#8a348a',
   },
   fieldItemText: {
     fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
+    color: '#8a348a',
+    marginLeft: 15,
   },
   fieldItemTextSelected: {
-    color: '#8a348a',
-    fontWeight: 'bold',
+    color: '#fff',
   },
   closeModalButton: {
-    marginTop: 20,
     backgroundColor: '#8a348a',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    padding: 15,
+    borderRadius: 25,
+    marginTop: 20,
   },
   closeModalText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

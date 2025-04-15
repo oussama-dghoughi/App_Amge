@@ -8,13 +8,12 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  Alert,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import * as DocumentPicker from 'expo-document-picker';
 import { FontAwesome } from '@expo/vector-icons';
-import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
+import axios from 'axios';
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({ navigation }) => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [email, setEmail] = useState('');
@@ -22,23 +21,78 @@ const RegistrationScreen = () => {
   const [status, setStatus] = useState('');
   const [domain, setDomain] = useState('');
   const [track, setTrack] = useState('');
-  const [cvFile, setCvFile] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!isChecked) {
-      alert('You must agree to the legal conditions before signing up.');
+      Alert.alert('Erreur', 'Vous devez accepter les conditions légales pour vous inscrire.');
       return;
     }
-    console.log({ name, surname, email, password, status, domain, track, cvFile });
-  };
 
-  const handlePickFile = async () => {
-    let result = await DocumentPicker.getDocumentAsync({
-      type: '*/*',
-    });
-    if (result.type === 'success') {
-      setCvFile(result);
+    // Vérification des champs obligatoires
+    if (!name || !surname || !email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    // Validation basique de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Erreur', 'Veuillez entrer une adresse email valide.');
+      return;
+    }
+
+    // Validation du mot de passe (minimum 6 caractères)
+    if (password.length < 6) {
+      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    const userData = {
+      name,
+      surname,
+      email,
+      password,
+      status: status || 'Non spécifié',
+      domain: domain || 'Non spécifié',
+      track: track || 'Non spécifié',
+    };
+
+    try {
+      const response = await axios.post('http://172.20.10.2:5000/api/auth/register', userData);
+      Alert.alert(
+        'Succès',
+        'Inscription réussie ! Vous pouvez maintenant vous connecter.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setIsLoading(false);
+              navigation.replace('Login');
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Erreur détaillée:', error);
+      
+      let errorMessage = 'Erreur lors de l\'inscription';
+      if (error.response) {
+        // La requête a été faite et le serveur a répondu avec un code d'état
+        errorMessage = error.response.data.msg || `Erreur ${error.response.status}: ${error.response.data}`;
+      } else if (error.request) {
+        // La requête a été faite mais aucune réponse n'a été reçue
+        errorMessage = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
+      } else {
+        // Une erreur s'est produite lors de la configuration de la requête
+        errorMessage = error.message;
+      }
+      
+      Alert.alert('Erreur', errorMessage);
     }
   };
 
@@ -48,7 +102,7 @@ const RegistrationScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Image
-          source={require('../../assets/logo.png')} // Ensure the path matches
+          source={require('../../assets/logo.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -56,80 +110,106 @@ const RegistrationScreen = () => {
         <View style={styles.formContainer}>
           <Text style={styles.header}>Register now</Text>
 
+          <Text style={styles.inputLabel}>Nom *</Text>
           <TextInput
             style={[styles.input, styles.adjustedInput, styles.inputBorder]}
-            placeholder="Nom*"
+            placeholder="Entrez votre nom"
             value={name}
             onChangeText={setName}
+            editable={!isLoading}
           />
+
+          <Text style={styles.inputLabel}>Prénom *</Text>
           <TextInput
             style={[styles.input, styles.adjustedInput, styles.inputBorder]}
-            placeholder="Prénom*"
+            placeholder="Entrez votre prénom"
             value={surname}
             onChangeText={setSurname}
+            editable={!isLoading}
           />
+
+          <Text style={styles.inputLabel}>Adresse email *</Text>
           <TextInput
             style={[styles.input, styles.adjustedInput, styles.inputBorder]}
-            placeholder="Adresse mail*"
+            placeholder="Entrez votre adresse email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!isLoading}
           />
+
+          <Text style={styles.inputLabel}>Mot de passe *</Text>
           <TextInput
             style={[styles.input, styles.adjustedInput, styles.inputBorder]}
-            placeholder="Mot de passe*"
+            placeholder="Minimum 6 caractères"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            editable={!isLoading}
           />
 
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue) => setStatus(itemValue)}
-            style={[styles.picker, styles.adjustedInput, styles.inputBorder]}
-          >
-            <Picker.Item label="Statut*" value="" />
-            <Picker.Item label="Étudiant" value="student" />
-            <Picker.Item label="Professionnel" value="professional" />
-          </Picker>
+          <Text style={styles.inputLabel}>Statut</Text>
+          <TextInput
+            style={[styles.input, styles.adjustedInput, styles.inputBorder]}
+            placeholder="Ex: Étudiant, Professionnel..."
+            value={status}
+            onChangeText={setStatus}
+            editable={!isLoading}
+          />
 
-          <Picker
-            selectedValue={domain}
-            onValueChange={(itemValue) => setDomain(itemValue)}
-            style={[styles.picker, styles.adjustedInput, styles.inputBorder]}
-          >
-            <Picker.Item label="Domaine*" value="" />
-            <Picker.Item label="Informatique" value="it" />
-            <Picker.Item label="Ingénierie" value="engineering" />
-          </Picker>
+          <Text style={styles.inputLabel}>Domaine</Text>
+          <TextInput
+            style={[styles.input, styles.adjustedInput, styles.inputBorder]}
+            placeholder="Ex: Informatique, Marketing..."
+            value={domain}
+            onChangeText={setDomain}
+            editable={!isLoading}
+          />
 
-          <Picker
-            selectedValue={track}
-            onValueChange={(itemValue) => setTrack(itemValue)}
-            style={[styles.picker, styles.adjustedInput, styles.inputBorder]}
-          >
-            <Picker.Item label="Parcours*" value="" />
-            <Picker.Item label="Développement" value="development" />
-            <Picker.Item label="Gestion de projet" value="project_management" />
-          </Picker>
+          <Text style={styles.inputLabel}>Parcours</Text>
+          <TextInput
+            style={[styles.input, styles.adjustedInput, styles.inputBorder]}
+            placeholder="Ex: Master, Licence..."
+            value={track}
+            onChangeText={setTrack}
+            editable={!isLoading}
+          />
 
-          <TouchableOpacity onPress={handlePickFile} style={styles.uploadButtonLarge}>
-            <Text style={styles.cvUploadText}>
-              {cvFile ? cvFile.name : 'Ajoutez votre CV (Facultatif)'}
-            </Text>
-            <FontAwesome name="cloud-upload" size={30} color="gray" style={styles.uploadIcon} />
-          </TouchableOpacity>
-
-          {/* Legal Conditions Checkbox */}
           <View style={styles.checkboxContainer}>
-            <TouchableOpacity style={styles.checkbox} onPress={toggleCheckbox}>
+            <TouchableOpacity 
+              style={styles.checkbox} 
+              onPress={toggleCheckbox}
+              disabled={isLoading}
+            >
               {isChecked && <View style={styles.checked} />}
             </TouchableOpacity>
-            <Text style={styles.checkboxLabel}>By checking this box, you are agreeing to our terms of service.</Text>
+            <Text style={styles.checkboxLabel}>
+              En cochant cette case, vous acceptez nos conditions d'utilisation.
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-            <Text style={styles.signUpButtonText}>Sign up</Text>
+          <TouchableOpacity 
+            style={[
+              styles.signUpButton,
+              isLoading && styles.signUpButtonDisabled
+            ]} 
+            onPress={handleSignUp}
+            disabled={isLoading}
+          >
+            <Text style={styles.signUpButtonText}>
+              {isLoading ? 'Inscription en cours...' : 'Sign up'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.loginLink}
+            onPress={() => navigation.navigate('Login')}
+            disabled={isLoading}
+          >
+            <Text style={styles.loginLinkText}>
+              Déjà un compte ? Connectez-vous
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -143,9 +223,6 @@ const RegistrationScreen = () => {
           </View>
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation Bar */}
-      <BottomNavigationBar />
     </SafeAreaView>
   );
 };
@@ -153,12 +230,12 @@ const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff', // White background
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
-    paddingBottom: 80, // Add padding to avoid overlap with BottomNavigationBar
+    paddingBottom: 80,
   },
   logo: {
     width: 150,
@@ -195,36 +272,6 @@ const styles = StyleSheet.create({
   adjustedInput: {
     fontSize: 16,
     paddingVertical: 12,
-  },
-  picker: {
-    borderWidth: 0,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 20,
-    backgroundColor: 'transparent',
-  },
-  uploadButtonLarge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 18,
-    marginBottom: 22,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  cvUploadText: {
-    fontSize: 16,
-    color: 'gray',
-  },
-  uploadIcon: {
-    marginLeft: 10,
   },
   signUpButton: {
     backgroundColor: '#005f73',
@@ -279,6 +326,26 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     backgroundColor: '#005f73',
+  },
+  signUpButtonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+  loginLink: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  loginLinkText: {
+    color: '#005f73',
+    fontSize: 16,
+    textDecorationLine: 'underline',
+  },
+  inputLabel: {
+    alignSelf: 'flex-start',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#005f73',
+    marginBottom: 5,
+    marginTop: 10,
   },
 });
 

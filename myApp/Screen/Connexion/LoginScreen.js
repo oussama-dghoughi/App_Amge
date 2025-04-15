@@ -9,16 +9,67 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log(`Email: ${email}, Password: ${password}`);
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post('http://172.20.10.2:5000/api/auth/login', {
+        email,
+        password
+      });
+
+      console.log('Réponse du serveur:', response.data);
+      console.log('Données utilisateur reçues:', response.data.user);
+
+      // Formatage des données utilisateur
+      const userData = {
+        name: response.data.user.name || response.data.user.firstName || '',
+        surname: response.data.user.surname || response.data.user.lastName || '',
+        email: response.data.user.email,
+      };
+
+      console.log('Données formatées:', userData);
+
+      // Stockage des informations de l'utilisateur
+      await AsyncStorage.setItem('userToken', response.data.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      // Vérification des données stockées
+      const storedData = await AsyncStorage.getItem('userData');
+      console.log('Données stockées:', JSON.parse(storedData));
+
+      // Réinitialisation des champs
+      setEmail('');
+      setPassword('');
+      setIsLoading(false);
+
+      // Redirection vers la page d'accueil
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } catch (error) {
+      setIsLoading(false);
+      const errorMessage = error.response?.data?.msg || 'Identifiants incorrects';
+      Alert.alert('Erreur de connexion', errorMessage);
+    }
   };
 
   const handleForgotAccount = () => {
@@ -42,30 +93,45 @@ const LoginScreen = ({ navigation }) => {
         {/* Login Box */}
         <View style={styles.loginBox}>
           <Text style={styles.header}>Log in</Text>
+          
+          <Text style={styles.helpText}>Connectez-vous avec l'email et le mot de passe utilisés lors de l'inscription</Text>
 
           {/* Email Input */}
-          <TextInput
-            style={[styles.input, styles.inputBorder]}
-            placeholder="Adresse mail *"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            placeholderTextColor="#7d8e98" // Soft gray placeholder text
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              style={[styles.input, styles.inputBorder]}
+              placeholder="Entrez votre adresse email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#7d8e98"
+            />
+          </View>
 
           {/* Password Input */}
-          <TextInput
-            style={[styles.input, styles.inputBorder]}
-            placeholder="Mot de passe *"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            placeholderTextColor="#7d8e98" // Soft gray placeholder text
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Mot de passe</Text>
+            <TextInput
+              style={[styles.input, styles.inputBorder]}
+              placeholder="Entrez votre mot de passe"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              placeholderTextColor="#7d8e98"
+            />
+          </View>
 
           {/* Login Button */}
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Log in</Text>
+          <TouchableOpacity 
+            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
+            <Text style={styles.loginButtonText}>
+              {isLoading ? 'Connexion...' : 'Se connecter'}
+            </Text>
           </TouchableOpacity>
 
           {/* Footer Links */}
@@ -199,6 +265,26 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 10,
+  },
+  helpText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#005f73',
+    marginBottom: 5,
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#cccccc',
   },
 });
 

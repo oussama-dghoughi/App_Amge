@@ -8,85 +8,86 @@ import {
   ScrollView,
   Image,
   Platform,
+  Animated,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../../components/HomeScreen/Header';
+import { LinearGradient } from 'expo-linear-gradient';
+import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
 const AProposScreen = ({navigation}) => {
-  // Handlers for the header buttons, if needed
-  const handleMenuPress = () => {
-    console.log('Menu button pressed');
-  };
-
-  const handleProfilePress = () => {
-    console.log('Profile button pressed');
-  };
-
   return (
     <SafeAreaProvider>
-        {/* Safe area for header */}
-        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-          <StatusBar
-            backgroundColor="#fff"
-            barStyle="dark-content"
-            translucent={Platform.OS === 'android'}
-          />
-          <View style={styles.headerContainer}>
-            <Header navigation={navigation} />
-          </View>
-        </SafeAreaView>
-      <ImageBackground
-        source={require('../../assets/BackGround.jpeg')} 
-        style={styles.background}
-        imageStyle={{ opacity: 0.5 }} 
-      >
+      <View style={styles.mainContainer}>
+        <View style={styles.headerContainer}>
+          <HeaderMenu navigation={navigation} />
+        </View>
 
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-
-            {/* 
-              Optional: If you have a “Forum Horizons Maroc Paris 2024” logo, 
-              you could place it here or keep it in the Header 
-            */}
-            {/*
-            <View style={styles.logoContainer}>
-              <Image
-                source={require('../assets/fhmLogo.png')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-            </View>
-            */}
+        <ImageBackground
+          source={require('../../assets/BackGround.jpeg')} 
+          style={styles.background}
+          imageStyle={{ opacity: 0.15 }}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header Section with Gradient */}
+            <LinearGradient
+              colors={['#A34392', '#8a348a']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.headerGradient}
+            >
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/logo.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
+              <Text style={styles.headerText}>À Propos</Text>
+            </LinearGradient>
 
             {/* Box: "Qu'est-ce que le FHM ?" */}
             <View style={styles.fhmBox}>
-              <Text style={styles.fhmTitle}>Qu’est-ce que le FHM ?</Text>
+              <Text style={styles.fhmTitle}>Qu'est-ce que le FHM ?</Text>
               <Text style={styles.fhmDescription}>
                 Le Forum Horizons Maroc (FHM) a pour vocation de promouvoir
                 le marché du travail marocain et se veut comme le lieu
                 de rencontre par excellence entre les entreprises marocaines
                 et les étudiants ou professionnels de toutes nationalités
                 désireux de saisir les opportunités professionnelles
-                qu’offre le marché de travail marocain.
+                qu'offre le marché de travail marocain.
               </Text>
             </View>
 
-            {/* Vertical chain of circles: +60 Entreprises, +3000 Visiteurs, Ateliers & Conférences */}
+            {/* Vertical chain of circles with gradients */}
             <View style={styles.circleContainer}>
-              <View style={styles.circle}>
+              <LinearGradient
+                colors={['#A34392', '#8a348a']}
+                style={styles.circle}
+              >
                 <Text style={styles.circleText}>+60{'\n'}Entreprises</Text>
-              </View>
-              <View style={styles.circle}>
+              </LinearGradient>
+
+              <LinearGradient
+                colors={['#A34392', '#8a348a']}
+                style={styles.circle}
+              >
                 <Text style={styles.circleText}>+3000{'\n'}Visiteurs</Text>
-              </View>
-              <View style={styles.circle}>
+              </LinearGradient>
+
+              <LinearGradient
+                colors={['#A34392', '#8a348a']}
+                style={styles.circle}
+              >
                 <Text style={styles.circleText}>Ateliers et{'\n'}conférences</Text>
-              </View>
+              </LinearGradient>
             </View>
 
             {/* Box: Notre association (AMGE Caravane) */}
             <View style={styles.associationBox}>
-              {/* Logo row (optional) */}
               <View style={styles.associationLogoRow}>
                 <Image
                   source={require('../../assets/logo.png')}
@@ -96,134 +97,164 @@ const AProposScreen = ({navigation}) => {
               </View>
               <Text style={styles.associationTitle}>Notre association</Text>
               <Text style={styles.associationText}>
-                Fondée en 1994, l’Association des Marocains aux Grandes Écoles
+                Fondée en 1994, l'Association des Marocains aux Grandes Écoles
                 (AMGE – Caravane) est une association française indépendante,
-                apolitique et areligieuse. Notre mission est d’assister les
+                apolitique et areligieuse. Notre mission est d'assister les
                 étudiants marocains avant, pendant et après leur séjour en France.
-                Avec plus de 5000 alumni issus des Grandes Écoles d’Ingénieurs,
+                Avec plus de 5000 alumni issus des Grandes Écoles d'Ingénieurs,
                 de Commerce et des Universités, notre réseau, axé sur le service
-                de l’étudiant marocain, vise également à contribuer au rayonnement
-                du Maroc en France. Notre objectif principal demeure d’être au
-                service de l’étudiant marocain sur les plans personnel et
+                de l'étudiant marocain, vise également à contribuer au rayonnement
+                du Maroc en France. Notre objectif principal demeure d'être au
+                service de l'étudiant marocain sur les plans personnel et
                 professionnel.
               </Text>
             </View>
-
           </ScrollView>
-          <BottomNavigationBar />
-      </ImageBackground>
+        </ImageBackground>
+
+        {/* Bottom Navigation Bar */}
+        <View style={styles.navBarContainer}>
+          <SafeAreaView edges={['bottom']}>
+            <BottomNavigationBar navigation={navigation} />
+          </SafeAreaView>
+        </View>
+      </View>
     </SafeAreaProvider>
   );
 };
 
-// ------------------- STYLES -------------------
 const styles = StyleSheet.create({
-  background: {
+  mainContainer: {
     flex: 1,
-  },
-  safeArea: {
     backgroundColor: '#fff',
   },
   headerContainer: {
-    width: '100%',
-    backgroundColor: '#fff',
+    marginTop: Platform.OS === 'ios' ? 45 : 25,
   },
-  container: {
+  background: {
     flex: 1,
   },
   scrollContainer: {
-    padding: 20,
+    flexGrow: 1,
+    paddingBottom: 100,
   },
-
-  // If you have a logo for FHM
+  headerGradient: {
+    paddingVertical: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    marginBottom: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   logo: {
-    width: 150,
-    height: 60,
+    width: 100,
+    height: 100,
   },
-
-  // ---- "Qu'est-ce que le FHM ?" Box ----
+  headerText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
   fhmBox: {
     backgroundColor: '#fff',
-    borderColor: '#26b1cc', // Teal border, adjust as needed
-    borderWidth: 2,
     borderRadius: 15,
-    padding: 15,
-    marginBottom: 30,
+    padding: 20,
+    margin: 15,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   fhmTitle: {
-    fontSize: 18,
-    fontFamily: 'Josefin Sans',
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 15,
     textAlign: 'center',
-    color: '#000', // or #8a348a if you prefer
+    color: '#8a348a',
   },
   fhmDescription: {
-    fontSize: 14,
-    fontFamily: 'Josefin Sans',
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'justify',
     color: '#333',
   },
-
-  // ---- Circles (stats) ----
   circleContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginVertical: 20,
   },
   circle: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: '#26b1cc', // Teal
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   circleText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 16,
-    fontFamily: 'Josefin Sans',
-    fontWeight: '600',
-    lineHeight: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    lineHeight: 24,
   },
-
-  // ---- Association Box (AMGE Caravane) ----
   associationBox: {
     backgroundColor: '#fff',
-    borderColor: '#d60000', // Red border, adjust as needed
-    borderWidth: 2,
     borderRadius: 15,
-    padding: 15,
-    marginBottom: 50, // space at bottom
+    padding: 20,
+    margin: 15,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   associationLogoRow: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   associationLogo: {
     width: 120,
     height: 50,
   },
   associationTitle: {
-    fontSize: 18,
-    fontFamily: 'Josefin Sans',
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'left',
-    color: '#000', // or #8a348a
+    marginBottom: 15,
+    color: '#8a348a',
   },
   associationText: {
-    fontSize: 14,
-    fontFamily: 'Josefin Sans',
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'justify',
     color: '#333',
+  },
+  navBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
 });
 
