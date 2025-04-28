@@ -4,7 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/HomeScreen/Header';
 import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
 import Body from '../components/HomeScreen/Body';
-
+import SocialSidebar from '../components/HomeScreen/SocialSidebar';
 const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaProvider>
@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
             <Body />
           </ScrollView>
         </ImageBackground>
-
+        <SocialSidebar />
         {/* Fixed Bottom Navigation */}
         <View style={styles.bottomNavContainer}>
           <BottomNavigationBar />
@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flexGrow: 1,
     paddingTop: 20,
-    marginBottom: 26, // Ensures Body stops exactly where the Bottom Navigation starts
+    paddingBottom: 30,
+
   },
   bottomNavContainer: {
     position: 'absolute',
