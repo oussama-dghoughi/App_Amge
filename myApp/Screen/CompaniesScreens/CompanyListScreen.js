@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,9 @@ import {
   Modal,
   ScrollView,
   Linking,
-  Dimensions
+  Dimensions,
+  Animated,
+  Platform
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,7 +25,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width, height } = Dimensions.get('window');
 
-const CompanyListScreen = ({ navigation }) => { 
+const CompanyListScreen = ({ navigation, openMenu }) => { 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedField, setSelectedField] = useState('');
   const [showFieldModal, setShowFieldModal] = useState(false);
@@ -102,14 +104,11 @@ const CompanyListScreen = ({ navigation }) => {
         style={styles.background}
         imageStyle={{ opacity: 0.3 }}
       >
-        <SafeAreaView style={styles.safeAreaHeader} edges={['top', 'left', 'right']}>
+        <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
           <StatusBar backgroundColor="#fff" barStyle="dark-content" />
           <View style={styles.headerContainer}>
-            <Header navigation={navigation} />
+            <Header navigation={navigation} openMenu={openMenu} />
           </View>
-        </SafeAreaView>
-
-        <SafeAreaView style={styles.container} edges={['left', 'right']}>
           {selectedCompany ? (
             <ScrollView style={styles.detailsContainer}>
               <LinearGradient
@@ -222,8 +221,8 @@ const CompanyListScreen = ({ navigation }) => {
               </View>
             </View>
           </Modal>
+          <BottomNavigationBar navigation={navigation} />
         </SafeAreaView>
-        <BottomNavigationBar navigation={navigation} />
       </ImageBackground>
     </SafeAreaProvider>
   );
@@ -467,6 +466,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  iconContainer: {
+    padding: 10,
   },
 });
 

@@ -16,7 +16,10 @@ const BottomNavigationBar = () => {
         <Icon name="home" size={24} color="#9b59b6" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity 
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate('Localisation')}
+      >
         <FontAwesome name="location-arrow" size={24} color="#9b59b6" />
       </TouchableOpacity>
 

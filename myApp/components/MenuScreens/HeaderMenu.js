@@ -8,7 +8,8 @@ import {
   Text,
   Platform,
   Dimensions,
-  Alert
+  Alert,
+  Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -116,89 +117,92 @@ const HeaderMenu = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Menu Container */}
-      <View style={[
-        styles.menuWrapper,
-        { display: isMenuVisible ? 'flex' : 'none' }
-      ]}>
-        {/* Overlay */}
-        <TouchableOpacity 
-          style={styles.overlay} 
-          activeOpacity={1} 
-          onPress={handleMenuPress}
-        />
-        
-        {/* Sidebar Menu */}
-        <Animated.View 
-          style={[
-            styles.sidebarMenu,
-            { transform: [{ translateX: slideAnim }] }
-          ]}
-        >
-          <View style={styles.menuContent}>
-            {/* User Profile or Login Button */}
-            {isLoggedIn ? (
-              <View style={styles.userProfileContainer}>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{userData?.name} {userData?.surname}</Text>
-                  <Text style={styles.userEmail}>{userData?.email}</Text>
+      {/* Menu Container rendu dans un Modal natif */}
+      <Modal
+        visible={isMenuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={handleMenuPress}
+      >
+        <View style={styles.menuWrapper}>
+          {/* Overlay */}
+          <TouchableOpacity 
+            style={styles.overlay} 
+            activeOpacity={1} 
+            onPress={handleMenuPress}
+          />
+          {/* Sidebar Menu */}
+          <Animated.View 
+            style={[
+              styles.sidebarMenu,
+              { transform: [{ translateX: slideAnim }] }
+            ]}
+          >
+            <View style={styles.menuContent}>
+              {/* User Profile or Login Button */}
+              {isLoggedIn ? (
+                <View style={styles.userProfileContainer}>
+                  <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{userData?.name} {userData?.surname}</Text>
+                    <Text style={styles.userEmail}>{userData?.email}</Text>
+                  </View>
                 </View>
-              </View>
-            ) : (
-              <TouchableOpacity 
-                style={styles.logginContainer} 
-                onPress={() => navigation.navigate('Login')}
-              >
-                <Icon name="login" size={24} color="#8a348a" />
-                <Text style={styles.loggingText}>Se connecter</Text>
+              ) : (
+                <TouchableOpacity 
+                  style={styles.logginContainer} 
+                  onPress={() => navigation.navigate('Login')}
+                >
+                  <Icon name="login" size={24} color="#8a348a" />
+                  <Text style={styles.loggingText}>Se connecter</Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Menu Items */}
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
+                <Icon name="home" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Accueil</Text>
               </TouchableOpacity>
-            )}
 
-            {/* Menu Items */}
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-              <Icon name="home" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Accueil</Text>
-            </TouchableOpacity>
+              {isLoggedIn && (
+                <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
+                  <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
+                  <Text style={styles.menuText}>Paramètres</Text>
+                </TouchableOpacity>
+              )}
 
-            {isLoggedIn && (
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
-                <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>Paramètres</Text>
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
+                <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Localisation</Text>
               </TouchableOpacity>
-            )}
 
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
-              <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Localisation</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FAQ')}>
-              <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>FAQ</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
-              <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>À propos</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Contact')}>
-              <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Contactez-nous</Text>
-            </TouchableOpacity>
-
-            {isLoggedIn && (
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.logoutButton]} 
-                onPress={handleLogout}
-              >
-                <Icon name="logout" size={24} color="#fff" style={styles.menuIcon} />
-                <Text style={styles.logoutText}>Se déconnecter</Text>
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FAQ')}>
+                <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>FAQ</Text>
               </TouchableOpacity>
-            )}
-          </View>
-        </Animated.View>
-      </View>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
+                <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>À propos</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Contact')}>
+                <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Contactez-nous</Text>
+              </TouchableOpacity>
+
+              {isLoggedIn && (
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.logoutButton]} 
+                  onPress={handleLogout}
+                >
+                  <Icon name="logout" size={24} color="#fff" style={styles.menuIcon} />
+                  <Text style={styles.logoutText}>Se déconnecter</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
     </View>
   );
 };

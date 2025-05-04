@@ -1,27 +1,35 @@
 import React from 'react';
-import { Animated, TouchableOpacity, View , Text} from 'react-native';
+import { Animated, TouchableOpacity, View , Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
-const Menu = ({ navigation, isMenuVisible, slideAnim, handleMenuPress }) => {
+const Menu = ({ isMenuVisible, slideAnim, handleMenuPress }) => {
+  const navigation = useNavigation();
+
   // Your menu content JSX from HomeScreen
   const handleLoginPress = () => {
-    navigation.navigate('Login'); // Replace 'Login' with the actual screen name
+    navigation.navigate('Login');
+    handleMenuPress && handleMenuPress();
   };
 
   const handleLocalisation = () => {
-    navigation.navigate('Localisation'); // Replace with the actual screen name
+    navigation.navigate('Localisation');
+    handleMenuPress && handleMenuPress();
   };
 
   const handleFAQ = () => {
     navigation.navigate('FAQ');
+    handleMenuPress && handleMenuPress();
   };
 
   const handleAbout = () => {
-    navigation.navigate('About'); // Replace with the actual screen name
+    navigation.navigate('About');
+    handleMenuPress && handleMenuPress();
   };
 
   const handleContact = () => {
-    navigation.navigate('Contact'); // Replace with the actual screen name
+    navigation.navigate('Contact');
+    handleMenuPress && handleMenuPress();
   };
 
   return (
@@ -40,7 +48,7 @@ const Menu = ({ navigation, isMenuVisible, slideAnim, handleMenuPress }) => {
       </TouchableOpacity>
 
       {/* Menu Items */}
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Settings'); handleMenuPress && handleMenuPress(); }}>
             <Icon name="cog" size={24} color="#333" style={styles.menuIcon} />
             <Text style={styles.menuText}>Paramètres</Text>
         </TouchableOpacity>
@@ -48,8 +56,8 @@ const Menu = ({ navigation, isMenuVisible, slideAnim, handleMenuPress }) => {
             <Icon name="map-marker" size={24} color="#333" style={styles.menuIcon} />
             <Text style={styles.menuText}>Localisation</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-            <Icon name="compass" size={24} color="#333" style={styles.menuIcon} />
+        <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('GuideForum'); handleMenuPress && handleMenuPress(); }}>
+            <Icon name="book-open-variant" size={24} color="#333" style={styles.menuIcon} />
             <Text style={styles.menuText}>Guide Forum</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleFAQ}>

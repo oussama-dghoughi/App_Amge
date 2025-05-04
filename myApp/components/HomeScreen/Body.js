@@ -1,208 +1,116 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, StatusBar, ImageBackground, TouchableOpacity, Image, Animated, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Animated, Dimensions, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import * as Animatable from 'react-native-animatable';
 
 const { width } = Dimensions.get('window');
 
-// Composant pour chaque chiffre du compte à rebours
-const CountdownDigit = ({ value, label }) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.spring(fadeAnim, {
-      toValue: 1,
-      tension: 20,
-      friction: 4,
-      useNativeDriver: true,
-    }).start();
-  }, [value]);
-
-  return (
-    <BlurView intensity={80} tint="light" style={styles.digitContainer}>
-      <LinearGradient
-        colors={['rgba(138, 52, 138, 0.8)', 'rgba(161, 60, 161, 0.8)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.digitGradient}
-      >
-        <Animated.View
-          style={[
-            styles.digitValue,
-            {
-              opacity: fadeAnim,
-            },
-          ]}
-        >
-          <Text style={styles.digitText}>{String(value).padStart(2, '0')}</Text>
-        </Animated.View>
-        <View style={styles.labelContainer}>
-          <Text style={styles.digitLabel}>{label}</Text>
-        </View>
-      </LinearGradient>
-    </BlurView>
-  );
-};
+const EVENT_DATE = new Date('2025-06-01T00:00:00').getTime();
 
 const FlipNumber = ({ value, label }) => {
   const flipAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  const [displayValue, setDisplayValue] = useState(value);
-  const [nextValue, setNextValue] = useState(value);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (value !== displayValue) {
-      setNextValue(value);
-      Animated.parallel([
+    Animated.parallel([
+      Animated.sequence([
         Animated.timing(flipAnim, {
           toValue: 1,
-          duration: 400,
+          duration: 800,
           useNativeDriver: true,
         }),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(pulseAnim, {
+              toValue: 1.05,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(pulseAnim, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+          ])
+        ),
+      ]),
+      Animated.loop(
         Animated.sequence([
-          Animated.timing(glowAnim, {
+          Animated.timing(rotateAnim, {
             toValue: 1,
-            duration: 200,
+            duration: 2000,
             useNativeDriver: true,
           }),
-          Animated.timing(glowAnim, {
+          Animated.timing(rotateAnim, {
             toValue: 0,
-            duration: 200,
+            duration: 2000,
             useNativeDriver: true,
           }),
-        ]),
-      ]).start(() => {
-        flipAnim.setValue(0);
-        setDisplayValue(value);
-      });
-    }
+        ])
+      ),
+    ]).start();
   }, [value]);
 
-  const frontInterpolate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '-180deg'],
-  });
+  const getIcon = () => {
+    switch (label) {
+      case 'JOURS':
+        return 'calendar';
+      case 'HEURES':
+        return 'clock-o';
+      case 'MINUTES':
+        return 'hourglass-half';
+      case 'SECONDES':
+        return 'hourglass-end';
+      default:
+        return 'clock-o';
+    }
+  };
 
-  const backInterpolate = flipAnim.interpolate({
+  const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['180deg', '0deg'],
-  });
-
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.5],
+    outputRange: ['0deg', '360deg'],
   });
 
   return (
-    <View style={styles.flipContainer}>
-      <BlurView intensity={40} tint="light" style={styles.flipBlurContainer}>
+    <Animated.View 
+      style={[
+        styles.flipContainer, 
+        { 
+          transform: [
+            { scale: pulseAnim },
+            { perspective: 1000 },
+          ] 
+        }
+      ]}
+    >
+      <BlurView intensity={90} tint="light" style={styles.flipBlur}>
         <LinearGradient
-          colors={['rgba(138, 52, 138, 0.95)', 'rgba(161, 60, 161, 0.95)']}
+          colors={['#8a348a', '#C76B98']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.flipGradient}
         >
-          <View style={styles.flipInnerContainer}>
-            <Animated.View
-              style={[
-                styles.glowEffect,
-                {
-                  opacity: glowOpacity,
-                },
-              ]}
-            />
-            <View style={styles.flipTop}>
-              <Text style={styles.flipNumber}>{String(displayValue).padStart(2, '0')}</Text>
-            </View>
-            <View style={styles.flipDivider} />
-            <View style={styles.flipBottom}>
-              <Text style={styles.flipNumber}>{String(displayValue).padStart(2, '0')}</Text>
-            </View>
-            <Animated.View
-              style={[
-                styles.flipCard,
-                {
-                  transform: [{ rotateX: frontInterpolate }],
-                },
-              ]}
-            >
-              <Text style={styles.flipNumber}>{String(displayValue).padStart(2, '0')}</Text>
-            </Animated.View>
-            <Animated.View
-              style={[
-                styles.flipCardBack,
-                {
-                  transform: [{ rotateX: backInterpolate }],
-                },
-              ]}
-            >
-              <Text style={styles.flipNumber}>{String(nextValue).padStart(2, '0')}</Text>
-            </Animated.View>
-          </View>
-        </LinearGradient>
-      </BlurView>
-      <LinearGradient
-        colors={['rgba(138, 52, 138, 0.8)', 'rgba(161, 60, 161, 0.8)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.labelGradient}
-      >
-        <Text style={styles.flipLabel}>{label}</Text>
-      </LinearGradient>
-    </View>
-  );
-};
-
-const StatCard = ({ number, label, icon, index }) => {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const translateYAnim = useRef(new Animated.Value(50)).current;
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.delay(index * 200),
-      Animated.parallel([
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          tension: 20,
-          friction: 4,
-          useNativeDriver: true,
-        }),
-        Animated.spring(translateYAnim, {
-          toValue: 0,
-          tension: 20,
-          friction: 6,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-  }, []);
-
-  return (
-    <Animated.View
-      style={[
-        styles.statCardContainer,
-        {
-          transform: [
-            { scale: scaleAnim },
-            { translateY: translateYAnim },
-          ],
-        },
-      ]}
-    >
-      <BlurView intensity={60} tint="light" style={styles.statCardBlur}>
-        <LinearGradient
-          colors={['rgba(138, 52, 138, 0.9)', 'rgba(161, 60, 161, 0.9)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.statCardGradient}
-        >
-          <View style={styles.statIconContainer}>
-            <Icon name={icon} size={24} color="#fff" style={styles.statIcon} />
-          </View>
-          <Text style={styles.statCardNumber}>{number}</Text>
-          <Text style={styles.statCardLabel}>{label}</Text>
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            <Icon name={getIcon()} size={28} color="#fff" style={styles.flipIcon} />
+          </Animated.View>
+          <Animated.View
+            style={{
+              transform: [
+                { perspective: 1000 },
+                { rotateX: flipAnim.interpolate({
+                  inputRange: [0, 0.5, 1],
+                  outputRange: ['0deg', '-90deg', '0deg'],
+                })},
+              ],
+            }}
+          >
+            <Text style={styles.flipNumber}>{String(value).padStart(2, '0')}</Text>
+          </Animated.View>
+          <Text style={styles.flipLabel}>{label}</Text>
         </LinearGradient>
       </BlurView>
     </Animated.View>
@@ -210,81 +118,22 @@ const StatCard = ({ number, label, icon, index }) => {
 };
 
 const Body = () => {
-  const [timeLeft, setTimeLeft] = useState(360000);
-  const buttonScaleAnim = useRef(new Animated.Value(1)).current;
-  const buttonPressAnim = useRef(new Animated.Value(0)).current;
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // État pour le carrousel d'images
+  const [currentIndex, setCurrentIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-
-    // Animation continue du bouton
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(buttonPressAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(buttonPressAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (time) => {
-    const days = Math.floor(time / (3600 * 24));
-    const hours = Math.floor((time % (3600 * 24)) / 3600);
-    const minutes = Math.floor((time % 3600) / 60);
-    const seconds = time % 60;
-    return { days, hours, minutes, seconds };
-  };
-
-  const { days, hours, minutes, seconds } = formatTime(timeLeft);
-
-  const handleButtonPress = () => {
-    Animated.sequence([
-      Animated.timing(buttonScaleAnim, {
-        toValue: 0.95,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(buttonScaleAnim, {
-        toValue: 1,
-        friction: 3,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const buttonAnimatedStyle = {
-    transform: [
-      { scale: buttonScaleAnim },
-      {
-        translateY: buttonPressAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -10],
-        }),
-      },
-    ],
-  };
-
-  // Image Carousel (Slide Images every 5 seconds)
-  const [currentIndex, setCurrentIndex] = useState(0);
   const images = [
     require('../../assets/image1.jpeg'),
-    require('../../assets/image1.png'),
     require('../../assets/image2.png'),
-    require('../../assets/image3.png'), // Add more images here
+    require('../../assets/image3.png'),
   ];
 
   const animateImageTransition = () => {
@@ -317,12 +166,27 @@ const Body = () => {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = EVENT_DATE - now;
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    }, 1000);
+
+    const imageInterval = setInterval(() => {
       animateImageTransition();
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 3000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(timer);
+      clearInterval(imageInterval);
+    };
   }, []);
 
   const renderPaginationDots = () => {
@@ -346,40 +210,67 @@ const Body = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        {/* StatusBar */}
+      <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-        {/* Main Text */}
-        <Text style={styles.mainText}>Forum Horizons Maroc 2025</Text>
+        {/* Titre animé */}
+        <Animatable.View animation="fadeInDown" duration={1500} style={styles.headerContainer}>
+          <Text style={styles.mainTitle}>Forum Horizon Maroc</Text>
+          <Text style={styles.subTitle}>L'événement qui façonnera votre avenir professionnel</Text>
+        </Animatable.View>
 
-        {/* Countdown Timer */}
+        {/* Compte à rebours */}
         <View style={styles.countdownContainer}>
-          <FlipNumber value={days} label="JOURS" />
-          <FlipNumber value={hours} label="HEURES" />
+          <FlipNumber value={timeLeft.days} label="JOURS" />
+          <FlipNumber value={timeLeft.hours} label="HEURES" />
+          <FlipNumber value={timeLeft.minutes} label="MINUTES" />
+          <FlipNumber value={timeLeft.seconds} label="SECONDE" />
         </View>
 
-        {/* Inscrivez-vous Button */}
-        <Animated.View style={[styles.registerButtonContainer, buttonAnimatedStyle]}>
-          <TouchableOpacity
-            onPress={handleButtonPress}
-            activeOpacity={0.7}
-          >
-            <BlurView intensity={90} tint="light" style={styles.registerButton}>
-              <LinearGradient
-                colors={['rgba(138, 52, 138, 0.9)', 'rgba(255, 107, 139, 0.9)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.registerGradient}
-              >
-                <Text style={styles.registerButtonText}>Inscrivez-vous</Text>
-                <View style={styles.buttonGlow} />
-              </LinearGradient>
-            </BlurView>
+        {/* Message d'accroche */}
+        <Animatable.View animation="fadeInUp" delay={500} duration={1500} style={styles.ctaContainer}>
+          <Text style={styles.ctaText}>
+            🌟 Ne manquez pas cette opportunité unique !
+          </Text>
+          <Text style={styles.ctaDescription}>
+            Rejoignez plus de 2000 étudiants et 60 entreprises pour façonner l'avenir de l'ingénierie au Maroc
+          </Text>
+          
+          <TouchableOpacity style={styles.registerButton}>
+            <LinearGradient
+              colors={['#8a348a', '#C76B98']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.buttonText}>Je m'inscris maintenant</Text>
+              <Icon name="arrow-right" size={24} color="#fff" />
+            </LinearGradient>
           </TouchableOpacity>
-        </Animated.View>
+        </Animatable.View>
 
-        {/* Image Box with Slideshow */}
+        {/* Statistiques */}
+        <View style={styles.statsContainer}>
+          <Animatable.View animation="fadeInLeft" delay={800} style={styles.statItem}>
+            <Icon name="users" size={32} color="#8a348a" />
+            <Text style={styles.statNumber}>2200+</Text>
+            <Text style={styles.statLabel}>Visiteurs</Text>
+          </Animatable.View>
+          
+          <Animatable.View animation="fadeInUp" delay={1000} style={styles.statItem}>
+            <Icon name="building" size={32} color="#8a348a" />
+            <Text style={styles.statNumber}>60+</Text>
+            <Text style={styles.statLabel}>Entreprises</Text>
+          </Animatable.View>
+          
+          <Animatable.View animation="fadeInRight" delay={1200} style={styles.statItem}>
+            <Icon name="map-marker" size={32} color="#8a348a" />
+            <Text style={styles.statNumber}>5000</Text>
+            <Text style={styles.statLabel}>m² surface</Text>
+          </Animatable.View>
+        </View>
+
+        {/* Carrousel d'images */}
         <View style={styles.imageBoxContainer}>
           <BlurView intensity={20} tint="light" style={styles.imageBlurContainer}>
             <LinearGradient
@@ -406,60 +297,6 @@ const Body = () => {
           </BlurView>
         </View>
 
-        {/* Statistics Section */}
-        <View style={styles.statisticsContainer}>
-          <StatCard
-            number="+2200"
-            label="Visiteurs"
-            icon="users"
-            index={0}
-          />
-          <StatCard
-            number="+60"
-            label="Entreprises"
-            icon="building"
-            index={1}
-          />
-          <StatCard
-            number="+5000 m²"
-            label="Surface"
-            icon="map-marker"
-            index={2}
-          />
-        </View>
-
-        {/* Social Media Sidebar */}
-        <View style={styles.socialSidebar}>
-          <BlurView intensity={60} tint="light" style={styles.socialBlur}>
-            <LinearGradient
-              colors={['rgba(138, 52, 138, 0.95)', 'rgba(161, 60, 161, 0.95)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.socialGradient}
-            >
-              {['instagram', 'facebook', 'linkedin', 'envelope'].map((icon, index) => (
-                <TouchableOpacity 
-                  key={icon}
-                  style={styles.socialIconButton}
-                  onPress={() => console.log(`${icon} pressed`)}
-                >
-                  <Animated.View
-                    style={[
-                      styles.iconContainer,
-                      {
-                        transform: [{
-                          scale: buttonScaleAnim
-                        }]
-                      }
-                    ]}
-                  >
-                    <Icon name={icon} size={18} color="#fff" />
-                  </Animated.View>
-                </TouchableOpacity>
-              ))}
-            </LinearGradient>
-          </BlurView>
-        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -469,183 +306,155 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  mainText: {
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 20,
+  },
+  mainTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
     color: '#8a348a',
-    fontSize: 18,
-    fontFamily: 'Josefin Sans',
-    fontWeight: '500',
-    fontStyle: 'italic',
-    lineHeight: 23,
     textAlign: 'center',
-    marginTop: 5,
+    marginBottom: 10,
+  },
+  subTitle: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
   countdownContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    paddingHorizontal: 10,
+    flexWrap: 'nowrap',
+    marginBottom: 30,
+    gap: 6,
   },
   flipContainer: {
-    alignItems: 'center',
-    marginHorizontal: 8,
-  },
-  flipBlurContainer: {
-    borderRadius: 12,
+    marginHorizontal: 2,
+    marginVertical: 0,
+    borderRadius: 15,
     overflow: 'hidden',
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 5,
+    minWidth: 64,
   },
-  flipGradient: {
-    borderRadius: 12,
-    padding: 1.5,
-  },
-  flipInnerContainer: {
-    width: 60,
-    height: 80,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 10,
-    position: 'relative',
+  flipBlur: {
+    borderRadius: 15,
     overflow: 'hidden',
   },
-  glowEffect: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    zIndex: 3,
-  },
-  flipTop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
+  flipGradient: {
+    width: 90,
+    height: 120,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    padding: 10,
+    borderRadius: 15,
   },
-  flipBottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  flipDivider: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1,
-    top: '50%',
-    marginTop: -0.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    zIndex: 2,
-  },
-  flipCard: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '50%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    backfaceVisibility: 'hidden',
-    transformOrigin: 'bottom',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  flipCardBack: {
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    height: '50%',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    backfaceVisibility: 'hidden',
-    transformOrigin: 'top',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+  flipIcon: {
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   flipNumber: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: 'bold',
     color: '#fff',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
-  labelGradient: {
-    marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
   flipLabel: {
-    fontSize: 9,
+    fontSize: 12,
     color: '#fff',
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    marginTop: 8,
+    fontWeight: '600',
     textTransform: 'uppercase',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    letterSpacing: 1,
   },
-  registerButtonContainer: {
-    marginTop: 40,
+  ctaContainer: {
     alignItems: 'center',
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  ctaText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#8a348a',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  ctaDescription: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
   },
   registerButton: {
-    borderRadius: 30,
+    width: width * 0.8,
+    height: 50,
+    borderRadius: 25,
     overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  registerGradient: {
-    paddingVertical: 18,
-    paddingHorizontal: 50,
-    borderRadius: 30,
-    alignItems: 'center',
+  gradientButton: {
+    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  registerButtonText: {
-    fontSize: 20,
+  buttonText: {
     color: '#fff',
-    fontWeight: '600',
-    letterSpacing: 1,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginRight: 10,
   },
-  buttonGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 30,
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 20,
+    paddingHorizontal: 10,
+  },
+  statItem: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 15,
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    minWidth: width * 0.28,
+  },
+  statNumber: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#8a348a',
+    marginTop: 5,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
   },
   imageBoxContainer: {
-    marginTop: 30,
-    width: width * 0.85,
+    marginTop: 10,
+    marginBottom: 20,
+    width: width * 0.9,
     height: 200,
     alignSelf: 'center',
   },
@@ -673,108 +482,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  statisticsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 30,
-    paddingHorizontal: 10,
-    gap: 12,
-  },
-  statCardContainer: {
-    flex: 1,
-    maxWidth: 110,
-    aspectRatio: 0.8,
-  },
-  statCardBlur: {
-    flex: 1,
-    borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  statCardGradient: {
-    flex: 1,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statIconContainer: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  statIcon: {
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  statCardNumber: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  statCardLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontWeight: '500',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  socialSidebar: {
-    position: 'absolute',
-    right: 0,
-    top: '50%',
-    transform: [{ translateY: -100 }],
-    width: 50,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15,
-    overflow: 'hidden',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-  },
-  socialBlur: {
-    overflow: 'hidden',
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15,
-  },
-  socialGradient: {
-    padding: 10,
-    alignItems: 'center',
-  },
-  socialIconButton: {
-    width: 40,
-    height: 40,
-    marginVertical: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -788,7 +495,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
-    transition: '0.3s',
   },
 });
 

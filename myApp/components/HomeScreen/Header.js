@@ -147,10 +147,14 @@ const Header = ({ navigation }) => {
               <Text style={styles.menuText}>Paramètres</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('CompanyList')}>
-              <Icon name="office-building" size={24} color="#8a348a" style={styles.menuIcon} />
+              <Icon name="building" size={24} color="#8a348a" style={styles.menuIcon} />
               <Text style={styles.menuText}>Entreprises</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Plan')}>
+              <Icon name="map" size={24} color="#8a348a" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Plan du salon</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Location')}>
               <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
               <Text style={styles.menuText}>Localisation</Text>
             </TouchableOpacity>
@@ -185,9 +189,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: '#fff',
+    paddingTop: 0,
   },
   iconContainer: {
     padding: 10,
+    marginTop: 27,
   },
   logo: {
     height: 40,

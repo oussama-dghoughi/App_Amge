@@ -17,6 +17,8 @@ import About from './Screen/menuScreens/About.js';
 import Settings from './Screen/menuScreens/Settings';
 import NotificationScreen from './Screen/menuScreens/Notifs';
 import EditProfile from './Screen/menuScreens/EditProfile';
+import PlanScreen from './Screen/PlanScreen';
+import GuideForumScreen from './Screen/GuideForumScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,7 +86,9 @@ const App = () => {
           >
             {(props) => <HomeScreen {...props} isMenuVisible={isMenuVisible} toggleMenu={toggleMenu} />}
           </Stack.Screen>
-          <Stack.Screen name="CompanyList" component={CompanyListScreen} options={{ title: 'Liste des entreprises' }} />
+          <Stack.Screen name="CompanyList">
+            {props => <CompanyListScreen {...props} openMenu={toggleMenu} />}
+          </Stack.Screen>
           <Stack.Screen name="Settings" component={Settings} options={{ title: 'Paramètres' }} />
           <Stack.Screen name="Localisation" component={Localisation} options={{ title: 'Localisation' }} />
           <Stack.Screen name="Registration" component={RegistrationScreen} options={{ title: "S'inscrire" }} />
@@ -100,6 +104,8 @@ const App = () => {
           <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ title: 'Changer le mot de passe' }} />
           <Stack.Screen name="EditProfile" component={EditProfile} options={{ title: 'Modifier mon profil' }} />
           <Stack.Screen name="FindAccount" component={FindAccountScreen} options={{ title: 'Retrouver mon compte' }} />
+          <Stack.Screen name="Plan" component={PlanScreen} />
+          <Stack.Screen name="GuideForum" component={GuideForumScreen} options={{ title: 'Guide Forum' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
