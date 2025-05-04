@@ -224,7 +224,7 @@ const Body = () => {
           <FlipNumber value={timeLeft.days} label="JOURS" />
           <FlipNumber value={timeLeft.hours} label="HEURES" />
           <FlipNumber value={timeLeft.minutes} label="MINUTES" />
-          <FlipNumber value={timeLeft.seconds} label="SECONDE" />
+          <FlipNumber value={timeLeft.seconds} label="SECONDEs" />
         </View>
 
         {/* Message d'accroche */}
