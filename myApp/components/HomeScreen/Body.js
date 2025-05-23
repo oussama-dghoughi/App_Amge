@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Animated, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Animated, Dimensions, Image, Linking } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,7 +13,6 @@ const EVENT_DATE = new Date('2025-06-01T00:00:00').getTime();
 const FlipNumber = ({ value, label }) => {
   const flipAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -38,20 +37,6 @@ const FlipNumber = ({ value, label }) => {
           ])
         ),
       ]),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(rotateAnim, {
-            toValue: 1,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(rotateAnim, {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-        ])
-      ),
     ]).start();
   }, [value]);
 
@@ -69,11 +54,6 @@ const FlipNumber = ({ value, label }) => {
         return 'clock-o';
     }
   };
-
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
 
   return (
     <Animated.View 
@@ -94,9 +74,9 @@ const FlipNumber = ({ value, label }) => {
           end={{ x: 1, y: 1 }}
           style={styles.flipGradient}
         >
-          <Animated.View style={{ transform: [{ rotate }] }}>
+          <View>
             <Icon name={getIcon()} size={28} color="#fff" style={styles.flipIcon} />
-          </Animated.View>
+          </View>
           <Animated.View
             style={{
               transform: [
@@ -224,7 +204,7 @@ const Body = () => {
           <FlipNumber value={timeLeft.days} label="JOURS" />
           <FlipNumber value={timeLeft.hours} label="HEURES" />
           <FlipNumber value={timeLeft.minutes} label="MINUTES" />
-          <FlipNumber value={timeLeft.seconds} label="SECONDEs" />
+          <FlipNumber value={timeLeft.seconds} label="SECONDES" />
         </View>
 
         {/* Message d'accroche */}
@@ -236,7 +216,7 @@ const Body = () => {
             Rejoignez plus de 2000 étudiants et 60 entreprises pour façonner l'avenir de l'ingénierie au Maroc
           </Text>
           
-          <TouchableOpacity style={styles.registerButton}>
+          <TouchableOpacity style={styles.registerButton} onPress={() => Linking.openURL('https://www.forumhorizonsmaroc.com/candidats/inscription')}>
             <LinearGradient
               colors={['#8a348a', '#C76B98']}
               start={{ x: 0, y: 0 }}
@@ -253,7 +233,7 @@ const Body = () => {
         <View style={styles.statsContainer}>
           <Animatable.View animation="fadeInLeft" delay={800} style={styles.statItem}>
             <Icon name="users" size={32} color="#8a348a" />
-            <Text style={styles.statNumber}>2200+</Text>
+            <Text style={styles.statNumber}>4000+</Text>
             <Text style={styles.statLabel}>Visiteurs</Text>
           </Animatable.View>
           

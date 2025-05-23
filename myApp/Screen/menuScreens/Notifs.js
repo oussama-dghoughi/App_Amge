@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, ImageBackground } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../../components/HomeScreen/Header';
+import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
 const NOTIFS = ({navigation}) => {
@@ -28,7 +28,7 @@ const NOTIFS = ({navigation}) => {
       >
         <SafeAreaView style={styles.container} edges={['left', 'right']}>
         <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
-          <Header  navigation={navigation} />
+          <HeaderMenu navigation={navigation} />
         </SafeAreaView>
           <ScrollView contentContainerStyle={styles.contentContainer}>
             {/* Rectangle 1 */}

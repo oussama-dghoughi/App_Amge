@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView, ImageBackground, Text, TouchableOpacity, Linking, Image, Animated, Easing, Modal, Pressable } from 'react-native';
+import { View, StyleSheet, ScrollView, ImageBackground, Text, TouchableOpacity, Linking, Image, Modal, Pressable } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/HomeScreen/Header';
 import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
@@ -12,23 +12,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 const PourquoiTimelineItem = ({ index, icon, title, content }) => {
   const [expanded, setExpanded] = useState(false);
   const [pressed, setPressed] = useState(false);
-  const spinAnim = useState(new Animated.Value(0))[0];
-
-  // Animation de rotation de l'icône
-  React.useEffect(() => {
-    Animated.loop(
-      Animated.timing(spinAnim, {
-        toValue: 1,
-        duration: 2200,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, []);
-  const spin = spinAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
 
   return (
     <Animatable.View
@@ -52,9 +35,9 @@ const PourquoiTimelineItem = ({ index, icon, title, content }) => {
           <View style={styles.timelineRow}>
             <View style={styles.timelineBadgeBox}>
               <View style={styles.timelineBadge}><Text style={styles.timelineBadgeText}>{index + 1}</Text></View>
-              <Animated.View style={[styles.timelineIconBox, { transform: [{ rotate: spin }] }]}> 
+              <View style={styles.timelineIconBox}>
                 <Text style={styles.timelineIcon}>{icon}</Text>
-              </Animated.View>
+              </View>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.timelineTitle}>{title}</Text>
@@ -220,7 +203,7 @@ const PourquoiCardsModern = () => {
           </LinearGradient>
           <Text style={styles.whyTitle}>{item.title}</Text>
           <Text style={styles.whyShort}>{item.short}</Text>
-          <TouchableOpacity style={styles.whyMoreBtn} onPress={() => setModal(item)}>
+          <TouchableOpacity style={[styles.whyMoreBtn, { flexDirection: 'row', alignItems: 'center' }]} onPress={() => setModal(item)}>
             <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 15, marginRight: 8}}>Lire la suite</Text>
             <Icon name="chevron-right" size={20} color="#fff" />
           </TouchableOpacity>
@@ -237,7 +220,7 @@ const PourquoiCardsModern = () => {
               <Text style={styles.whyModalText}>{modal?.content}</Text>
             </ScrollView>
             <TouchableOpacity style={styles.whyModalClose} onPress={() => setModal(null)}>
-              <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16 }}>Fermer</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Retour</Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>
@@ -263,10 +246,19 @@ const PlanningTimelinePremium = () => (
           key={ev.time}
           animation={isLeft ? 'slideInLeft' : 'slideInRight'}
           delay={idx * 120}
-          style={[styles.timelinePremiumRow, { flexDirection: isLeft ? 'row' : 'row-reverse', position: 'relative' }]}
+          style={[styles.timelinePremiumRow, { flexDirection: isLeft ? 'row' : 'row-reverse', alignItems: 'center' }]}
         >
+          {/* Badge horaire aligné */}
+          <LinearGradient
+            colors={["#8a348a", "#c76b98"]}
+            style={[styles.timelinePremiumBadgeGlow, { marginHorizontal: 18 }]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Text style={styles.timelinePremiumBadgeTextBig} numberOfLines={1} adjustsFontSizeToFit>{ev.time.split(' - ')[0]}</Text>
+          </LinearGradient>
           {/* Carte glassmorphism */}
-          <View style={[styles.timelinePremiumCardWrap, isLeft ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }]}> 
+          <View style={[styles.timelinePremiumCardWrap, { alignItems: isLeft ? 'flex-end' : 'flex-start' }]}> 
             <BlurView intensity={60} tint="light" style={styles.timelinePremiumGlassCard}>
               <View style={{ paddingTop: 18, paddingBottom: 8, paddingHorizontal: 8 }}>
                 <Text style={styles.timelinePremiumTitle}>{ev.title}</Text>
@@ -276,17 +268,6 @@ const PlanningTimelinePremium = () => (
                 <Text style={styles.timelinePremiumDesc}>{ev.description}</Text>
               </View>
             </BlurView>
-          </View>
-          {/* Badge horaire flottant, effet glow */}
-          <View style={[styles.timelinePremiumBadgeFloat, isLeft ? { left: -12 } : { right: -12 }]}> 
-            <LinearGradient
-              colors={["#8a348a", "#c76b98"]}
-              style={styles.timelinePremiumBadgeGlow}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Text style={styles.timelinePremiumBadgeTextBig}>{ev.time.split(' - ')[0]}</Text>
-            </LinearGradient>
           </View>
         </Animatable.View>
       );
@@ -949,30 +930,16 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     lineHeight: 21,
   },
-  timelinePremiumBadgeFloat: {
-    position: 'absolute',
-    top: 18,
-    zIndex: 20,
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    elevation: 8,
-  },
   timelinePremiumBadgeGlow: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
+    paddingHorizontal: 6,
   },
   timelinePremiumBadgeTextBig: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',

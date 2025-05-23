@@ -34,6 +34,7 @@ const LocalisationScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
+      
       {/* Header */}
       <LinearGradient colors={["#8a348a", "#c76b98"]} style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>

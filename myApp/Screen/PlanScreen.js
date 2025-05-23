@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Dimensions, Image } from 'react-native';
 import Svg, { Path, Rect, Text as SvgText, G, Circle, Defs, Stop, Filter } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
 import { exhibitors, planLayout } from '../data/exhibitors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../components/HomeScreen/Header';
+import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
+import { ScrollView as GestureScrollView } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window');
 
-const PlanScreen = () => {
+const PlanScreen = ({ navigation }) => {
   const [selectedStand, setSelectedStand] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -100,142 +104,46 @@ const PlanScreen = () => {
   );
 
   return (
-    <ScrollView 
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      maximumZoomScale={2}
-      minimumZoomScale={0.5}
-    >
+    <SafeAreaView style={styles.safeArea}>
+      <Header navigation={navigation} />
       <View style={styles.planContainer}>
-        <Svg width={width} height={height * 0.8} viewBox="0 0 1000 800">
-          <Defs>
-            <LinearGradient id="badgeGradient" x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0%" stopColor="#8a348a" />
-              <Stop offset="100%" stopColor="#C76B98" />
-            </LinearGradient>
-            <Filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="6" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </Filter>
-          </Defs>
-          {/* Zones principales */}
-          <Rect
-            x={planLayout.loungeClub.x}
-            y={planLayout.loungeClub.y}
-            width={planLayout.loungeClub.width}
-            height={planLayout.loungeClub.height}
-            fill="#f0f0f0"
-            stroke="#8a348a"
-            strokeWidth={2}
+        <GestureScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
+          maximumZoomScale={2}
+          minimumZoomScale={1}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          bouncesZoom={true}
+        >
+          <Image
+            source={require('../assets/Plan.png')}
+            style={styles.planImage}
           />
-          <SvgText
-            x={planLayout.loungeClub.x + planLayout.loungeClub.width / 2}
-            y={planLayout.loungeClub.y + planLayout.loungeClub.height / 2}
-            fontSize={12}
-            textAnchor="middle"
-            fill="#8a348a"
-          >
-            {planLayout.loungeClub.label}
-          </SvgText>
-
-          {/* Salle de repos */}
-          <Rect
-            x={planLayout.salleRepos.x}
-            y={planLayout.salleRepos.y}
-            width={planLayout.salleRepos.width}
-            height={planLayout.salleRepos.height}
-            fill="#f0f0f0"
-            stroke="#8a348a"
-            strokeWidth={2}
-          />
-          <SvgText
-            x={planLayout.salleRepos.x + planLayout.salleRepos.width / 2}
-            y={planLayout.salleRepos.y + planLayout.salleRepos.height / 2}
-            fontSize={12}
-            textAnchor="middle"
-            fill="#8a348a"
-          >
-            {planLayout.salleRepos.label}
-          </SvgText>
-
-          {/* Accueil */}
-          <Rect
-            x={planLayout.accueil.x}
-            y={planLayout.accueil.y}
-            width={planLayout.accueil.width}
-            height={planLayout.accueil.height}
-            fill="#f0f0f0"
-            stroke="#8a348a"
-            strokeWidth={2}
-          />
-          <SvgText
-            x={planLayout.accueil.x + planLayout.accueil.width / 2}
-            y={planLayout.accueil.y + planLayout.accueil.height / 2}
-            fontSize={12}
-            textAnchor="middle"
-            fill="#8a348a"
-          >
-            {planLayout.accueil.label}
-          </SvgText>
-
-          {/* Chemins */}
-          <Path
-            d={planLayout.paths.entree}
-            stroke="#8a348a"
-            strokeWidth={2}
-            fill="none"
-          />
-          <Path
-            d={planLayout.paths.sortie}
-            stroke="#8a348a"
-            strokeWidth={2}
-            fill="none"
-          />
-
-          {/* Stands des exposants */}
-          {Object.entries(exhibitors).map(([standId, company], idx) =>
-            renderStand(standId, company, idx)
-          )}
-        </Svg>
+        </GestureScrollView>
       </View>
-
-      <View style={styles.floatingBar}>
-        <TouchableOpacity style={styles.floatingButton}>
-          <Icon name="search" size={22} color="#8a348a" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.floatingButton}>
-          <Icon name="filter" size={22} color="#8a348a" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.floatingButton}>
-          <Icon name="home" size={22} color="#8a348a" />
-        </TouchableOpacity>
-      </View>
-
+      <BottomNavigationBar />
       {renderModal()}
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  contentContainer: {
-    padding: 20,
-  },
   planContainer: {
-    alignItems: 'center',
+    flex: 1,
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  planImage: {
+    width: width * 0.95,
+    height: height * 0.7,
+    resizeMode: 'contain',
     borderRadius: 20,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   modalContainer: {
     flex: 1,
@@ -277,18 +185,6 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: 10,
-  },
-  floatingBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  floatingButton: {
-    padding: 10,
   },
   modalIconContainer: {
     padding: 5,

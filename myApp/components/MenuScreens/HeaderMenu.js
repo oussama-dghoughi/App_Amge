@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,78 +8,18 @@ import {
   Text,
   Platform,
   Dimensions,
-  Alert,
   Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
-const HeaderMenu = ({ navigation }) => {
+const HeaderMenu = (props) => {
+  const navigation = props.navigation || useNavigation();
   const [isMenuVisible, setMenuVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
   const slideAnim = useRef(new Animated.Value(-300)).current;
-
-  useEffect(() => {
-    checkLoginStatus();
-    // Ajouter un listener pour la navigation
-    const unsubscribe = navigation.addListener('focus', () => {
-      checkLoginStatus();
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  const checkLoginStatus = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem('userToken');
-      const userDataString = await AsyncStorage.getItem('userData');
-      console.log('Token dans HeaderMenu:', userToken);
-      console.log('Données utilisateur dans HeaderMenu:', userDataString);
-      
-      setIsLoggedIn(!!userToken);
-      if (userDataString) {
-        const parsedUserData = JSON.parse(userDataString);
-        console.log('Données parsées dans HeaderMenu:', parsedUserData);
-        setUserData(parsedUserData);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la vérification du statut:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    Alert.alert(
-      'Déconnexion',
-      'Êtes-vous sûr de vouloir vous déconnecter ?',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel'
-        },
-        {
-          text: 'Déconnexion',
-          onPress: async () => {
-            try {
-              await AsyncStorage.multiRemove(['userToken', 'userData', 'isLoggedIn']);
-              setIsLoggedIn(false);
-              setUserData(null);
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              });
-            } catch (error) {
-              console.error('Erreur lors de la déconnexion:', error);
-              Alert.alert('Erreur', 'Impossible de se déconnecter');
-            }
-          },
-          style: 'destructive'
-        }
-      ]
-    );
-  };
 
   const handleMenuPress = () => {
     setMenuVisible((prevState) => {
@@ -109,12 +49,8 @@ const HeaderMenu = ({ navigation }) => {
           resizeMode="contain"
         />
 
-        <TouchableOpacity 
-          style={styles.iconContainer} 
-          onPress={() => isLoggedIn ? navigation.navigate('Settings') : navigation.navigate('Login')}
-        >
-          <Ionicons name="person" size={24} color="#7E57C2" />
-        </TouchableOpacity>
+        {/* Icône vide pour garder l'espacement */}
+        <View style={styles.iconContainer} />
       </View>
 
       {/* Menu Container rendu dans un Modal natif */}
@@ -139,23 +75,10 @@ const HeaderMenu = ({ navigation }) => {
             ]}
           >
             <View style={styles.menuContent}>
-              {/* User Profile or Login Button */}
-              {isLoggedIn ? (
-                <View style={styles.userProfileContainer}>
-                  <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{userData?.name} {userData?.surname}</Text>
-                    <Text style={styles.userEmail}>{userData?.email}</Text>
-                  </View>
-                </View>
-              ) : (
-                <TouchableOpacity 
-                  style={styles.logginContainer} 
-                  onPress={() => navigation.navigate('Login')}
-                >
-                  <Icon name="login" size={24} color="#8a348a" />
-                  <Text style={styles.loggingText}>Se connecter</Text>
-                </TouchableOpacity>
-              )}
+              <View style={{ alignItems: 'center', marginBottom: 24 }}>
+                <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
+                <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
+              </View>
 
               {/* Menu Items */}
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
@@ -163,12 +86,10 @@ const HeaderMenu = ({ navigation }) => {
                 <Text style={styles.menuText}>Accueil</Text>
               </TouchableOpacity>
 
-              {isLoggedIn && (
-                <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
-                  <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
-                  <Text style={styles.menuText}>Paramètres</Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('GuideForum')}>
+                <Icon name="book-open-variant" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Guide Forum</Text>
+              </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
                 <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
@@ -189,16 +110,6 @@ const HeaderMenu = ({ navigation }) => {
                 <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Contactez-nous</Text>
               </TouchableOpacity>
-
-              {isLoggedIn && (
-                <TouchableOpacity 
-                  style={[styles.menuItem, styles.logoutButton]} 
-                  onPress={handleLogout}
-                >
-                  <Icon name="logout" size={24} color="#fff" style={styles.menuIcon} />
-                  <Text style={styles.logoutText}>Se déconnecter</Text>
-                </TouchableOpacity>
-              )}
             </View>
           </Animated.View>
         </View>
@@ -258,21 +169,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-  logginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(138, 52, 138, 0.2)',
-  },
-  loggingText: {
-    fontSize: 16,
-    color: '#8a348a',
-    marginLeft: 10,
-    fontWeight: '500',
-  },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -294,36 +190,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     zIndex: 999998,
-  },
-  userProfileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(138, 52, 138, 0.2)',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: '#666',
-  },
-  logoutButton: {
-    marginTop: 'auto',
-    backgroundColor: '#8a348a',
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });
 

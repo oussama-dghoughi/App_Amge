@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
-const Header = ({ navigation }) => {
+const Header = ({ navigation, openMenu }) => {
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const slideAnim = useRef(new Animated.Value(-300)).current;
@@ -80,7 +80,7 @@ const Header = ({ navigation }) => {
     <>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.iconContainer} onPress={handleMenuPress}>
+        <TouchableOpacity style={styles.iconContainer} onPress={openMenu ? openMenu : handleMenuPress}>
           <Ionicons name="menu" size={24} color="#7E57C2" />
         </TouchableOpacity>
 
@@ -90,8 +90,8 @@ const Header = ({ navigation }) => {
           resizeMode="contain"
         />
 
-        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Settings')}>
-          <Ionicons name="person" size={24} color="#7E57C2" />
+        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Notifs')}>
+          <Ionicons name="notifications-outline" size={24} color="#7E57C2" />
         </TouchableOpacity>
       </View>
 
@@ -115,31 +115,11 @@ const Header = ({ navigation }) => {
           ]}
         >
           <View style={styles.menuContent}>
-            {/* User Profile Section */}
-            {userData ? (
-              <View style={styles.userSection}>
-                <View style={styles.userAvatar}>
-                  <Ionicons name="person-circle" size={60} color="#7E57C2" />
-                </View>
-                <Text style={styles.userName}>{userData.nom} {userData.prenom}</Text>
-                <Text style={styles.userEmail}>{userData.email}</Text>
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                  <Icon name="logout" size={20} color="#fff" />
-                  <Text style={styles.logoutText}>Se déconnecter</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity 
-                style={styles.logginContainer} 
-                onPress={() => {
-                  handleMenuPress();
-                  navigation.navigate('Login');
-                }}
-              >
-                <Icon name="login" size={24} color="#8a348a" />
-                <Text style={styles.loggingText}>Se connecter</Text>
-              </TouchableOpacity>
-            )}
+            {/* Logo et titre en haut du menu */}
+            <View style={{ alignItems: 'center', marginBottom: 24 }}>
+              <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
+              <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
+            </View>
 
             {/* Menu Items */}
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
@@ -154,11 +134,11 @@ const Header = ({ navigation }) => {
               <Icon name="map" size={24} color="#8a348a" style={styles.menuIcon} />
               <Text style={styles.menuText}>Plan du salon</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Location')}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
               <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
               <Text style={styles.menuText}>Localisation</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Guide')}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('GuideForum')}>
               <Icon name="compass" size={24} color="#8a348a" style={styles.menuIcon} />
               <Text style={styles.menuText}>Guide Forum</Text>
             </TouchableOpacity>
@@ -231,21 +211,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-  logginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(138, 52, 138, 0.2)',
-  },
-  loggingText: {
-    fontSize: 16,
-    color: '#8a348a',
-    marginLeft: 10,
-    fontWeight: '500',
-  },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -269,47 +234,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     zIndex: 999998,
     elevation: 999998,
-  },
-  userSection: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(138, 52, 138, 0.2)',
-    marginBottom: 20,
-  },
-  userAvatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(126, 87, 194, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#7E57C2',
-    marginBottom: 5,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 15,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#7E57C2',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  logoutText: {
-    color: '#fff',
-    marginLeft: 8,
-    fontSize: 16,
-    fontWeight: '500',
   },
 });
 

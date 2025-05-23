@@ -115,55 +115,11 @@ const Settings = ({ navigation }) => {
           imageStyle={{ opacity: 0.15 }}
         >
           <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
-            {/* Profile Header */}
-            <LinearGradient
-              colors={['#A34392', '#8a348a']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.header}
-            >
-              <TouchableOpacity style={styles.profileContainer}>
-                <View style={styles.imageContainer}>
-                  <Image
-                    source={require('../../assets/logo.png')}
-                    style={styles.profileImage}
-                  />
-                </View>
-                <View style={styles.profileInfo}>
-                  <Text style={styles.profileName}>{`${userData.name} ${userData.surname}`}</Text>
-                  <Text style={styles.profileEmail}>{userData.email}</Text>
-                </View>
-              </TouchableOpacity>
-            </LinearGradient>
-
-            {/* Settings List */}
+            {/* Settings List - uniquement Gérer les notifications */}
             <View style={styles.settingsContainer}>
-              <TouchableOpacity style={styles.settingItem} onPress={handleEditProfile}>
-                <Icon name="account-edit" size={24} color="#8a348a" style={styles.settingIcon} />
-                <Text style={styles.settingText}>Modifier mon profil</Text>
-              </TouchableOpacity>
-              
               <TouchableOpacity style={styles.settingItem} onPress={handleNotifs}>
                 <Icon name="bell-outline" size={24} color="#8a348a" style={styles.settingIcon} />
                 <Text style={styles.settingText}>Gérer les notifications</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.settingItem} onPress={handleChangePassword}>
-                <Icon name="lock-outline" size={24} color="#8a348a" style={styles.settingIcon} />
-                <Text style={styles.settingText}>Paramètres de sécurité</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.settingItem}>
-                <Icon name="map-marker-outline" size={24} color="#8a348a" style={styles.settingIcon} />
-                <Text style={styles.settingText}>Paramètres de localisation</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.settingItem, styles.logoutButton]}
-                onPress={handleLogout}
-              >
-                <Icon name="logout" size={24} color="#fff" style={styles.settingIcon} />
-                <Text style={styles.logoutText}>Se déconnecter</Text>
               </TouchableOpacity>
             </View>
 

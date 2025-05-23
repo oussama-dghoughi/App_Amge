@@ -34,7 +34,7 @@ const BottomNavigationBar = () => {
         <Icon name="notebook" size={24} color="#9b59b6" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('PlanningFHM')}>
         <Icon name="calendar" size={24} color="#9b59b6" />
       </TouchableOpacity>
     </View>
