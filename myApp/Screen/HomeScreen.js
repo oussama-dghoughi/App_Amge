@@ -278,7 +278,7 @@ const PlanningTimelinePremium = () => (
 const Footer = () => (
   <View style={styles.footerContainer}>
     <Text style={styles.footerText}>
-      © Forum Horizons Maroc 2025. Tous droits réservés.
+      © Forum Horizons Maroc 2026. Tous droits réservés.
     </Text>
     <View style={styles.footerSocials}>
       <TouchableOpacity onPress={() => Linking.openURL('https://facebook.com/forumhorizonsmaroc')}>

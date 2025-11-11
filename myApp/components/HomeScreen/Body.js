@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 
 const { width } = Dimensions.get('window');
 
-const EVENT_DATE = new Date('2025-06-01T00:00:00').getTime();
+const EVENT_DATE = new Date('2026-06-01T00:00:00').getTime();
 
 const FlipNumber = ({ value, label }) => {
   const flipAnim = useRef(new Animated.Value(0)).current;
