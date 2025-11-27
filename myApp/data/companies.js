@@ -58,4 +58,163 @@ export const companies = [
   { id: '57', name: 'TAQA Morocco', field: 'Energy', details: 'Leading energy company in Morocco, focused on electricity generation and distribution.' , website: 'https://www.forumhorizonsmaroc.com/exposants-2024',logo: require('../assets/logos/taqa.png')},
   { id: '58', name: 'Vinci Energies', field: 'Engineering', details: 'Global leader in electrical engineering and energy services.' , website: 'https://www.forumhorizonsmaroc.com/exposants-2024',logo: require('../assets/logos/VINCI.png')},
   { id: '59', name: 'Wafa Assurance', field: 'Insurance', details: 'Leading Moroccan insurance company offering a variety of coverage options.' , website: 'https://www.forumhorizonsmaroc.com/exposants-2024',logo: require('../assets/logos/LOGO_Wafa_Assurance.pdf')},
+// --- MISSING COMPANIES FROM FHM PDF (Sans Sanlam Maroc) ---
+
+    // --- MISSING COMPANIES FROM FHM PDF (Without Sanlam Maroc) ---
+
+{
+  id: '60',
+  name: 'Bank of Africa',
+  field: 'Banking',
+  details: 'Pan-African banking group operating in more than 30 countries.',
+  website: 'https://www.bankofafrica.ma',
+  logo: require('../assets/logos/BOA.pdf') // MISSING LOGO PATH
+},
+
+{
+  id: '61',
+  name: 'Centrale Automobile Chérifienne (CAC)',
+  field: 'Automotive',
+  details: 'Exclusive importer of Volkswagen, Audi, Porsche, Seat, Skoda and Bentley in Morocco.',
+  website: 'https://www.cac.ma',
+  logo: require('../assets/logos/CAC.pdf') // MISSING LOGO PATH
+},
+
+{
+  id: '62',
+  name: 'AMMC - Moroccan Capital Market Authority',
+  field: 'Regulation',
+  details: 'Public authority regulating Morocco’s capital markets and protecting investors.',
+  website: 'https://www.ammc.ma',
+  logo: require('../assets/logos/AMMC.png') // MISSING LOGO PATH
+},
+
+{
+  id: '63',
+  name: 'Wavestone Advisors Morocco',
+  field: 'Consulting',
+  details: 'Consulting firm supporting organizations in digital transformation and strategy.',
+  website: 'https://www.wavestone.com',
+  logo: require('../assets/logos/Wavestone.png') // MISSING LOGO PATH
+},
+
+{
+  id: '64',
+  name: 'Leyton Morocco',
+  field: 'Consulting',
+  details: 'International consulting firm specialized in financial optimization and innovation.',
+  website: 'https://www.leyton.com',
+  logo: require('../assets/logos/Leyton.png') // MISSING LOGO PATH
+},
+
+{
+  id: '65',
+  name: 'NGE Morocco',
+  field: 'Construction',
+  details: 'Major construction and infrastructure group operating in over 20 countries.',
+  website: 'https://www.nge.fr',
+  logo: require('../assets/logos/NGE.png') // MISSING LOGO PATH
+},
+
+{
+  id: '66',
+  name: 'Nareva Holding',
+  field: 'Energy',
+  details: 'Energy holding company developing large-scale renewable energy projects.',
+  website: 'https://www.nareva.ma',
+  logo: require('../assets/logos/Nareva.png') // MISSING LOGO PATH
+},
+
+{
+  id: '67',
+  name: 'LaunchX',
+  field: 'Innovation',
+  details: 'Corporate venture builder helping companies launch and scale new ventures.',
+  website: 'https://www.launchx.co',
+  logo: require('../assets/logos/LaunchX.jpg') // MISSING LOGO PATH
+},
+
+{
+  id: '68',
+  name: 'Masen',
+  field: 'Energy',
+  details: 'Morocco’s renewable energy agency leading major solar and green energy projects.',
+  website: 'https://www.masen.ma',
+  logo: require('../assets/logos/Masen.png') // MISSING LOGO PATH
+},
+
+{
+  id: '69',
+  name: 'TGCC',
+  field: 'Construction',
+  details: 'National leader in industrial, public and building construction projects.',
+  website: 'https://www.tgcc.ma',
+  logo: require('../assets/logos/TGCC.jpeg') // MISSING LOGO PATH
+},
+
+{
+  id: '70',
+  name: 'Oracle Morocco R&D Center',
+  field: 'Technology',
+  details: 'Oracle’s research and development center operating from Casablanca and Agadir.',
+  website: 'https://www.oracle.com',
+  logo: require('../assets/logos/Oracle.pdf') // MISSING LOGO PATH
+},
+
+{
+  id: '71',
+  name: 'BYMARO',
+  field: 'Construction',
+  details: 'Moroccan subsidiary of Bouygues, delivering major construction projects nationwide.',
+  website: 'https://www.bymaro.com',
+  logo: require('../assets/logos/BYMARO.png') // MISSING LOGO PATH
+},
+
+{
+  id: '72',
+  name: 'Bouygues Construction IT Morocco',
+  field: 'IT Services',
+  details: 'IT division of Bouygues Construction, supporting global digital and infrastructure projects.',
+  website: 'https://www.bouygues-construction.com',
+  logo: require('../assets/logos/BouyguesIT.png') // MISSING LOGO PATH
+},
+{
+  id: '73',
+  name: 'Colas Digital Solutions',
+  field: 'IT Services',
+  details: 'Digital division of the Colas Group, responsible for supporting the global digitalization of all Colas subsidiaries, including infrastructure, cloud, data, and mobile solutions.',
+  website: 'https://www.colas.com',
+  logo: require('../assets/logos/Colas.png') // MISSING LOGO PATH
+}
+,
+{
+  id: '74',
+  name: 'Managem',
+  field: 'Mining',
+  details: 'Pan-African mining group specialized in gold and critical energy-transition metals.',
+  website: 'https://www.managemgroup.com',
+  logo: require('../assets/logos/Managem.png') // MISSING LOGO PATH
+},
+
+{
+  id: '75',
+  name: 'Tessi',
+  field: 'Business Services',
+  details: 'International company offering business process outsourcing and digital solutions.',
+  website: 'https://www.tessi.eu',
+  logo: require('../assets/logos/tessi.png') // MISSING LOGO PATH
+},
+
+{
+  id: '76',
+  name: 'Alliances',
+  field: 'Real Estate',
+  details: 'Leading Moroccan real estate group delivering residential, touristic and urban projects.',
+  website: 'https://www.groupedalliances.com',
+  logo: require('../assets/logos/Alliances.jpg') // MISSING LOGO PATH
+}
+
+
+
+
 ];
