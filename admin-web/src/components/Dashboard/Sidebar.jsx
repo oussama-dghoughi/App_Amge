@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { FiUsers, FiBarChart2, FiLogOut } from 'react-icons/fi'
 import './Sidebar.css'
-
+import { FiBriefcase, FiFileText } from 'react-icons/fi'
 const Sidebar = ({ activePage }) => {
   const { logout } = useAuth()
   const navigate = useNavigate()
@@ -16,6 +16,8 @@ const Sidebar = ({ activePage }) => {
   const menuItems = [
     { id: 'users', label: 'Utilisateurs', icon: FiUsers, path: '/users' },
     { id: 'stats', label: 'Statistiques', icon: FiBarChart2, path: '/stats' },
+    { id: 'companies', label: 'Entreprises', icon: FiBriefcase, path: '/companies' },
+    { id: 'offers', label: 'Offres', icon: FiFileText, path: '/offers' },
   ]
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { statsService } from '../../services/api'
-import { FiUsers, FiUserCheck, FiUserX, FiShield } from 'react-icons/fi'
+import { FiUsers, FiUserCheck, FiUserX, FiShield, FiBriefcase, FiFileText } from 'react-icons/fi'
 import './Stats.css'
 
 const Stats = () => {
@@ -62,7 +62,21 @@ const Stats = () => {
       icon: FiShield,
       color: '#ed8936',
     },
-  ]
+    // ⭐ NEW CARDS BELOW
+    {
+      title: 'Total entreprises',
+      value: stats.totalCompanies || 0,
+      icon: FiBriefcase,
+      color: '#4FD1C5', // teal
+    },
+    {
+      title: 'Total offres',
+      value: stats.totalOffers || 0,
+      icon: FiFileText,
+      color: '#9F7AEA', // purple
+    },
+]
+  
 
   return (
     <div className="stats-page">
@@ -140,9 +154,69 @@ const Stats = () => {
           </div>
         </div>
       )}
+
+      {stats.recentCompanies && stats.recentCompanies.length > 0 && (
+      <div className="stats-section">
+        <h3>Dernières entreprises ajoutées</h3>
+        <div className="recent-users">
+          <table className="recent-users-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Secteur</th>
+                <th>Site Web</th>
+                <th>Date d'ajout</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.recentCompanies.map((company) => (
+                <tr key={company.id}>
+                  <td>{company.name}</td>
+                  <td>{company.sector || '—'}</td>
+                  <td>{company.websiteUrl || '—'}</td>
+                  <td>{new Date(company.createdAt).toLocaleDateString('fr-FR')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
+
+    {stats.recentOffers && stats.recentOffers.length > 0 && (
+    <div className="stats-section">
+      <h3>Dernières offres publiées</h3>
+      <div className="recent-users">
+        <table className="recent-users-table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Entreprise</th>
+              <th>Salaire</th>
+              <th>Date de publication</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stats.recentOffers.map((offer) => (
+              <tr key={offer.id}>
+                <td>{offer.title}</td>
+                <td>{offer.Company?.name || '—'}</td>
+                <td>{offer.salary || '—'}</td>
+                <td>{new Date(offer.createdAt).toLocaleDateString('fr-FR')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )}
+
+
     </div>
   )
 }
+
+
 
 export default Stats
 

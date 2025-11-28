@@ -86,5 +86,22 @@ export const statsService = {
   },
 }
 
+export const companyService = {
+  getCompanies: () => api.get('/admin/companies').then(res => res.data),
+  getCompany: (id) => api.get(`/admin/companies/${id}`).then(res => res.data),
+  createCompany: (data) => api.post('/admin/companies', data).then(res => res.data),
+  updateCompany: (id, data) => api.put(`/admin/companies/${id}`, data).then(res => res.data),
+  deleteCompany: (id) => api.delete(`/admin/companies/${id}`).then(res => res.data),
+}
+
+export const offerService = {
+  getOffers: () => api.get('/admin/offers').then(res => res.data),
+  getOffer: (id) => api.get(`/admin/offers/${id}`).then(res => res.data),
+  createOffer: (data) => api.post('/admin/offers', data).then(res => res.data),
+  updateOffer: (id, data) => api.put(`/admin/offers/${id}`, data).then(res => res.data),
+  deleteOffer: (id) => api.delete(`/admin/offers/${id}`).then(res => res.data),
+}
+
+
 export default api
 

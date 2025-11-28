@@ -1,0 +1,128 @@
+.offers-page {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.offers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.offers-header h2 {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+/* Table styling like Users + Companies */
+.offers-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.offers-table thead {
+  background: #f8f9fa;
+}
+
+.offers-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.offers-table td {
+  padding: 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.offers-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* Buttons */
+.btn-small {
+  padding: 6px 10px;
+  font-size: 13px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn-small:hover {
+  opacity: 0.9;
+}
+
+.btn-small-danger {
+  padding: 6px 10px;
+  font-size: 13px;
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-small-danger:hover {
+  opacity: 0.9;
+}
+
+/* FORM PAGE */
+.offer-form-page {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.offer-form-page h2 {
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.offer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.offer-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.offer-form input,
+.offer-form textarea,
+.offer-form select {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.offer-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.offer-form input:focus,
+.offer-form textarea:focus,
+.offer-form select:focus {
+  outline: none;
+  border-color: #667eea;
+}

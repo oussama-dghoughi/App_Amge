@@ -1,4 +1,7 @@
 const User = require('../models/User');
+const Company = require('../models/Company');
+const Offer = require('../models/Offer');
+
 const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
@@ -320,6 +323,9 @@ exports.toggleUserActive = async (req, res) => {
 exports.getStats = async (req, res) => {
   try {
     const totalUsers = await User.count();
+    const totalCompanies = await Company.count();
+    const totalOffers = await Offer.count();
+
     const activeUsers = await User.count({ where: { isActive: true } });
     const inactiveUsers = await User.count({ where: { isActive: false } });
     const adminUsers = await User.count({ where: { role: 'admin' } });
@@ -346,6 +352,18 @@ exports.getStats = async (req, res) => {
       order: [['createdAt', 'DESC']],
       limit: 5,
     });
+    // Dernières entreprises ajoutées
+    const recentCompanies = await Company.findAll({
+      order: [['createdAt', 'DESC']],
+      limit: 5,
+    });
+
+    // Dernières offres ajoutées
+    const recentOffers = await Offer.findAll({
+      include: [{ model: Company }],
+      order: [['createdAt', 'DESC']],
+      limit: 5,
+    });
 
     res.status(200).json({
       success: true,
@@ -356,7 +374,12 @@ exports.getStats = async (req, res) => {
         adminUsers,
         usersByType: formattedUsersByType,
         recentUsers,
+        totalCompanies,
+        totalOffers,
+        recentCompanies,
+        recentOffers,
       },
+
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des statistiques:', error);

@@ -6,6 +6,8 @@ import Header from './Header'
 import Users from '../Users/Users'
 import Stats from '../Stats/Stats'
 import './Dashboard.css'
+import Companies from '../Companies/Companies'
+import Offers from '../Offers/Offers'
 
 const Dashboard = () => {
   const { user } = useAuth()
@@ -15,8 +17,11 @@ const Dashboard = () => {
   const getActivePage = () => {
     if (location.pathname.startsWith('/users')) return 'users'
     if (location.pathname.startsWith('/stats')) return 'stats'
-    return 'users'
+    if (location.pathname.startsWith('/companies')) return 'companies'
+    if (location.pathname.startsWith('/offers')) return 'offers'
+    return ''
   }
+
 
   return (
     <div className="dashboard">
@@ -28,6 +33,8 @@ const Dashboard = () => {
             <Route path="/" element={<Navigate to="/users" replace />} />
             <Route path="/users/*" element={<Users />} />
             <Route path="/stats" element={<Stats />} />
+            <Route path="/companies/*" element={<Companies />} />
+            <Route path="/offers/*" element={<Offers />} />
           </Routes>
         </div>
       </div>
