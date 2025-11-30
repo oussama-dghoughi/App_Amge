@@ -16,6 +16,9 @@ import PlanScreen from './Screen/PlanScreen';
 import GuideForumScreen from './Screen/GuideForumScreen';
 import PlanningFHM from './Screen/PlanningFHM';
 import Menu from './components/common/Menu';
+import LoginScreen from './Screen/Connexion/LoginScreen';
+import RegistrationScreen from './Screen/Connexion/RegistrationScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -47,12 +50,26 @@ const App = () => {
               headerShown: false,
               gestureEnabled: Platform.OS !== 'web'
             }}
-            initialRouteName="Intro"
+            initialRouteName="Login"
           >
-            <Stack.Screen 
-              name="Intro" 
-              component={IntroScreen}
-              options={{ headerShown: false }}
+          
+
+            <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+                name="Registration"
+                component={RegistrationScreen}
+                options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+                name="Intro"
+                component={IntroScreen}
+                options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="Home" 

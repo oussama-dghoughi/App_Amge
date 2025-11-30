@@ -97,7 +97,7 @@ const FlipNumber = ({ value, label }) => {
   );
 };
 
-const Body = () => {
+const Body = ({navigation}) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -216,7 +216,7 @@ const Body = () => {
             Rejoignez plus de 2000 étudiants et 60 entreprises pour façonner l'avenir de l'ingénierie au Maroc
           </Text>
           
-          <TouchableOpacity style={styles.registerButton} onPress={() => Linking.openURL('https://www.forumhorizonsmaroc.com/candidats/inscription')}>
+          <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate("Registration")}>
             <LinearGradient
               colors={['#8a348a', '#C76B98']}
               start={{ x: 0, y: 0 }}
