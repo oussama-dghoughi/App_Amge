@@ -1,15 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Platform } from 'react-native';
 
-const StandBottomSheet = ({ stand, visible, onClose }) => {
-    if (!stand) return null;
+const StandBottomSheet = ({
+  stand,
+  visible,
+  onClose,
+  isVisited,
+  isFavorite,
+  onToggleVisited,
+  onToggleFavorite,
+}) => {
+        if (!stand) return null;
 
     const hasCompanyDetails = Boolean(stand.companyDetails);
 
     const handleWebsitePress = () => {
         const url = stand.companyDetails?.website;
-
-        // Protection : URL vide ou invalide
         if (!url || url.trim() === '') {
             console.warn('[BottomSheet] Website URL is empty');
             return;
@@ -17,10 +23,8 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
 
         try {
             if (Platform.OS === 'web') {
-                // Web : ouvrir dans nouvel onglet
                 window.open(url, '_blank');
             } else {
-                // Native : utiliser Linking (déjà importé si nécessaire)
                 const { Linking } = require('react-native');
                 Linking.openURL(url).catch((err) =>
                     console.error('[BottomSheet] Error opening URL:', err)
@@ -34,15 +38,13 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
     return (
         <Modal
             visible={visible}
-            transparent={true}
+            transparent
             animationType="slide"
             onRequestClose={onClose}
         >
-            {/* Backdrop cliquable pour fermer */}
             <Pressable style={styles.backdrop} onPress={onClose}>
-                {/* Bottom sheet content */}
                 <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-                    {/* Header avec bouton fermer */}
+                    {/* Header */}
                     <View style={styles.header}>
                         <View style={styles.handle} />
                         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -50,8 +52,8 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Contenu */}
-                    <View style={styles.content}>
+                    {/* Content */}
+                   <View style={styles.content}>
                         {hasCompanyDetails ? (
                             <>
                                 {/* Nom officiel de l'entreprise */}
@@ -61,14 +63,18 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
 
                                 {/* Numéro de stand */}
                                 {stand.stand_number && (
-                                    <Text style={styles.standNumber}>Stand {stand.stand_number}</Text>
+                                    <Text style={styles.standNumber}>
+                                        Stand {stand.stand_number}
+                                    </Text>
                                 )}
 
                                 {/* Secteur/Field */}
                                 {stand.companyDetails.field && (
                                     <View style={styles.fieldContainer}>
                                         <Text style={styles.fieldLabel}>Secteur</Text>
-                                        <Text style={styles.fieldValue}>{stand.companyDetails.field}</Text>
+                                        <Text style={styles.fieldValue}>
+                                            {stand.companyDetails.field}
+                                        </Text>
                                     </View>
                                 )}
 
@@ -80,16 +86,6 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
                                         </Text>
                                     </View>
                                 )}
-
-                                {/* Website - Réactivé avec protection */}
-                                {stand.companyDetails.website && stand.companyDetails.website.trim() !== '' && (
-                                    <TouchableOpacity
-                                        style={styles.websiteButton}
-                                        onPress={handleWebsitePress}
-                                    >
-                                        <Text style={styles.websiteText}>🌐 Voir le site web</Text>
-                                    </TouchableOpacity>
-                                )}
                             </>
                         ) : (
                             <>
@@ -98,7 +94,9 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
                                     {stand.company_name}
                                 </Text>
                                 {stand.stand_number && (
-                                    <Text style={styles.standNumber}>Stand {stand.stand_number}</Text>
+                                    <Text style={styles.standNumber}>
+                                        Stand {stand.stand_number}
+                                    </Text>
                                 )}
                                 <View style={styles.noDataContainer}>
                                     <Text style={styles.noDataText}>
@@ -107,19 +105,78 @@ const StandBottomSheet = ({ stand, visible, onClose }) => {
                                 </View>
                             </>
                         )}
+
+                        {/* ✅ STATUS BUTTONS – always visible */}
+                        <View style={styles.statusRow}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.statusButton,
+                                    isVisited && styles.statusButtonVisited,
+                                ]}
+                                onPress={() => onToggleVisited?.(stand.id)}
+                            >
+                                <Text
+                                    style={[
+                                        styles.statusButtonText,
+                                        isVisited && styles.statusButtonTextVisited,
+                                    ]}
+                                >
+                                    {isVisited ? '✅ Visité' : 'Marquer comme visité'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.statusButton,
+                                    isFavorite && styles.statusButtonFavorite,
+                                ]}
+                                onPress={() => onToggleFavorite?.(stand.id)}
+                            >
+                                <Text
+                                    style={[
+                                        styles.statusButtonText,
+                                        isFavorite && styles.statusButtonTextFavorite,
+                                    ]}
+                                >
+                                    {isFavorite ? '★ Favori' : 'Ajouter aux favoris'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* 🌐 Website button – only if we have a website */}
+                        {hasCompanyDetails &&
+                            stand.companyDetails.website &&
+                            stand.companyDetails.website.trim() !== '' && (
+                                <TouchableOpacity
+                                    style={[
+                                        styles.websiteButton,
+                                        isVisited && styles.websiteButtonVisited,
+                                        isFavorite && styles.websiteButtonFavorite,
+                                    ]}
+                                    onPress={handleWebsitePress}
+                                >
+                                    <Text style={styles.websiteText}>
+                                        🌐 Voir le site web
+                                        {isFavorite ? ' ★' : ''}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                     </View>
+
                 </Pressable>
             </Pressable>
         </Modal>
     );
 };
 
+
 const styles = StyleSheet.create({
-    backdrop: {
+ backdrop: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',
     },
+
     sheet: {
         backgroundColor: '#fff',
         borderTopLeftRadius: 20,
@@ -133,6 +190,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 10,
     },
+
     header: {
         paddingTop: 12,
         paddingHorizontal: 20,
@@ -140,6 +198,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         marginBottom: 8,
     },
+
     handle: {
         width: 40,
         height: 4,
@@ -147,6 +206,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         marginBottom: 10,
     },
+
     closeButton: {
         position: 'absolute',
         right: 16,
@@ -159,27 +219,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     closeIcon: {
         fontSize: 20,
         color: '#666',
         fontWeight: 'bold',
     },
+
     content: {
         paddingHorizontal: 24,
         paddingTop: 12,
     },
+
     companyName: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#1a1a1a',
         marginBottom: 8,
     },
+
     standNumber: {
         fontSize: 16,
         color: '#666',
         marginBottom: 16,
         fontWeight: '600',
     },
+
     fieldContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -189,51 +254,103 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f8f8',
         borderRadius: 8,
     },
+
     fieldLabel: {
         fontSize: 14,
         color: '#999',
         marginRight: 8,
         fontWeight: '600',
     },
+
     fieldValue: {
         fontSize: 14,
         color: '#333',
         fontWeight: '600',
     },
+
     detailsContainer: {
         marginTop: 8,
         marginBottom: 16,
     },
+
     detailsText: {
         fontSize: 15,
         lineHeight: 22,
         color: '#555',
     },
+
+    /* ----------------------------
+       VISITED / FAVORITE BUTTONS
+       ---------------------------- */
+    statusRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 4,
+        marginBottom: 12,
+    },
+
+    statusButton: {
+        flex: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        backgroundColor: '#f5f5f5',
+        alignItems: 'center',
+        marginRight: 10, // fallback instead of RN gap
+    },
+
+    statusButtonVisited: {
+        backgroundColor: '#E6F9EB',   // light green
+        borderColor: '#21A453',
+    },
+
+    statusButtonFavorite: {
+        backgroundColor: '#FFF5D9',   // light yellow
+        borderColor: '#FFB200',
+    },
+
+    statusButtonText: {
+        fontSize: 14,
+        color: '#333',
+        fontWeight: '500',
+    },
+
+    statusButtonTextVisited: {
+        color: '#177A3D',
+    },
+
+    statusButtonTextFavorite: {
+        color: '#A66A00',
+    },
+
+    /* ----------------------------
+       WEBSITE BUTTON (dynamic)
+       ---------------------------- */
     websiteButton: {
         marginTop: 12,
         paddingVertical: 14,
         paddingHorizontal: 20,
-        backgroundColor: '#007AFF',
+        backgroundColor: '#007AFF',  // default blue
         borderRadius: 10,
         alignItems: 'center',
+        justifyContent: 'center',
     },
+
+    websiteButtonVisited: {
+        backgroundColor: '#0058C5',  // deeper blue
+    },
+
+    websiteButtonFavorite: {
+        borderWidth: 2,
+        borderColor: '#FFD700',      // gold border
+    },
+
     websiteText: {
         fontSize: 16,
         color: '#fff',
         fontWeight: '600',
-    },
-    noDataContainer: {
-        marginTop: 16,
-        padding: 16,
-        backgroundColor: '#f8f8f8',
-        borderRadius: 8,
-        borderLeftWidth: 3,
-        borderLeftColor: '#FFD700',
-    },
-    noDataText: {
-        fontSize: 14,
-        color: '#666',
-        fontStyle: 'italic',
     },
 });
 

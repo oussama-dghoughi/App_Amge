@@ -23,6 +23,8 @@ const InteractiveMap = () => {
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [showList, setShowList] = useState(false);
     const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
+    const [visitedStands, setVisitedStands] = useState({});
+    const [favoriteStands, setFavoriteStands] = useState({});
 
     const zoomableViewRef = useRef(null);
 
@@ -115,9 +117,13 @@ const InteractiveMap = () => {
         setShowList(false);
         setSelectedStand(stand);
         setShowBottomSheet(true);
-        // TODO: centre la vue sur le stand sélectionné
-        // setTimeout(() => focusOnStand(stand), 300);
+
+        setVisitedStands((prev) => ({
+            ...prev,
+            [stand.id]: true,
+        }));
     };
+
 
     const handleQueryChange = (text) => {
         setSearchQuery(text);
@@ -132,6 +138,19 @@ const InteractiveMap = () => {
     const handleMapLayout = (event) => {
         const { width, height } = event.nativeEvent.layout;
         setMapDimensions({ width, height });
+    };
+    const toggleVisited = (standId) => {
+        setVisitedStands((prev) => ({
+            ...prev,
+            [standId]: !prev[standId],
+        }));
+    };
+
+    const toggleFavorite = (standId) => {
+        setFavoriteStands((prev) => ({
+            ...prev,
+            [standId]: !prev[standId],
+        }));
     };
 
     if (!imageRatio) {
@@ -153,6 +172,8 @@ const InteractiveMap = () => {
                             stand_w={stand.stand_w}
                             stand_h={stand.stand_h}
                             isSelected={selectedStand?.id === stand.id}
+                            isVisited={!!visitedStands[stand.id]}
+                            isFavorite={!!favoriteStands[stand.id]}
                             debug={DEBUG_MODE}
                             onPress={() => handleStandPress(stand)}
                         />
@@ -191,8 +212,15 @@ const InteractiveMap = () => {
                 </TouchableOpacity>
             )}
 
-            <StandBottomSheet stand={selectedStand} visible={showBottomSheet} onClose={handleCloseBottomSheet} />
-
+            <StandBottomSheet
+            stand={selectedStand}
+            visible={showBottomSheet}
+            onClose={handleCloseBottomSheet}
+            isVisited={selectedStand ? !!visitedStands[selectedStand.id] : false}
+            isFavorite={selectedStand ? !!favoriteStands[selectedStand.id] : false}
+            onToggleVisited={toggleVisited}
+            onToggleFavorite={toggleFavorite}
+            />
             <ExhibitorsList
                 visible={showList}
                 onClose={() => setShowList(false)}

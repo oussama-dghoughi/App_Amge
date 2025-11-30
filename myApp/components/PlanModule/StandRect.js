@@ -8,26 +8,46 @@ const StandRect = ({
     stand_h,
     onPress,
     isSelected = false,
+    isVisited = false,
+    isFavorite = false,
     debug = false,
 }) => {
-    // Styles conditionnels selon l'état
+
     const getStyles = () => {
+        // 1️⃣ Selected
         if (isSelected) {
-            // Stand sélectionné : bordure jaune + halo
             return {
                 borderWidth: 2,
-                borderColor: '#FFD700', // Jaune doré
-                backgroundColor: 'rgba(255, 215, 0, 0.2)', // Halo jaune léger
+                borderColor: '#FFD700',
+                backgroundColor: 'rgba(255, 215, 0, 0.25)',
                 shadowColor: '#FFD700',
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.8,
+                shadowOpacity: 0.7,
                 shadowRadius: 8,
-                elevation: 5, // Android shadow
+                elevation: 4,
             };
         }
 
+        // 2️⃣ Favorite
+        if (isFavorite) {
+            return {
+                backgroundColor: 'rgba(255, 204, 0, 0.35)',
+                borderWidth: 1,
+                borderColor: '#FFB200',
+            };
+        }
+
+        // 3️⃣ Visited
+        if (isVisited) {
+            return {
+                backgroundColor: 'rgba(76, 217, 100, 0.3)',
+                borderWidth: 1,
+                borderColor: '#21A453',
+            };
+        }
+
+        // 4️⃣ Debug
         if (debug) {
-            // Mode debug : rectangles rouges visibles
             return {
                 borderWidth: 1,
                 borderColor: 'rgba(255, 0, 0, 0.5)',
@@ -35,11 +55,11 @@ const StandRect = ({
             };
         }
 
-        // Production : invisible mais cliquable
+        // 5️⃣ Default: light gray so it's clearly clickable
         return {
-            borderWidth: 0,
-            borderColor: 'transparent',
-            backgroundColor: 'transparent',
+            backgroundColor: 'rgba(200, 200, 200, 0.35)',
+            borderWidth: 1,
+            borderColor: '#CCCCCC',
         };
     };
 
