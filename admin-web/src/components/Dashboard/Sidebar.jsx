@@ -1,24 +1,31 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import { FiUsers, FiBarChart2, FiLogOut } from 'react-icons/fi'
-import './Sidebar.css'
-import { FiBriefcase, FiFileText } from 'react-icons/fi'
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { FiUsers, FiBarChart2, FiLogOut, FiCalendar } from "react-icons/fi";
+import "./Sidebar.css";
+import { FiBriefcase, FiFileText } from "react-icons/fi";
+
 const Sidebar = ({ activePage }) => {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate("/login");
+  };
 
   const menuItems = [
-    { id: 'users', label: 'Utilisateurs', icon: FiUsers, path: '/users' },
-    { id: 'stats', label: 'Statistiques', icon: FiBarChart2, path: '/stats' },
-    { id: 'companies', label: 'Entreprises', icon: FiBriefcase, path: '/companies' },
-    { id: 'offers', label: 'Offres', icon: FiFileText, path: '/offers' },
-  ]
+    { id: "users", label: "Utilisateurs", icon: FiUsers, path: "/users" },
+    { id: "stats", label: "Statistiques", icon: FiBarChart2, path: "/stats" },
+    {
+      id: "companies",
+      label: "Entreprises",
+      icon: FiBriefcase,
+      path: "/companies",
+    },
+    { id: "offers", label: "Offres", icon: FiFileText, path: "/offers" },
+    { id: "events", label: "Événements", icon: FiCalendar, path: "/events" },
+  ];
 
   return (
     <div className="sidebar">
@@ -28,17 +35,17 @@ const Sidebar = ({ activePage }) => {
 
       <nav className="sidebar-nav">
         {menuItems.map((item) => {
-          const Icon = item.icon
+          const Icon = item.icon;
           return (
             <button
               key={item.id}
-              className={`nav-item ${activePage === item.id ? 'active' : ''}`}
+              className={`nav-item ${activePage === item.id ? "active" : ""}`}
               onClick={() => navigate(item.path)}
             >
               <Icon className="nav-icon" />
               <span>{item.label}</span>
             </button>
-          )
+          );
         })}
       </nav>
 
@@ -49,8 +56,7 @@ const Sidebar = ({ activePage }) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
-
+export default Sidebar;
