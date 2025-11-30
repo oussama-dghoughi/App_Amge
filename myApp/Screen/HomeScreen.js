@@ -308,7 +308,7 @@ const HomeScreen = ({ navigation }) => {
           imageStyle={{ opacity: 0.3 }}
         >
           <ScrollView contentContainerStyle={styles.bodyContainer}>
-            <Body />
+            <Body navigation={navigation} />
             {/* Pourquoi venir au forum - Cards modernes et concises */}
             <Text style={styles.sectionTitle}>Pourquoi venir au forum ⁉️</Text>
             <PourquoiCardsModern />

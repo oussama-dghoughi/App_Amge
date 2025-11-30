@@ -158,7 +158,7 @@ const LoginScreen = ({ navigation }) => {
       </ScrollView>
 
       {/* Bottom Navigation Bar */}
-      <BottomNavigationBar />
+    
     </SafeAreaView>
   );
 };
