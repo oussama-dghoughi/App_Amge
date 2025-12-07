@@ -2,15 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Platform } from 'react-native';
 
 const StandBottomSheet = ({
-  stand,
-  visible,
-  onClose,
-  isVisited,
-  isFavorite,
-  onToggleVisited,
-  onToggleFavorite,
+    stand,
+    visible,
+    onClose,
+    isVisited,
+    isFavorite,
+    onToggleVisited,
+    onToggleFavorite,
 }) => {
-        if (!stand) return null;
+    if (!stand) return null;
 
     const hasCompanyDetails = Boolean(stand.companyDetails);
 
@@ -53,7 +53,7 @@ const StandBottomSheet = ({
                     </View>
 
                     {/* Content */}
-                   <View style={styles.content}>
+                    <View style={styles.content}>
                         {hasCompanyDetails ? (
                             <>
                                 {/* Nom officiel de l'entreprise */}
@@ -62,9 +62,9 @@ const StandBottomSheet = ({
                                 </Text>
 
                                 {/* Numéro de stand */}
-                                {stand.stand_number && (
+                                {stand.number && (
                                     <Text style={styles.standNumber}>
-                                        Stand {stand.stand_number}
+                                        Stand {stand.number}
                                     </Text>
                                 )}
 
@@ -93,9 +93,9 @@ const StandBottomSheet = ({
                                 <Text style={styles.companyName}>
                                     {stand.company_name}
                                 </Text>
-                                {stand.stand_number && (
+                                {stand.number && (
                                     <Text style={styles.standNumber}>
-                                        Stand {stand.stand_number}
+                                        Stand {stand.number}
                                     </Text>
                                 )}
                                 <View style={styles.noDataContainer}>
@@ -171,7 +171,7 @@ const StandBottomSheet = ({
 
 
 const styles = StyleSheet.create({
- backdrop: {
+    backdrop: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'flex-end',

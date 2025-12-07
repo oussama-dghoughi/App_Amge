@@ -55,7 +55,7 @@ const SearchBar = ({
                                         {item.company_name}
                                     </Text>
                                     <Text style={styles.standNumber}>
-                                        Stand {item.stand_number || item.id}
+                                        Stand {item.number || item.id}
                                     </Text>
                                 </TouchableOpacity>
                             )}

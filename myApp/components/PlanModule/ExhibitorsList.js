@@ -70,7 +70,7 @@ const ExhibitorsList = ({ visible, onClose, standsEnriched, onSelectStand }) => 
 
     const renderItem = ({ item }) => {
         const displayName = item.companyDetails?.name || item.company_name;
-        const standNumber = item.stand_number || item.id;
+        const standNumber = item.number || item.id;
 
         return (
             <TouchableOpacity

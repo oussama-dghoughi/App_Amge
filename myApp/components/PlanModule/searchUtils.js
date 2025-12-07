@@ -44,7 +44,7 @@ export const filterStands = (stands, query) => {
     // Filtrer
     const matches = stands.filter((stand) => {
         const normalizedName = normalize(stand.company_name);
-        const normalizedStandNumber = normalize(stand.stand_number);
+        const normalizedStandNumber = normalize(stand.number);
 
         // Recherche dans le nom ET le numéro de stand
         if (queryLength <= 2) {

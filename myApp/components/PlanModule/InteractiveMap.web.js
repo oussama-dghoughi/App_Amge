@@ -56,8 +56,8 @@ const InteractiveMap = () => {
     const focusOnStand = (stand) => {
         if (!scrollViewRef.current || !mapDimensions.width) return;
 
-        const standCenterX = ((stand.position_x + stand.stand_w / 2) / 100) * mapDimensions.width;
-        const standCenterY = ((stand.position_y + stand.stand_h / 2) / 100) * mapDimensions.height;
+        const standCenterX = ((stand.x + stand.w / 2) / 100) * mapDimensions.width;
+        const standCenterY = ((stand.y + stand.h / 2) / 100) * mapDimensions.height;
 
         const scrollX = Math.max(0, standCenterX - SCREEN_WIDTH / 2);
         const scrollY = Math.max(0, standCenterY - SCREEN_HEIGHT / 2);
@@ -140,10 +140,10 @@ const InteractiveMap = () => {
                             {standsEnriched.map((stand) => (
                                 <StandRect
                                     key={stand.id}
-                                    position_x={stand.position_x}
-                                    position_y={stand.position_y}
-                                    stand_w={stand.stand_w}
-                                    stand_h={stand.stand_h}
+                                    x={stand.x}
+                                    y={stand.y}
+                                    w={stand.w}
+                                    h={stand.h}
                                     isSelected={selectedStand?.id === stand.id}
                                     debug={DEBUG_MODE}
                                     onPress={() => handleStandPress(stand)}

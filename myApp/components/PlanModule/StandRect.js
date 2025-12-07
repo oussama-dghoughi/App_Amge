@@ -2,10 +2,10 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 
 const StandRect = ({
-    position_x,
-    position_y,
-    stand_w,
-    stand_h,
+    x,
+    y,
+    w,
+    h,
     onPress,
     isSelected = false,
     isVisited = false,
@@ -68,10 +68,10 @@ const StandRect = ({
             style={[
                 styles.rect,
                 {
-                    left: `${position_x}%`,
-                    top: `${position_y}%`,
-                    width: `${stand_w}%`,
-                    height: `${stand_h}%`,
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: `${w}%`,
+                    height: `${h}%`,
                 },
                 getStyles(),
             ]}

@@ -81,8 +81,8 @@ const InteractiveMap = () => {
     // Autofocus after search selection (native zoomable view)
     const focusOnStand = (stand) => {
         if (!zoomableViewRef.current || !mapDimensions.width) return;
-        const standCenterX = (stand.position_x + stand.stand_w / 2) / 100;
-        const standCenterY = (stand.position_y + stand.stand_h / 2) / 100;
+        const standCenterX = (stand.x + stand.w / 2) / 100;
+        const standCenterY = (stand.y + stand.h / 2) / 100;
         try {
             if (typeof zoomableViewRef.current.zoomToLocation === 'function') {
                 zoomableViewRef.current.zoomToLocation(
@@ -167,10 +167,10 @@ const InteractiveMap = () => {
                     {standsEnriched.map((stand) => (
                         <StandRect
                             key={stand.id}
-                            position_x={stand.position_x}
-                            position_y={stand.position_y}
-                            stand_w={stand.stand_w}
-                            stand_h={stand.stand_h}
+                            x={stand.x}
+                            y={stand.y}
+                            w={stand.w}
+                            h={stand.h}
                             isSelected={selectedStand?.id === stand.id}
                             isVisited={!!visitedStands[stand.id]}
                             isFavorite={!!favoriteStands[stand.id]}
@@ -213,13 +213,13 @@ const InteractiveMap = () => {
             )}
 
             <StandBottomSheet
-            stand={selectedStand}
-            visible={showBottomSheet}
-            onClose={handleCloseBottomSheet}
-            isVisited={selectedStand ? !!visitedStands[selectedStand.id] : false}
-            isFavorite={selectedStand ? !!favoriteStands[selectedStand.id] : false}
-            onToggleVisited={toggleVisited}
-            onToggleFavorite={toggleFavorite}
+                stand={selectedStand}
+                visible={showBottomSheet}
+                onClose={handleCloseBottomSheet}
+                isVisited={selectedStand ? !!visitedStands[selectedStand.id] : false}
+                isFavorite={selectedStand ? !!favoriteStands[selectedStand.id] : false}
+                onToggleVisited={toggleVisited}
+                onToggleFavorite={toggleFavorite}
             />
             <ExhibitorsList
                 visible={showList}
