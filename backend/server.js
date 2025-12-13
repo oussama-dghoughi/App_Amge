@@ -49,6 +49,7 @@ app.use(cors(corsOptions));
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
 
 // Route de test
 app.get('/', (req, res) => {
@@ -100,4 +101,3 @@ const startServer = async () => {
 startServer();
 
 module.exports = app;
-
