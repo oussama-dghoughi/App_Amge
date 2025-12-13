@@ -108,7 +108,7 @@ const RegistrationScreen = ({ navigation }) => {
         />
 
         <View style={styles.formContainer}>
-          <Text style={styles.header}>Register now</Text>
+          <Text style={styles.header}>Inscription</Text>
 
           <Text style={styles.inputLabel}>Nom *</Text>
           <TextInput
@@ -198,7 +198,7 @@ const RegistrationScreen = ({ navigation }) => {
             disabled={isLoading}
           >
             <Text style={styles.signUpButtonText}>
-              {isLoading ? 'Inscription en cours...' : 'Sign up'}
+              {isLoading ? 'Inscription en cours...' : 'S\'inscrire'}
             </Text>
           </TouchableOpacity>
 

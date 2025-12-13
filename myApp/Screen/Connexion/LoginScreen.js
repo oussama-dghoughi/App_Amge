@@ -92,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
 
         {/* Login Box */}
         <View style={styles.loginBox}>
-          <Text style={styles.header}>Log in</Text>
+          <Text style={styles.header}>Connexion</Text>
           
           <Text style={styles.helpText}>Connectez-vous avec l'email et le mot de passe utilisés lors de l'inscription</Text>
 
@@ -137,10 +137,10 @@ const LoginScreen = ({ navigation }) => {
           {/* Footer Links */}
           <View style={styles.footerLinks}>
             <TouchableOpacity onPress={handleForgotAccount}>
-              <Text style={styles.linkText}>Forgot account?</Text>
+              <Text style={styles.linkText}>Compte oublié ?</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignUp}>
-              <Text style={styles.linkText}>Sign up?</Text>
+              <Text style={styles.linkText}>Créer un compte</Text>
             </TouchableOpacity>
           </View>
         </View>
