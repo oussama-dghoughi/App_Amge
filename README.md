@@ -448,8 +448,6 @@ psql -U postgres -d amge_db -f migrations/add_category_to_stands.sql
 
 **Questions techniques** : Voir commentaires dans code ou `TEST_GUIDE.md`
 
-**Contact** : [Votre email/Slack]
-
 ---
 
 ## 📝 Changelog
