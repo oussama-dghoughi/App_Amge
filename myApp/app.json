@@ -16,7 +16,7 @@
       }
     },
     "web": {
-      "bundler": "webpack"
+      "bundler": "metro"
     },
     "android": {
       "package": "com.odgh.app_amge",

@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import IntroScreen from './Screen/IntroScreen';
 import HomeScreen from './Screen/HomeScreen';
 import CompanyListScreen from './Screen/CompaniesScreens/CompanyListScreen';
-import Localisation from './Screen/menuScreens/localisation';
+import Localisation from './Screen/menuScreens/localisation.index';
 import Contact from './Screen/menuScreens/contact';
 import FAQ from './Screen/menuScreens/FAQ';
 import About from './Screen/menuScreens/About.js';
@@ -42,20 +42,20 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <View style={{ flex: 1 }}>
-          <Stack.Navigator 
+          <Stack.Navigator
             screenOptions={{
               headerShown: false,
               gestureEnabled: Platform.OS !== 'web'
             }}
             initialRouteName="Intro"
           >
-            <Stack.Screen 
-              name="Intro" 
+            <Stack.Screen
+              name="Intro"
               component={IntroScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen 
-              name="Home" 
+            <Stack.Screen
+              name="Home"
               options={{ headerShown: false }}
             >
               {(props) => <HomeScreen {...props} isMenuVisible={isMenuVisible} toggleMenu={toggleMenu} />}
@@ -66,8 +66,8 @@ const App = () => {
             <Stack.Screen name="Settings" component={Settings} options={{ title: 'Paramètres' }} />
             <Stack.Screen name="Localisation" component={Localisation} options={{ title: 'Localisation' }} />
             <Stack.Screen name="Notifs" component={NotificationScreen} options={{ title: 'Notifications' }} />
-            <Stack.Screen 
-              name="FAQ" 
+            <Stack.Screen
+              name="FAQ"
               options={{ title: 'FAQ' }}
             >
               {(props) => <FAQ {...props} isMenuVisible={isMenuVisible} toggleMenu={toggleMenu} />}

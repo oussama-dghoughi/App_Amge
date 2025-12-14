@@ -17,10 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: function (origin, callback) {
     // Liste des origines autorisées depuis .env
-    const allowedOrigins = process.env.CORS_ORIGIN 
+    const allowedOrigins = process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
       : ['http://localhost:3000', 'http://localhost:3001'];
-    
+
     // En développement, autoriser aussi les requêtes sans origine (Postman, curl, etc.)
     if (process.env.NODE_ENV === 'development') {
       if (!origin || allowedOrigins.includes(origin)) {
@@ -46,10 +46,15 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Servir les fichiers statiques (images uploadées)
+app.use('/uploads', express.static('uploads'));
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/plans', require('./routes/planRoutes'));
+app.use('/api/stands', require('./routes/standRoutes')); // Routes pour les stands
 
 // Route de test
 app.get('/', (req, res) => {

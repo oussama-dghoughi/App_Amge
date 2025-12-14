@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config(); // ← CRITIQUE: Charger .env ICI avant d'utiliser process.env
 
 // Fonction pour créer la base de données si elle n'existe pas
 const createDatabaseIfNotExists = async () => {
@@ -8,10 +9,12 @@ const createDatabaseIfNotExists = async () => {
   const dbHost = process.env.DB_HOST || 'localhost';
   const dbPort = process.env.DB_PORT || 5432;
 
+  // Utiliser URI de connexion (cohérent avec la connexion principale)
+  const encodedPassword = encodeURIComponent(dbPassword);
+  const adminConnectionString = `postgres://${dbUser}:${encodedPassword}@${dbHost}:${dbPort}/postgres`;
+
   // Se connecter à PostgreSQL sans spécifier de base de données
-  const adminSequelize = new Sequelize('postgres', dbUser, dbPassword, {
-    host: dbHost,
-    port: dbPort,
+  const adminSequelize = new Sequelize(adminConnectionString, {
     dialect: 'postgres',
     logging: false,
   });
@@ -46,23 +49,27 @@ const createDatabaseIfNotExists = async () => {
 };
 
 // Configuration de la base de données
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'app_amge',
-  process.env.DB_USER || 'postgres',
-  process.env.DB_PASSWORD || 'postgres',
-  {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
-  }
-);
+// Utilise une URI de connexion (plus fiable sur Windows)
+const dbUser = process.env.DB_USER || 'postgres';
+const dbPassword = process.env.DB_PASSWORD || 'postgres';
+const dbHost = process.env.DB_HOST || 'localhost';
+const dbPort = process.env.DB_PORT || 5432;
+const dbName = process.env.DB_NAME || 'app_amge';
+
+// Encoder le mot de passe pour éviter les problèmes avec caractères spéciaux
+const encodedPassword = encodeURIComponent(dbPassword);
+const connectionString = `postgres://${dbUser}:${encodedPassword}@${dbHost}:${dbPort}/${dbName}`;
+
+const sequelize = new Sequelize(connectionString, {
+  dialect: 'postgres',
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+});
 
 const connectDB = async () => {
   try {
@@ -81,7 +88,7 @@ const connectDB = async () => {
     }
   } catch (error) {
     console.error('❌ Erreur de connexion PostgreSQL:', error.message);
-    
+
     // Suggestions d'aide
     if (error.message.includes('password authentication failed')) {
       console.error('💡 Vérifiez vos identifiants PostgreSQL dans le fichier .env');
@@ -89,7 +96,7 @@ const connectDB = async () => {
       console.error('💡 Vérifiez que PostgreSQL est démarré et accessible');
       console.error('   Sur macOS: brew services start postgresql');
     }
-    
+
     process.exit(1);
   }
 };

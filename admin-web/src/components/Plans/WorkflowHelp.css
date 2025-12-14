@@ -1,0 +1,207 @@
+/* ============================================
+   WORKFLOW HELP SECTION - Guide complet
+   ============================================ */
+
+.workflow-help {
+    margin-top: 50px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.workflow-help h2 {
+    text-align: center;
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.workflow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step-card {
+    display: flex;
+    gap: 20px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.step-number {
+    font-size: 36px;
+    min-width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+.step-content ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.step-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.step-content code {
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #d63384;
+}
+
+.code-sample {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 10px 0;
+}
+
+.info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #0066cc;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 16px;
+}
+
+.info-box strong {
+    color: #0066cc;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.info-box li {
+    margin-bottom: 6px;
+}
+
+/* Tips section */
+.tips-section {
+    margin-top: 30px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.tips-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 22px;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.tip-card {
+    background: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.tip-card strong {
+    display: block;
+    color: #f57c00;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.tip-card p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Warning box */
+.warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.warning-box strong {
+    display: block;
+    color: #856404;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.warning-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.warning-box li {
+    margin-bottom: 8px;
+    color: #856404;
+    line-height: 1.6;
+}
+
+.warning-box code {
+    background: #ffe69c;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .workflow-help {
+        padding: 20px;
+    }
+
+    .step-card {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .step-number {
+        font-size: 28px;
+        min-width: auto;
+    }
+
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
