@@ -2,378 +2,327 @@
 
 ## 🎯 Vue d'Ensemble
 
-Cette branche implémente la **migration complète du plan interactif vers une architecture dynamique basée sur une API**. Les données de plans et stands ne sont plus hardcodées mais gérées via une interface d'administration (admin-web) et servies par une API REST (backend).
+Cette branche implémente la **migration complète du plan interactif vers une architecture dynamique basée sur une API**, permettant la gestion des plans et stands via une interface d'administration.
 
-### Résumé Exécutif
+### Résumé des Changements
 
-| Avant | Après |
-|-------|-------|
-| Plan statique hardcodé dans le code | Plan dynamique géré via admin-web |
-| Modification du code pour chaque changement | Interface CRUD complète pour admins |
-| Un seul plan possible | Multi-plans avec activation |
-| Pas de catégories stands | Support 4 catégories (Entreprise, Service, Salle, Restauration) |
-| Association entreprises manuelle | Auto-matching lors import CSV |
+| Aspect | Avant | Après |
+|--------|-------|-------|
+| **Source données** | Fichiers JS hardcodés | API REST dynamique |
+| **Gestion plans** | Modification code source | Interface admin complète |
+| **Catégories stands** | Non supportées | Entreprise, Service, Salle, Restauration |
+| **Association entreprises** | Manuelle dans code | Auto-matching lors import CSV |
+| **Activation plans** | Un seul plan | Multi-plans avec activation |
 
 ---
 
-## 📂 Structure du Projet
+## 🏗️ Architecture Technique
 
 ```
-App_Amge_back/
-├── admin-web/          # Interface d'administration React
-├── backend/            # API REST Node.js + Express + PostgreSQL
-├── myApp/              # Application mobile React Native + Expo
-└── README.md           # Ce fichier
+┌─────────────────┐
+│   Admin-Web     │ ← Interface gestion (React)
+│ (localhost:3001)│
+└────────┬────────┘
+         │ POST/PUT/DELETE /api/plans
+         ▼
+┌─────────────────┐
+│    Backend      │ ← API REST (Node.js + Express)
+│ (localhost:5000)│
+└────────┬────────┘
+         │ Sequelize ORM
+         ▼
+┌─────────────────┐
+│   PostgreSQL    │ ← Base de données
+│   (amge_db)     │
+└─────────────────┘
+         ▲
+         │ GET /api/plans/active
+┌────────┴────────┐
+│     myApp       │ ← Application mobile (React Native + Expo)
+│ (localhost:8081)│
+└─────────────────┘
 ```
 
 ---
 
-## 🔧 Changements par Composant
+## 📦 Composants Modifiés/Ajoutés
 
-### 1. **Backend** (`backend/`)
+### Backend (`backend/`)
+- ✅ **Nouveaux modèles** : `PlanVersion.js`, `Stand.js` (avec colonne `category`)
+- ✅ **Nouveaux controllers** : `planController.js` (CRUD, upload, CSV import)
+- ✅ **Nouvelles routes** : `planRoutes.js`, `standRoutes.js`
+- ✅ **Migration DB** : `migrations/add_category_to_stands.sql`
+- ✅ **Config modifiée** : `server.js`, `database.js`
 
-#### Nouveaux Fichiers
+### Admin-Web (`admin-web/`)
+- ✅ **Module Plans complet** : 7 composants React
+  - `PlanList.jsx` - Liste + actions
+  - `PlanForm.jsx` - Création/édition + upload
+  - `StandManager.jsx` - Gestion stands
+  - `CsvImporter.jsx` - Import CSV drag-and-drop
+  - `PlanViewer.jsx` - Visualisation interactive
+  - `Plans.css` + `WorkflowHelp.css` - Styles
+- ✅ **Dashboard modifié** : Routing + menu sidebar
 
-| Fichier | Description |
-|---------|-------------|
-| `models/PlanVersion.js` | Modèle Sequelize - Table `plan_versions` |
-| `models/Stand.js` | Modèle Sequelize - Table `stands` (+ colonne `category`) |
-| `models/index.js` | Export centralisé des modèles + associations |
-| `controllers/planController.js` | Logique métier plans (CRUD, upload, CSV import, activation) |
-| `routes/planRoutes.js` | Routes API `/api/plans/*` |
-| `routes/standRoutes.js` | Routes API `/api/stands/*` (si utilisé) |
-| `migrations/add_category_to_stands.sql` | Script SQL migration colonne `category` |
-| `migrate_add_category.js` | Script Node.js pour migration |
-| `uploads/` | Dossier stockage images plans et fichiers uploadés |
-
-#### Fichiers Modifiés
-
-| Fichier | Changements |
-|---------|-------------|
-| `server.js` | + Import routes plans, + Serve static `/uploads` |
-| `config/database.js` | Configuration Sequelize + sync models |
-| `package.json` | + Dependencies (multer, papaparse si manquant) |
-| `controllers/companyController.js` | Potentiellement ajusté pour association stands |
-
-#### Fonctionnalités Ajoutées
-
-✅ **CRUD Plans Complet**
-- `POST /api/plans` - Créer plan
-- `GET /api/plans` - Lister tous plans
-- `GET /api/plans/:id` - Détails plan
-- `PATCH /api/plans/:id` - Modifier plan
-- `DELETE /api/plans/:id` - Supprimer plan (si non actif)
-- `PATCH /api/plans/:id/activate` - Activer plan (désactive les autres)
-
-✅ **Upload & Import**
-- `POST /api/plans/:id/upload-image` - Upload image plan (multer)
-- `POST /api/plans/:id/import-csv` - Import stands depuis CSV
-
-✅ **Endpoint Public**
-- `GET /api/plans/active` - Récupère plan actif + stands enrichis (pour myApp)
-
-✅ **Support Catégories**
-- Parsing colonne `category` du CSV
-- Matching conditionnel : entreprise cherchée UNIQUEMENT si `category = 'Entreprise'`
-- Autres catégories (Service, Salle, Restauration) créées sans entreprise
+### myApp (`myApp/`)
+- ✅ **Service API** : `services/planApi.js`, `config/api.config.js`
+- ✅ **Carte interactive** : Module `components/PlanModule/` complet
+- ✅ **Support catégories** : Affichage différencié selon type stand
+- ✅ **Indicateurs visuels** : Vert (visité), Jaune (favori)
 
 ---
 
-### 2. **Admin-Web** (`admin-web/`)
+## 🚀 Installation et Lancement
 
-#### Nouveaux Fichiers
+### Prérequis
 
-**Module Plans Complet** (`src/components/Plans/`)
+- **Node.js** : v16+ 
+- **PostgreSQL** : v12+
+- **npm** ou **yarn**
 
-| Fichier | Description |
-|---------|-------------|
-| `Plans.jsx` | Composant wrapper + routing `/plans/*` |
-| `PlanList.jsx` | Liste plans + actions (activer, modifier, gérer stands, supprimer) + **Guide Workflow** |
-| `PlanForm.jsx` | Formulaire création/édition + upload image avec preview |
-| `StandManager.jsx` | Gestion stands d'un plan (liste, import CSV, suppression) |
-| `CsvImporter.jsx` | Composant import CSV (drag-and-drop, preview, validation) |
-| `PlanViewer.jsx` | Visualisation plan avec overlay rectangles stands cliquables |
-| `Plans.css` | Styles complets du module Plans |
-| `WorkflowHelp.css` | Styles section d'aide workflow (6 étapes VGG→CSV) |
+### 1️⃣ Installation Backend
 
-#### Fichiers Modifiés
+```bash
+cd backend
 
-| Fichier | Changements |
-|---------|-------------|
-| `src/components/Dashboard/Sidebar.jsx` | + Item menu "Plans Interactifs" |
-| `src/components/Dashboard/Dashboard.jsx` | + Route `/plans/*` vers module Plans |
-| `package.json` | Vérification dependencies React Router |
+# Installer dépendances
+npm install
 
-#### Fonctionnalités Interface Admin
+# Configurer .env
+cp .env.example .env
+# Éditer .env avec vos credentials DB :
+# DATABASE_URL=postgresql://user:password@localhost:5432/amge_db
+# PORT=5000
 
-✅ **Gestion Plans**
-- Tableau liste plans : année, dimensions, actif, nb stands, actions
-- Formulaire création : année, upload image, dimensions (px)
-- Activation toggle (1 seul actif)
-- Suppression (si non actif et pas dernier)
+# Créer base de données
+psql -U postgres -c "CREATE DATABASE amge_db;"
 
-✅ **Gestion Stands**
-- Liste stands d'un plan (tableau : numéro, catégorie, entreprise, actions)
-- Import CSV avec :
-  - Drag-and-drop ou file picker
-  - Preview 5 premières lignes
-  - Compteur stands détectés
-  - Upload + parsing backend
-  - Retour erreurs/warnings ligne par ligne
-- Suppression tous stands (avec confirmation)
+# Migration : Ajouter colonne category
+psql -U postgres -d amge_db -f migrations/add_category_to_stands.sql
+# OU
+node -e "require('./config/database').sequelize.query('ALTER TABLE stands ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT \\'Entreprise\\';')"
 
-✅ **Visualisation Plan**
-- Affichage image plan
-- Overlay SVG avec rectangles stands (positions %)
-- Click stand → modal infos (numéro, catégorie, entreprise associée)
-- Statistiques : X stands, Y avec entreprise
+# Lancer serveur
+npm start
+```
 
-✅ **Guide Workflow Intégré**
-- 6 étapes détaillées (affiché en bas de PlanList) :
-  1. Préparer image plan
-  2. Créer plan interface
-  3. Extraire positions VGG/manuel
-  4. Préparer CSV (format + catégories)
-  5. Importer stands
-  6. Vérifier et activer
-- Conseils & astuces (4 cards tips)
-- Warnings (points d'attention)
+**Vérification** :
+- ✅ Console : `Server running on port 5000`
+- ✅ Test : `curl http://localhost:5000/api/plans/active`
 
 ---
 
-### 3. **myApp** (`myApp/`)
+### 2️⃣ Installation Admin-Web
 
-#### Nouveaux Fichiers
+```bash
+cd admin-web
 
-**Configuration & Services**
+# Installer dépendances
+npm install
 
-| Fichier | Description |
-|---------|-------------|
-| `config/api.config.js` | Config URLs API (dev: localhost, prod: TBD) |
-| `services/planApi.js` | Service layer - `fetchActivePlan()` + `transformStandsForApp()` |
+# Lancer interface (dev mode)
+npm run dev
+```
 
-**Composants Plan Module**
+**Accès** : `http://localhost:3001`
 
-| Fichier | Description |
-|---------|-------------|
-| `components/PlanModule/InteractiveMap.native.js` | Carte interactive React Native (ZoomableView) |
-| `components/PlanModule/InteractiveMap.web.js` | Carte interactive Web (ScrollView) |
-| `components/PlanModule/StandBottomSheet.js` | Détails stand avec différenciation catégorie |
-| `components/PlanModule/ExhibitorsList.js` | Liste alphabétique ALL stands (pas que entreprises) |
-| `components/PlanModule/StandRect.js` | Rectangle cliquable stand |
-| `components/PlanModule/SearchBar.js` | Barre recherche stands |
-| `components/PlanModule/enrichUtils.js` | (déprécié - enrichissement fait côté backend) |
-| `components/PlanModule/searchUtils.js` | Utilitaires recherche/normalisation |
-| `components/PlanModule/planConfig.js` | Config (ratio plan) |
+**Login** : Identifiants admin configurés dans votre DB
 
-**Données**
+**Vérification** :
+- ✅ Menu "Plans Interactifs" visible
+- ✅ Aucune erreur console (F12)
 
-| Fichier | Description |
-|---------|-------------|
-| `data/stands_2025.js` | **Conservé pour référence** (non utilisé par l'app) |
-| `data/standsIndex.js` | Index exports (potentiellement déprécié) |
-| `assets/maps/` | Dossier images plans (peut être vide si fetch API) |
+---
 
-**Scripts** (nouveaux)
+### 3️⃣ Installation myApp
 
-| Fichier | Description |
-|---------|-------------|
-| `scripts/convert_plan.py` | Script Python conversion VGG JSON → CSV (utilitaire) |
+```bash
+cd myApp
 
-#### Fichiers Modifiés
+# Installer dépendances
+npm install
 
-| Fichier | Changements |
-|---------|-------------|
-| `Screen/PlanScreen.js` | Import InteractiveMap (platform specific) |
-| `App.js` | Potentiellement navigation vers PlanScreen |
-| `package.json` | Vérification dependencies |
-| `app.json` | Config Expo (pas de changement majeur) |
+# Configurer API URL (fichier déjà créé)
+# Vérifier myApp/config/api.config.js :
+# - Pour web : http://localhost:5000/api
+# - Pour mobile : http://[VOTRE_IP]:5000/api
 
-#### Fichiers Supprimés
+# Lancer app
+npm start
+```
 
-| Fichier | Raison |
-|---------|--------|
-| `webpack.config.js` | Déplacé ou config obsolète |
+**Options** :
+- Presser **`w`** → Ouvrir version web (`http://localhost:8081`)
+- Scanner **QR code** → Tester sur mobile (Expo Go)
 
-#### Fonctionnalités myApp
+**Vérification** :
+- ✅ Plan charge (pas de spinner bloqué)
+- ✅ Console F12 : `Loaded X stands from API`
+- ✅ Click stand → bottom sheet s'ouvre
 
-✅ **Fetch Dynamique API**
-- Appel `GET /api/plans/active` au mount composant
-- Loading state (spinner) pendant fetch
-- Error handling (message + retry)
-- Transformation data au format app (% déjà calculés côté backend)
+---
 
-✅ **Affichage Différencié Catégories**
-- **Stand Entreprise avec company** :
-  - Nom entreprise
-  - Stand numéro
-  - Secteur
-  - Description
-  - Bouton site web (si URL)
-  - Boutons favoris/visité
-  
-- **Stand Entreprise SANS company** :
-  - Numéro stand
-  - Message "Informations non disponibles"
-  - Boutons favoris/visité
+## 🧪 Guide de Test Complet
 
-- **Stand Service/Salle/Restauration** :
-  - Nom stand (ex: "Accueil", "Salle A")
-  - Badge catégorie (Type: Service)
-  - Boutons favoris/visité
-  - PAS de message "non disponible" (normal sans entreprise)
+### Test 1 : Workflow Admin → myApp (End-to-End)
 
-✅ **Liste Exposants Complète**
-- Inclut TOUS les stands (pas uniquement entreprises)
-- Groupement alphabétique par nom entreprise OU numéro stand
-- Recherche filtrée
-- Click → focus sur carte + ouverture bottom sheet
+**Dans Admin-Web** :
+
+1. **Créer plan** :
+   ```
+   Plans → Nouveau Plan
+   - Année : 2025
+   - Upload image (ex: plan PNG)
+   - Largeur : 1725, Hauteur : 1725
+   → Sauvegarder
+   ```
+
+2. **Importer stands via CSV** :
+   
+   Créer fichier `test_stands.csv` :
+   ```csv
+   label,x,y,width,height,category,company_name
+   54,494.04,1176.97,51.92,70.03,Entreprise,MAROC TELECOM
+   Accueil,982.04,1269.95,190.96,76.07,Service,
+   55,495.07,1107.97,51.06,69.00,Entreprise,OCP
+   ```
+   
+   ```
+   Gérer Stands (📍) → Importer CSV
+   → Glisser test_stands.csv
+   → Vérifier : "3 stands détectés"
+   → Importer
+   ```
+
+3. **Visualiser** :
+   ```
+   Visualiser (👁️)
+   → Vérifier rectangles positionnés
+   → Click stand → Voir infos
+   ```
+
+4. **Activer plan** :
+   ```
+   Retour liste → Activer (✅)
+   → Plan devient actif (🟢)
+   ```
+
+**Dans myApp (web)** :
+
+5. **Recharger page** (Ctrl+R)
+
+6. **Vérifier** :
+   - ✅ 3 rectangles stands affichés
+   - ✅ Click stand 54 → "MAROC TELECOM" affiché
+   - ✅ Click "Accueil" → Badge "Type: Service"
+
+7. **Tester interactions** :
+   - Click "Marquer comme visité" → Stand devient **VERT** 🟢
+   - Click "Ajouter aux favoris" → Stand devient **JAUNE** 🟡
+   - Recherche : Taper "maroc" → Suggestions
+   - Liste (📋) → Voir 3 stands
+
+**✅ Si tout fonctionne → Workflow validé !**
+
+---
+
+### Test 2 : Catégories Stands
+
+**Tester affichage différencié** :
+
+| Catégorie | Click stand | Affichage attendu |
+|-----------|-------------|-------------------|
+| **Entreprise** (avec company) | Stand 54 | Nom entreprise + secteur + site web |
+| **Entreprise** (sans company) | Stand 99 | Numéro + "Infos non disponibles" |
+| **Service** | Accueil | Nom + Badge "Type: Service" |
+| **Salle** | Salle A | Nom + Badge "Type: Salle" |
+
+---
+
+### Test 3 : Multi-Plans
+
+1. Créer 2e plan (année 2026)
+2. Importer stands différents
+3. **Activer plan 2026** → Plan 2025 devient inactif
+4. Recharger myApp → Affiche plan 2026
 
 ---
 
 ## 🗄️ Base de Données
 
-### Nouvelles Tables
+### Migration Requise
 
-#### `plan_versions`
-
-```sql
-CREATE TABLE plan_versions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  year INTEGER NOT NULL,
-  imageUrl VARCHAR(500),
-  imageWidth INTEGER NOT NULL,
-  imageHeight INTEGER NOT NULL,
-  isActive BOOLEAN DEFAULT FALSE,
-  createdAt TIMESTAMP DEFAULT NOW(),
-  updatedAt TIMESTAMP DEFAULT NOW()
-);
-```
-
-**Contrainte** : Un seul plan avec `isActive = TRUE` à la fois.
-
-#### `stands` (modifiée)
+**Ajout colonne `category` à table `stands`** :
 
 ```sql
-CREATE TABLE stands (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  standNumber VARCHAR(50) NOT NULL,
-  xPercent DECIMAL(8,4) NOT NULL,  -- 0-100
-  yPercent DECIMAL(8,4) NOT NULL,  -- 0-100
-  wPercent DECIMAL(8,4) NOT NULL,  -- 0-100
-  hPercent DECIMAL(8,4) NOT NULL,  -- 0-100
-  category VARCHAR(50) DEFAULT 'Entreprise',  -- NOUVEAU
-  planVersionId UUID REFERENCES plan_versions(id) ON DELETE CASCADE,
-  companyId UUID REFERENCES companies(id) ON DELETE SET NULL,
-  createdAt TIMESTAMP DEFAULT NOW(),
-  updatedAt TIMESTAMP DEFAULT NOW()
-);
+-- Option 1 : Via psql
+psql -U postgres -d amge_db -f backend/migrations/add_category_to_stands.sql
+
+-- Option 2 : Manuel
+ALTER TABLE stands 
+ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'Entreprise';
 ```
 
-**Migration** : Colonne `category` ajoutée via script `migrate_add_category.js`.
+**Vérification** :
+```sql
+SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_name = 'stands' AND column_name = 'category';
+```
 
-### Relations
+### Schéma Tables
 
-- `Stand belongsTo PlanVersion` (N:1, cascade delete)
-- `Stand belongsTo Company` (N:1, nullable, set null on delete)
-- `PlanVersion hasMany Stand` (1:N)
+**`plan_versions`** :
+- `id` (UUID, PK)
+- `year` (INTEGER) - Année plan
+- `imageUrl` (VARCHAR) - URL image
+- `imageWidth`, `imageHeight` (INTEGER) - Dimensions pixels
+- `isActive` (BOOLEAN) - Un seul TRUE à la fois
+
+**`stands`** :
+- `id` (UUID, PK)
+- `standNumber` (VARCHAR) - Numéro/nom
+- `xPercent`, `yPercent`, `wPercent`, `hPercent` (DECIMAL) - Positions %
+- `category` (VARCHAR) - **NOUVEAU** : Entreprise/Service/Salle/Restauration
+- `planVersionId` (UUID, FK → plan_versions)
+- `companyId` (UUID, FK → companies, nullable)
 
 ---
 
 ## 📥 Format CSV Import
 
-### Structure Attendue
+### Structure
 
+```csv
+label,x,y,width,height,category,company_name
+```
+
+**Colonnes** :
+- `label` ✅ **Obligatoire** : Numéro ou nom stand
+- `x, y, width, height` ✅ **Obligatoire** : Coordonnées en **pixels**
+- `category` ⚠️ **Optionnel** : Entreprise (défaut), Service, Salle, Restauration
+- `company_name` ⚠️ **Optionnel** : Nom entreprise (matching auto si trouvé)
+
+**Traitement automatique** :
+- Conversion pixels → pourcentages (basé sur dimensions plan)
+- Matching entreprise case-insensitive (si `category = Entreprise`)
+- Warnings pour entreprises non trouvées
+
+### Exemples
+
+**Stands mixtes** :
 ```csv
 label,x,y,width,height,category,company_name
 54,494.04,1176.97,51.92,70.03,Entreprise,MAROC TELECOM
 Accueil,982.04,1269.95,190.96,76.07,Service,
-Toilettes H,400.00,100.00,40.00,50.00,Service,
+Toilettes,400.00,100.00,40.00,50.00,Service,
 Salle A,500.00,200.00,150.00,120.00,Salle,
-55,495.07,1107.97,51.06,69.00,Entreprise,OCP
+Cafétéria,600.00,300.00,100.00,80.00,Restauration,
 ```
 
-### Colonnes
-
-| Colonne | Obligatoire | Description |
-|---------|-------------|-------------|
-| `label` | ✅ | Numéro ou nom stand |
-| `x` | ✅ | Position X (pixels) |
-| `y` | ✅ | Position Y (pixels) |
-| `width` | ✅ | Largeur (pixels) |
-| `height` | ✅ | Hauteur (pixels) |
-| `category` | ❌ | Type : Entreprise, Service, Salle, Restauration (défaut: Entreprise) |
-| `company_name` | ❌ | Nom entreprise (matching auto si `category=Entreprise`) |
-
-### Traitement Backend
-
-1. **Parse CSV** (papaparse)
-2. **Validation** : champs requis, types, valeurs
-3. **Conversion** : pixels → pourcentages (basé sur `imageWidth/Height` du plan)
-4. **Matching entreprise** :
-   - SI `category = 'Entreprise'` ET `company_name` fourni
-   - Recherche case-insensitive normalisée dans table `companies`
-   - Si trouvé → `companyId` assigné
-   - Si pas trouvé → warning retourné
-5. **Bulk insert** : `Stand.bulkCreate()`
-
 ---
 
-## 🚀 Workflow Admin Complet
-
-### Étape 1 : Préparer Image Plan
-- Format : PNG ou JPG
-- Notez dimensions exactes (ex: 1725 × 1725 px)
-- Image claire avec numéros stands visibles
-
-### Étape 2 : Créer Plan (admin-web)
-1. `/plans` → "Nouveau Plan"
-2. Année : 2025
-3. Upload image
-4. Dimensions : largeur + hauteur (pixels)
-5. Sauvegarder
-
-### Étape 3 : Extraire Positions Stands
-
-**Option A - VGG Image Annotator**
-1. Ouvrir image dans VGG (http://www.robots.ox.ac.uk/~vgg/software/via/)
-2. Dessiner rectangles autour stands
-3. Exporter JSON
-4. Utiliser script `myApp/scripts/convert_plan.py` pour convertir JSON → CSV
-
-**Option B - Mesure Manuelle**
-1. Ouvrir image dans éditeur (Photoshop, GIMP)
-2. Outil sélection rectangulaire sur chaque stand
-3. Noter : X, Y, Width, Height
-4. Créer CSV manuellement
-
-### Étape 4 : Préparer CSV
-- Créer fichier avec colonnes requises
-- Ajouter `category` pour différencier types stands
-- Ajouter `company_name` pour stands Entreprise
-
-### Étape 5 : Importer (admin-web)
-1. Plans → Gérer Stands (icône 📍)
-2. Import CSV
-3. Drag-and-drop fichier
-4. Vérifier preview
-5. Importer
-6. Consulter warnings (entreprises non trouvées)
-
-### Étape 6 : Vérifier et Activer
-1. Visualiser plan (icône 👁️)
-2. Vérifier positions rectangles
-3. Tester clicks → infos stands
-4. Retour liste → Activer (✅)
-
-### Étape 7 : Tester myApp
-1. Relancer app mobile/web
-2. Vérifier fetch API réussit
-3. Tester interactions (zoom, click, recherche, liste)
-
----
-
-## 🔧 Configuration Requise
+## ⚙️ Configuration
 
 ### Backend `.env`
 
@@ -381,7 +330,6 @@ Salle A,500.00,200.00,150.00,120.00,Salle,
 DATABASE_URL=postgresql://user:password@localhost:5432/amge_db
 PORT=5000
 NODE_ENV=development
-UPLOAD_DIR=./uploads
 JWT_SECRET=your_jwt_secret_here
 ```
 
@@ -390,48 +338,146 @@ JWT_SECRET=your_jwt_secret_here
 ```javascript
 export default {
   dev: {
-    apiUrl: 'http://localhost:5000/api',      // Web testing
-    // apiUrl: 'http://192.168.x.x:5000/api', // Mobile device testing
+    apiUrl: 'http://localhost:5000/api',      // Web
+    // apiUrl: 'http://192.168.1.X:5000/api', // Mobile (remplacer X par votre IP)
   },
   prod: {
-    apiUrl: 'https://your-production-api.com/api'
+    apiUrl: 'https://your-backend.com/api'     // Production
   }
 };
 ```
 
-**Note** : Pour tester sur mobile physique, utiliser l'IP de votre PC (pas localhost).
+**Pour mobile** : Utiliser IP locale (même réseau WiFi), pas localhost
 
 ---
 
-## 🗑️ Fichiers à Supprimer (Temporaires/Test)
+## ⚠️ Breaking Changes
 
-### Backend
-- ✅ `migrate_add_category.js` - Migration déjà exécutée, garder pour référence OU supprimer
-- ✅ `env.example.txt` - Déjà supprimé (remplacé par .env.example standard)
+### 1. myApp Nécessite Backend Running
 
-### myApp
-- ✅ `webpack.config.js` - Déjà supprimé (config obsolète)
-- ⚠️ `scripts/` - **À VÉRIFIER** : contient `convert_plan.py` utile → **GARDER**
-- ⚠️ `data/stands_2025.js` - Conservé pour référence (non utilisé) → **GARDER pour rollback potentiel**
+**Avant** : App standalone avec données hardcodées  
+**Après** : Requiert backend API accessible
 
-### Admin-Web
-- Aucun fichier temporaire identifié
+**Impact** : Impossible de tester myApp sans backend
 
-### Racine Projet
-- Aucun fichier temporaire
+### 2. Migration DB Requise
+
+**Action** : Exécuter script `migrations/add_category_to_stands.sql`
+
+### 3. Format Données Modifié
+
+**Avant** : `stands_2025.js` hardcodé  
+**Après** : API retourne format enrichi avec `companyDetails`
 
 ---
 
-## ✅ Cette documentation comprend :
-1. Vue d'ensemble et objectifs
-2. Changements détaillés par composant (backend, admin-web, myApp)
-3. Schéma base de données
-4. Format CSV et traitement
-5. Workflow admin complet étape par étape
-6. Configuration requise
-7. Liste fichiers à supprimer
+## 🐛 Dépannage
 
-Pour toute question technique, se référer aux commentaires dans le code ou aux guides intégrés dans admin-web.
+### Erreur : "Cannot connect to database"
 
-**Dernière mise à jour** : 14 Décembre 2024  
-**Branche** : `Plan_integration`
+**Cause** : PostgreSQL pas running ou credentials incorrects
+
+**Solution** :
+```bash
+# Windows
+net start postgresql-x64-XX
+
+# Vérifier connexion
+psql -U postgres -d amge_db -c "SELECT 1;"
+```
+
+### Erreur : "Column category does not exist"
+
+**Cause** : Migration pas exécutée
+
+**Solution** :
+```bash
+cd backend
+psql -U postgres -d amge_db -f migrations/add_category_to_stands.sql
+```
+
+### Erreur myApp : "fetch failed"
+
+**Cause** : Backend pas accessible ou URL incorrecte
+
+**Solution** :
+1. Vérifier backend running : `curl http://localhost:5000/api/plans/active`
+2. Vérifier `myApp/config/api.config.js` URL correcte
+3. Si mobile : Utiliser IP locale, pas localhost
+
+### Erreur Admin : "CORS error"
+
+**Cause** : Backend pas configuré pour autoriser origin admin
+
+**Solution** : Vérifier `backend/server.js` autorise `http://localhost:3001`
+
+---
+
+## 📚 Documentation Additionnelle
+
+- **Guide test complet** : `backend/TEST_GUIDE.md`
+- **Format CSV détaillé** : Section "Format CSV Import" ci-dessus
+- **Workflow VGG→CSV** : Intégré dans admin-web (Plans → scroll bas)
+
+---
+
+## 🎯 Prochaines Étapes (Pour Merge)
+
+### Checklist Avant Merge
+
+- [ ] Tous tests passent (backend, admin-web, myApp)
+- [ ] Migration DB documentée et testée
+- [ ] Variables env configurées
+- [ ] Breaking changes communiqués à l'équipe
+- [ ] Documentation README complète ✅
+
+### Merge vers Main
+
+```bash
+# Sur GitHub/GitLab
+1. Créer Pull Request : Plan_integration → main
+2. Review par team lead
+3. Vérifier CI/CD (si configuré)
+4. Merge avec squash (optionnel)
+5. Déployer en staging pour tests équipe
+```
+
+---
+
+## 👥 Support
+
+**Questions techniques** : Voir commentaires dans code ou `TEST_GUIDE.md`
+
+**Contact** : [Votre email/Slack]
+
+---
+
+## 📝 Changelog
+
+### v2.0 - Dynamic Plan API (14 Dec 2024)
+
+**Added** :
+- Backend API complète (CRUD plans, CSV import, activation)
+- Admin-web module Plans (7 composants)
+- myApp migration API dynamique
+- Support 4 catégories stands
+- Indicateurs visuels (vert visité, jaune favori)
+- Multi-plans avec activation
+- Documentation complète (README + TEST_GUIDE)
+
+**Changed** :
+- myApp fetch data depuis API (plus hardcodé)
+- Format données enrichi côté backend
+
+**Removed** :
+- Fichiers obsolètes (env.example.txt, webpack.config.js)
+
+**Breaking** :
+- myApp nécessite backend running
+- Migration DB requise (colonne category)
+
+---
+
+**Date** : 14 Décembre 2024  
+**Branche** : `Plan_integration`  
+**Prêt pour merge** : ✅
