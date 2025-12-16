@@ -16,6 +16,7 @@ import PlanScreen from './Screen/PlanScreen';
 import GuideForumScreen from './Screen/GuideForumScreen';
 import PlanningFHM from './Screen/PlanningFHM';
 import Menu from './components/common/Menu';
+import OffresScreen from './Screen/OffresScreens/OffreScreen.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +63,9 @@ const App = () => {
             </Stack.Screen>
             <Stack.Screen name="CompanyList">
               {props => <CompanyListScreen {...props} openMenu={toggleMenu} />}
+            </Stack.Screen>
+            <Stack.Screen name="Offres">
+              {props => <OffresScreen {...props} openMenu={toggleMenu} />}
             </Stack.Screen>
             <Stack.Screen name="Settings" component={Settings} options={{ title: 'Paramètres' }} />
             <Stack.Screen name="Localisation" component={Localisation} options={{ title: 'Localisation' }} />

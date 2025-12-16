@@ -17,6 +17,11 @@ const Menu = ({ isMenuVisible, slideAnim, handleMenuPress }) => {
     handleMenuPress && handleMenuPress();
   };
 
+  const handleOffres = () => {
+    navigation.navigate('Offres');
+    handleMenuPress && handleMenuPress();
+  };
+
   const handleFAQ = () => {
     navigation.navigate('FAQ');
     handleMenuPress && handleMenuPress();
@@ -55,6 +60,10 @@ const Menu = ({ isMenuVisible, slideAnim, handleMenuPress }) => {
           <TouchableOpacity style={styles.menuItem} onPress={handleLocalisation}>
               <Icon name="map-marker" size={24} color="#333" style={styles.menuIcon} />
               <Text style={styles.menuText}>Localisation</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={handleOffres}>
+              <Icon name="briefcase" size={24} color="#333" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Offres</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('GuideForum'); handleMenuPress && handleMenuPress(); }}>
               <Icon name="book-open-variant" size={24} color="#333" style={styles.menuIcon} />
