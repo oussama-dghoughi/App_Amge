@@ -5,10 +5,11 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Users from "../Users/Users";
 import Stats from "../Stats/Stats";
-import "./Dashboard.css";
 import Companies from "../Companies/Companies";
 import Offers from "../Offers/Offers";
 import Events from "../Events/Events";
+import Plans from "../Plans/Plans";
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ const Dashboard = () => {
     if (location.pathname.startsWith("/companies")) return "companies";
     if (location.pathname.startsWith("/offers")) return "offers";
     if (location.pathname.startsWith("/events")) return "events";
+    if (location.pathname.startsWith("/plans")) return "plans";
     return "users";
   };
 
@@ -37,6 +39,7 @@ const Dashboard = () => {
             <Route path="/stats" element={<Stats />} />
             <Route path="/companies/*" element={<Companies />} />
             <Route path="/offers/*" element={<Offers />} />
+            <Route path="/plans/*" element={<Plans />} />
           </Routes>
         </div>
       </div>

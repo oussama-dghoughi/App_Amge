@@ -30,3 +30,6 @@ logs/
 dist/
 build/
 
+# Uploads (test images)
+uploads/
+
