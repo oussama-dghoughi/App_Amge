@@ -15,29 +15,11 @@ import NotificationScreen from './Screen/menuScreens/Notifs';
 import PlanScreen from './Screen/PlanScreen';
 import GuideForumScreen from './Screen/GuideForumScreen';
 import PlanningFHM from './Screen/PlanningFHM';
-import Menu from './components/common/Menu';
+import LoginScreen from './Screen/Connexion/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [isMenuVisible, setIsMenuVisible] = React.useState(false);
-  const [slideAnim] = React.useState(new Animated.Value(-300));
-
-  const toggleMenu = () => {
-    if (!isMenuVisible) {
-      setIsMenuVisible(true);
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.spring(slideAnim, {
-        toValue: -300,
-        useNativeDriver: true,
-      }).start(() => setIsMenuVisible(false));
-    }
-  };
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
@@ -54,14 +36,15 @@ const App = () => {
               component={IntroScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen
               name="Home"
               options={{ headerShown: false }}
             >
-              {(props) => <HomeScreen {...props} isMenuVisible={isMenuVisible} toggleMenu={toggleMenu} />}
+              {(props) => <HomeScreen {...props} />}
             </Stack.Screen>
             <Stack.Screen name="CompanyList">
-              {props => <CompanyListScreen {...props} openMenu={toggleMenu} />}
+              {props => <CompanyListScreen {...props} />}
             </Stack.Screen>
             <Stack.Screen name="Settings" component={Settings} options={{ title: 'Paramètres' }} />
             <Stack.Screen name="Localisation" component={Localisation} options={{ title: 'Localisation' }} />
@@ -70,7 +53,7 @@ const App = () => {
               name="FAQ"
               options={{ title: 'FAQ' }}
             >
-              {(props) => <FAQ {...props} isMenuVisible={isMenuVisible} toggleMenu={toggleMenu} />}
+              {(props) => <FAQ {...props} />}
             </Stack.Screen>
             <Stack.Screen name="Contact" component={Contact} options={{ title: 'Contact' }} />
             <Stack.Screen name="About" component={About} options={{ title: 'À propos' }} />
@@ -78,8 +61,6 @@ const App = () => {
             <Stack.Screen name="GuideForum" component={GuideForumScreen} options={{ title: 'Guide Forum' }} />
             <Stack.Screen name="PlanningFHM" component={PlanningFHM} options={{ title: 'Planning FHM' }} />
           </Stack.Navigator>
-          {/* Menu global */}
-          <Menu isMenuVisible={isMenuVisible} slideAnim={slideAnim} handleMenuPress={toggleMenu} />
         </View>
       </NavigationContainer>
     </GestureHandlerRootView>

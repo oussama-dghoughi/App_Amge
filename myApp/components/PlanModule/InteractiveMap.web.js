@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     },
     listButton: {
         position: 'absolute',
-        top: 80,
+        top: 90,
         right: 20,
         backgroundColor: '#007AFF',
         paddingVertical: 12,

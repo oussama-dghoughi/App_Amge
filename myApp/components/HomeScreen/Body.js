@@ -56,14 +56,14 @@ const FlipNumber = ({ value, label }) => {
   };
 
   return (
-    <Animated.View 
+    <Animated.View
       style={[
-        styles.flipContainer, 
-        { 
+        styles.flipContainer,
+        {
           transform: [
             { scale: pulseAnim },
             { perspective: 1000 },
-          ] 
+          ]
         }
       ]}
     >
@@ -81,10 +81,12 @@ const FlipNumber = ({ value, label }) => {
             style={{
               transform: [
                 { perspective: 1000 },
-                { rotateX: flipAnim.interpolate({
-                  inputRange: [0, 0.5, 1],
-                  outputRange: ['0deg', '-90deg', '0deg'],
-                })},
+                {
+                  rotateX: flipAnim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: ['0deg', '-90deg', '0deg'],
+                  })
+                },
               ],
             }}
           >
@@ -215,7 +217,7 @@ const Body = () => {
           <Text style={styles.ctaDescription}>
             Rejoignez plus de 2000 étudiants et 60 entreprises pour façonner l'avenir de l'ingénierie au Maroc
           </Text>
-          
+
           <TouchableOpacity style={styles.registerButton} onPress={() => Linking.openURL('https://www.forumhorizonsmaroc.com/candidats/inscription')}>
             <LinearGradient
               colors={['#8a348a', '#C76B98']}
@@ -236,13 +238,13 @@ const Body = () => {
             <Text style={styles.statNumber}>4000+</Text>
             <Text style={styles.statLabel}>Visiteurs</Text>
           </Animatable.View>
-          
+
           <Animatable.View animation="fadeInUp" delay={1000} style={styles.statItem}>
             <Icon name="building" size={32} color="#8a348a" />
             <Text style={styles.statNumber}>60+</Text>
             <Text style={styles.statLabel}>Entreprises</Text>
           </Animatable.View>
-          
+
           <Animatable.View animation="fadeInRight" delay={1200} style={styles.statItem}>
             <Icon name="map-marker" size={32} color="#8a348a" />
             <Text style={styles.statNumber}>5000</Text>

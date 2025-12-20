@@ -92,8 +92,8 @@ const LoginScreen = ({ navigation }) => {
 
         {/* Login Box */}
         <View style={styles.loginBox}>
-          <Text style={styles.header}>Log in</Text>
-          
+          <Text style={styles.header}>Se connecter</Text>
+
           <Text style={styles.helpText}>Connectez-vous avec l'email et le mot de passe utilisés lors de l'inscription</Text>
 
           {/* Email Input */}
@@ -124,8 +124,8 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity 
-            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+          <TouchableOpacity
+            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
           >
@@ -136,11 +136,11 @@ const LoginScreen = ({ navigation }) => {
 
           {/* Footer Links */}
           <View style={styles.footerLinks}>
-            <TouchableOpacity onPress={handleForgotAccount}>
-              <Text style={styles.linkText}>Forgot account?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSignUp}>
-              <Text style={styles.linkText}>Sign up?</Text>
+            <TouchableOpacity onPress={() => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            })}>
+              <Text style={styles.guestLinkText}>Continuer en mode invité</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -239,14 +239,15 @@ const styles = StyleSheet.create({
   },
   footerLinks: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
-    marginTop: 20, // Increased margin for more spacing
+    marginTop: 20,
   },
-  linkText: {
-    color: '#005f73', // Deep blue for links
-    fontSize: 14,
+  guestLinkText: {
+    color: '#005f73',
+    fontSize: 16,
     textDecorationLine: 'underline',
+    fontWeight: '500',
   },
   footer: {
     alignItems: 'center',

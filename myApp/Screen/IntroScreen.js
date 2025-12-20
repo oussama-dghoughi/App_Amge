@@ -1,14 +1,28 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
 const IntroScreen = ({ navigation }) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('Home');
-    }, 5000);
-    return () => clearTimeout(timer);
+    const checkLoginStatus = async () => {
+      try {
+        const userToken = await AsyncStorage.getItem('userToken');
+        setTimeout(() => {
+          if (userToken) {
+            navigation.replace('Home');
+          } else {
+            navigation.replace('Login');
+          }
+        }, 3000); // Reduced delay slightly for better UX
+      } catch (e) {
+        console.error(e);
+        navigation.replace('Login');
+      }
+    };
+
+    checkLoginStatus();
   }, [navigation]);
 
   return (

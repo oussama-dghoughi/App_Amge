@@ -154,11 +154,6 @@ const InteractiveMap = () => {
         setShowList(false);
         setSelectedStand(stand);
         setShowBottomSheet(true);
-
-        setVisitedStands((prev) => ({
-            ...prev,
-            [stand.id]: true,
-        }));
     };
 
 
@@ -306,7 +301,7 @@ const styles = StyleSheet.create({
     overlayContainer: { ...StyleSheet.absoluteFillObject, zIndex: 1 },
     listButton: {
         position: 'absolute',
-        top: 80,
+        top: 90,
         right: 20,
         backgroundColor: '#007AFF',
         paddingVertical: 12,
