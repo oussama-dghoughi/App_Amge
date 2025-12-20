@@ -1,28 +1,32 @@
 {
   "expo": {
-    "name": "myApp",
-    "slug": "myApp",
+    "name": "App_Amge",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+    "extra": {
+      "eas": {
+        "projectId": "818ebe86-8d51-4a49-b6c9-ba607bc382f8"
+      },
+      "platformSpecific": {
+        "web": {
+          "useWebSpecificComponents": true
+        },
+        "native": {
+          "useNativeSpecificComponents": true
+        }
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "bundler": "metro"
+    },
+    "android": {
+      "package": "com.odgh.app_amge",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
