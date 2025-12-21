@@ -1,475 +1,273 @@
-import React, { useState, useRef } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  ImageBackground,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  Linking,
-  Dimensions,
-  Animated,
-  Platform
+  View, Text, StyleSheet, StatusBar, ImageBackground, FlatList,
+  TextInput, TouchableOpacity, Modal, ScrollView, Linking,
+  Dimensions, Platform, LayoutAnimation, UIManager
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons, MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+
+// Components
 import Header from '../../components/HomeScreen/Header.js';
-import { offres } from '../../data/offres.js';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar.js';
-import { Ionicons } from '@expo/vector-icons';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { offres } from '../../data/offres.js';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-const OffreScreen = ({ navigation, openMenu }) => { 
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const OffreScreen = ({ navigation, openMenu }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTitle, setSelectedTitle] = useState('');
-  const [showFieldModal, setShowFieldModal] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState('Toutes les offres');
   const [selectedOffre, setSelectedOffre] = useState(null);
+  
+  // État pour les favoris (stocke les IDs) ---
+  const [favorites, setFavorites] = useState([]);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   const titles = ['Toutes les offres', ...new Set(offres.map((offer) => offer.title))];
 
+  // LOGIQUE DE FILTRAGE MISE À JOUR
   const filteredOffres = offres.filter((offer) => {
-    const matchesSearch = offer.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTitle =
-      selectedTitle === '' || selectedTitle === 'Toutes les offres' || offer.title === selectedTitle;
-    return matchesSearch && matchesTitle;
+    const matchesSearch = offer.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         offer.companyId.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTitle = selectedTitle === 'Toutes les offres' || offer.title === selectedTitle;
+    const matchesFavorites = showOnlyFavorites ? favorites.includes(offer.id) : true;
+    
+    return matchesSearch && matchesTitle && matchesFavorites;
   });
 
-  const handleWebsitePress = (url) => {
-    Linking.openURL(url).catch((err) => 
-      console.error("Failed to open URL:", err)
-    );
+  // FONCTION TOGGLE FAVORIS 
+  const toggleFavorite = (id) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (favorites.includes(id)) {
+      setFavorites(favorites.filter(favId => favId !== id));
+    } else {
+      setFavorites([...favorites, id]);
+    }
   };
+
   const getFieldIcon = (field) => {
-    const icons = {
-      'Banking': 'bank',
-      'Insurance': 'shield-check',
-      'Technology': 'laptop',
-      'Consulting': 'briefcase',
-      'Engineering': 'engine',
-      'Investment': 'chart-line',
-      'Construction': 'home',
-      'Telecommunications': 'phone',
-      'Energy': 'flash',
-      'Retail': 'store',
-      'Aviation': 'airplane',
-      'Mining': 'pickaxe',
-      'Food & Beverage': 'food',
-      'Pharmaceuticals': 'medical-bag',
-      'Logistics': 'truck',
-      'Agriculture': 'sprout',
-    };
+    const icons = { 'Banking': 'bank', 'Technology': 'laptop', 'Consulting': 'briefcase' };
     return icons[field] || 'office-building';
   };
-  const renderOffreItem = ({ item }) => (
+
+  //  RENDERS 
+
+  const renderCategoryChips = () => (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsContainer}>
+      {/* Chip Spécial Favoris */}
       <TouchableOpacity
-        style={styles.companyCard}
-        onPress={() => setSelectedOffre(item)}
+        onPress={() => {
+            setShowOnlyFavorites(!showOnlyFavorites);
+            setSelectedTitle('Toutes les offres');
+        }}
+        style={[styles.chip, showOnlyFavorites && styles.chipFavoriteSelected]}
       >
-        <LinearGradient
-          colors={['#8a348a', '#C76B98']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.cardGradient}
+        <Ionicons 
+            name={showOnlyFavorites ? "heart" : "heart-outline"} 
+            size={16} 
+            color={showOnlyFavorites ? "#fff" : "#FF4B4B"} 
+        />
+        <Text style={[styles.chipText, showOnlyFavorites && styles.chipTextSelected, {marginLeft: 5}]}>
+          Favoris
+        </Text>
+      </TouchableOpacity>
+
+      {titles.map((title) => (
+        <TouchableOpacity
+          key={title}
+          onPress={() => {setSelectedTitle(title); setShowOnlyFavorites(false);}}
+          style={[styles.chip, selectedTitle === title && !showOnlyFavorites && styles.chipSelected]}
         >
-          <View style={styles.cardHeader}>
-            <Icon name={getFieldIcon(item.title)} size={30} color="#fff" style={styles.fieldIcon} />
-            <View style={styles.cardHeaderText}>
-              <Text style={styles.companyName}>{item.salary}</Text>
-              <Text style={styles.fieldName}>{item.companyId}</Text>
-            </View>
-          </View>
-          <Text style={styles.companyPreview} numberOfLines={2}>
-            {item.description}
+          <Text style={[styles.chipText, selectedTitle === title && !showOnlyFavorites && styles.chipTextSelected]}>
+            {title}
           </Text>
-          <View style={styles.cardFooter}>
-            <Text style={styles.viewMore}>Voir plus</Text>
-            <Icon name="chevron-right" size={20} color="#fff" />
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+
+  const renderOffreItem = ({ item }) => {
+    const isFav = favorites.includes(item.id);
+    return (
+      <TouchableOpacity style={styles.newCard} onPress={() => setSelectedOffre(item)} activeOpacity={0.9}>
+        <View style={styles.cardInfo}>
+          <View style={styles.cardHeaderRow}>
+            <View style={styles.iconBox}>
+               <Icon name={getFieldIcon(item.title)} size={24} color="#8a348a" />
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.companyTitle}>{item.companyId}</Text>
+              <Text style={styles.jobType}>{item.title}</Text>
+            </View>
+            
+            {/* BOUTON CŒUR SUR LA CARTE */}
+            <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.heartButton}>
+                <Ionicons name={isFav ? "heart" : "heart-outline"} size={24} color={isFav ? "#FF4B4B" : "#ccc"} />
+            </TouchableOpacity>
           </View>
-        </LinearGradient>
+          
+          <Text style={styles.descriptionSnippet} numberOfLines={2}>{item.description}</Text>
+
+          <View style={styles.cardFooterRow}>
+            <View style={styles.salaryBadge}><Text style={styles.salaryText}>{item.salary}</Text></View>
+            <Text style={styles.detailsLink}>Voir plus <Icon name="chevron-right" size={14} /></Text>
+          </View>
+        </View>
       </TouchableOpacity>
     );
+  };
 
+  return (
+    <SafeAreaProvider>
+      <View style={styles.mainContainer}>
+        <StatusBar barStyle="dark-content" />
+        <Header navigation={navigation} openMenu={openMenu} />
 
-    return (
-        <SafeAreaProvider>
-          <ImageBackground
-            source={require('../../assets/BackGround.jpeg')}
-            style={styles.background}
-            imageStyle={{ opacity: 0.3 }}
-          >
-            <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
-              <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-              <View style={styles.headerContainer}>
-                <Header navigation={navigation} openMenu={openMenu} />
-              </View>
-              {selectedOffre ? (
-                <ScrollView style={styles.detailsContainer}>
-                  <LinearGradient
-                    colors={['#8a348a', '#C76B98']}
-                    style={styles.detailsHeader}
-                  >
-                    <Icon name={getFieldIcon(selectedOffre.title)} size={50} color="#fff" />
-                    <Text style={styles.detailsTitle}>{selectedOffre.companyId}</Text>
-                    <Text style={styles.detailsField}>{selectedOffre.salary}</Text>
-                  </LinearGradient>
-    
-                  <View style={styles.detailsContent}>
-                    <View style={styles.detailsSection}>
-                      <Text style={styles.sectionTitle}>À propos</Text>
-                      <Text style={styles.detailsText}>{selectedOffre.description}</Text>
-                    </View>
-    
-                    {selectedOffre.website && (
-                      <TouchableOpacity
-                        style={styles.websiteButton}
-                        onPress={() => handleWebsitePress(selectedOffre.website)}
-                      >
-                        <Icon name="web" size={24} color="#fff" style={styles.websiteIcon} />
-                        <Text style={styles.websiteButtonText}>Visiter le site web</Text>
-                      </TouchableOpacity>
-                    )}
-    
-                    <TouchableOpacity
-                      style={styles.backButton}
-                      onPress={() => setSelectedOffre(null)}
-                    >
-                      <Icon name="arrow-left" size={24} color="#fff" style={styles.backIcon} />
-                      <Text style={styles.backButtonText}>Retour à la liste</Text>
-                    </TouchableOpacity>
-                  </View>
-                </ScrollView>
-              ) : (
-                <>
-                  <View style={styles.searchContainer}>
-                    <View style={styles.searchInputContainer}>
-                      <Icon name="magnify" size={24} color="#8a348a" style={styles.searchIcon} />
-                      <TextInput
-                        style={styles.searchInput}
-                        placeholder="Rechercher une offre"
-                        placeholderTextColor="#666"
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                      />
-                    </View>
-                    <TouchableOpacity
-                      style={styles.filterButton}
-                      onPress={() => setShowFieldModal(true)}
-                    >
-                      <Icon name="filter-variant" size={24} color="#fff" />
-                    </TouchableOpacity>
-                  </View>
-    
-                  <FlatList
-                    data={filteredOffres}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderOffreItem}
-                    contentContainerStyle={styles.companyList}
-                    showsVerticalScrollIndicator={false}
-                  />
-                </>
-              )}
-    
-              <Modal
-                transparent={true}
-                visible={showFieldModal}
-                animationType="slide"
-                onRequestClose={() => setShowFieldModal(false)}
-              >
-                <View style={styles.modalBackground}>
-                  <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Filtrer par entreprise</Text>
-                    <ScrollView style={styles.fieldsList}>
-                      {titles.map((title, index) => (
-                        <TouchableOpacity
-                          key={index}
-                          style={[
-                            styles.fieldItem,
-                            selectedTitle === title && styles.fieldItemSelected
-                          ]}
-                          onPress={() => {
-                            setSelectedField(title === 'Toutes les entreprises' ? '' : title);
-                            setShowFieldModal(false);
-                          }}
-                        >
-                          <Icon 
-                            name={title === 'Toutes les entreprises' ? 'view-grid' : getFieldIcon(title)} 
-                            size={24} 
-                            color={selectedTitle === title ? '#fff' : '#8a348a'} 
-                          />
-                          <Text style={[
-                            styles.fieldItemText,
-                            selectedTitle === title && styles.fieldItemTextSelected
-                          ]}>
-                            {title}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                    <TouchableOpacity
-                      style={styles.closeModalButton}
-                      onPress={() => setShowFieldModal(false)}
-                    >
-                      <Text style={styles.closeModalText}>Fermer</Text>
-                    </TouchableOpacity>
-                  </View>
+        {selectedOffre ? (
+          <View style={styles.fullDetailContainer}>
+             <View style={styles.detailHeaderActions}>
+                <TouchableOpacity onPress={() => setSelectedOffre(null)} style={styles.circleBtn}>
+                    <Ionicons name="arrow-back" size={24} color="#fff" />
+                </TouchableOpacity>
+                {/* CŒUR DANS LES DÉTAILS */}
+                <TouchableOpacity onPress={() => toggleFavorite(selectedOffre.id)} style={styles.circleBtn}>
+                    <Ionicons 
+                        name={favorites.includes(selectedOffre.id) ? "heart" : "heart-outline"} 
+                        size={24} 
+                        color={favorites.includes(selectedOffre.id) ? "#FF4B4B" : "#fff"} 
+                    />
+                </TouchableOpacity>
+             </View>
+
+            <ScrollView bounces={false}>
+              <LinearGradient colors={['#8a348a', '#C76B98']} style={styles.detailHeaderGradient}>
+                <View style={styles.detailIconCircle}>
+                   <Icon name={getFieldIcon(selectedOffre.title)} size={50} color="#8a348a" />
                 </View>
-              </Modal>
-              <BottomNavigationBar navigation={navigation} />
-            </SafeAreaView>
+                <Text style={styles.detailCompany}>{selectedOffre.companyId}</Text>
+                <Text style={styles.detailSubtitle}>{selectedOffre.title}</Text>
+              </LinearGradient>
+
+              <View style={styles.detailBody}>
+                <View style={styles.infoRow}>
+                    <View style={styles.infoItem}>
+                        <Icon name="cash" size={20} color="#8a348a" />
+                        <Text style={styles.infoText}>{selectedOffre.salary}</Text>
+                    </View>
+                </View>
+                <Text style={styles.detailSectionTitle}>À propos de l'offre</Text>
+                <Text style={styles.detailDescText}>{selectedOffre.description}</Text>
+                
+                <TouchableOpacity style={styles.applyButton} onPress={() => Linking.openURL(selectedOffre.website)}>
+                  <Text style={styles.applyButtonText}>Postuler via le site</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        ) : (
+          <ImageBackground source={require('../../assets/BackGround.jpeg')} style={styles.background} imageStyle={{ opacity: 0.1 }}>
+            <View style={styles.searchSection}>
+              <View style={styles.searchWrapper}>
+                <Icon name="magnify" size={22} color="#8a348a" />
+                <TextInput
+                  style={styles.newInput}
+                  placeholder="Rechercher..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+              </View>
+            </View>
+
+            {renderCategoryChips()}
+
+            <FlatList
+              data={filteredOffres}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderOffreItem}
+              contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 15 }}
+              ListEmptyComponent={
+                <View style={styles.emptyState}>
+                  <Icon name={showOnlyFavorites ? "heart-broken" : "magnify-close"} size={60} color="#ccc" />
+                  <Text style={styles.emptyText}>
+                    {showOnlyFavorites ? "Vous n'avez pas encore de favoris." : "Aucun résultat."}
+                  </Text>
+                </View>
+              }
+            />
           </ImageBackground>
-        </SafeAreaProvider>
-      );
-    };
+        )}
+        <BottomNavigationBar navigation={navigation} />
+      </View>
+    </SafeAreaProvider>
+  );
+};
 
 const styles = StyleSheet.create({
-  safeAreaHeader: {
-    backgroundColor: '#fff',
+  mainContainer: { flex: 1, backgroundColor: '#F8F9FA' },
+  background: { flex: 1 },
+  
+  // Search & Chips
+  searchSection: { flexDirection: 'row', padding: 15, paddingBottom: 5 },
+  searchWrapper: { 
+    flex: 1, flexDirection: 'row', alignItems: 'center', 
+    backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12,
+    height: 45, elevation: 2
   },
-  background: {
-    flex: 1,
+  newInput: { flex: 1, marginLeft: 10, fontSize: 15 },
+  chipsContainer: { paddingLeft: 15, marginVertical: 15, maxHeight: 45 },
+  chip: { 
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, 
+    height: 35, borderRadius: 18, backgroundColor: '#fff', marginRight: 10, 
+    borderWidth: 1, borderColor: '#eee' 
   },
-  container: {
-    flex: 1,
+  chipSelected: { backgroundColor: '#8a348a', borderColor: '#8a348a' },
+  chipFavoriteSelected: { backgroundColor: '#FF4B4B', borderColor: '#FF4B4B' },
+  chipText: { color: '#666', fontWeight: '600', fontSize: 13 },
+  chipTextSelected: { color: '#fff' },
+
+  // Cards
+  newCard: {
+    backgroundColor: '#fff', borderRadius: 16, marginBottom: 12,
+    padding: 16, elevation: 2, shadowOpacity: 0.05
   },
-  headerContainer: {
-    width: '100%',
-    backgroundColor: '#fff',
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'flex-start' },
+  iconBox: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#F3E5F5', justifyContent: 'center', alignItems: 'center' },
+  titleContainer: { flex: 1, marginLeft: 12 },
+  companyTitle: { fontSize: 15, fontWeight: 'bold', color: '#333' },
+  jobType: { fontSize: 12, color: '#8a348a', marginTop: 2 },
+  heartButton: { padding: 5 },
+  descriptionSnippet: { color: '#777', fontSize: 13, lineHeight: 18, marginVertical: 12 },
+  cardFooterRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  salaryBadge: { backgroundColor: '#E8F5E9', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+  salaryText: { color: '#2E7D32', fontSize: 12, fontWeight: 'bold' },
+  detailsLink: { color: '#8a348a', fontWeight: 'bold', fontSize: 12 },
+
+  // Details
+  fullDetailContainer: { flex: 1, backgroundColor: '#fff' },
+  detailHeaderActions: { 
+    position: 'absolute', top: 50, left: 0, right: 0, zIndex: 10, 
+    flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20 
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    gap: 10,
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    height: 45,
-    color: '#000',
-    fontSize: 16,
-  },
-  filterButton: {
-    backgroundColor: '#8a348a',
-    width: 45,
-    height: 45,
-    borderRadius: 23,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  companyList: {
-    padding: 10,
-  },
-  companyCard: {
-    marginHorizontal: 10,
-    marginVertical: 8,
-    borderRadius: 15,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  cardGradient: {
-    borderRadius: 15,
-    padding: 15,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  fieldIcon: {
-    marginRight: 10,
-  },
-  cardHeaderText: {
-    flex: 1,
-  },
-  companyName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  fieldName: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  companyPreview: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: 10,
-    lineHeight: 20,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  viewMore: {
-    fontSize: 14,
-    color: '#fff',
-    marginRight: 5,
-  },
-  detailsContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    marginTop: 20,
-  },
-  detailsHeader: {
-    padding: 30,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    alignItems: 'center',
-  },
-  detailsTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginTop: 15,
-  },
-  detailsField: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginTop: 5,
-  },
-  detailsContent: {
-    padding: 20,
-  },
-  detailsSection: {
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    marginBottom: 10,
-  },
-  detailsText: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 24,
-  },
-  websiteButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#8a348a',
-    padding: 15,
-    borderRadius: 25,
-    marginBottom: 15,
-  },
-  websiteIcon: {
-    marginRight: 10,
-  },
-  websiteButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#C76B98',
-    padding: 15,
-    borderRadius: 25,
-  },
-  backIcon: {
-    marginRight: 10,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: width * 0.9,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    maxHeight: height * 0.8,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  fieldsList: {
-    maxHeight: 400,
-  },
-  fieldItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 12,
-    backgroundColor: 'rgba(138, 52, 138, 0.1)',
-  },
-  fieldItemSelected: {
-    backgroundColor: '#8a348a',
-  },
-  fieldItemText: {
-    fontSize: 16,
-    color: '#8a348a',
-    marginLeft: 15,
-  },
-  fieldItemTextSelected: {
-    color: '#fff',
-  },
-  closeModalButton: {
-    backgroundColor: '#8a348a',
-    padding: 15,
-    borderRadius: 25,
-    marginTop: 20,
-  },
-  closeModalText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  iconContainer: {
-    padding: 10,
-  },
+  circleBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' },
+  detailHeaderGradient: { padding: 50, paddingTop: 80, alignItems: 'center', borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
+  detailIconCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', elevation: 5 },
+  detailCompany: { fontSize: 22, fontWeight: 'bold', color: '#fff', marginTop: 15 },
+  detailSubtitle: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginTop: 5 },
+  detailBody: { padding: 25 },
+  infoRow: { marginBottom: 20 },
+  infoItem: { flexDirection: 'row', alignItems: 'center' },
+  infoText: { marginLeft: 10, fontSize: 16, color: '#333', fontWeight: '500' },
+  detailSectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 10 },
+  detailDescText: { fontSize: 15, color: '#666', lineHeight: 22 },
+  applyButton: { backgroundColor: '#8a348a', padding: 16, borderRadius: 12, marginTop: 30, alignItems: 'center' },
+  applyButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  emptyState: { alignItems: 'center', marginTop: 80 },
+  emptyText: { color: '#999', marginTop: 10 }
 });
 
 export default OffreScreen;
