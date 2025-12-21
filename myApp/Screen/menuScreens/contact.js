@@ -69,7 +69,7 @@ const Contact = ({ navigation }) => {
           >
             {/* Header Section */}
             <LinearGradient
-              colors={['#A34392', '#8a348a']}
+              colors={['#ffffff', '#ffffff']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.headerGradient}
@@ -136,7 +136,7 @@ const Contact = ({ navigation }) => {
               {/* Submit Button */}
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <LinearGradient
-                  colors={['#A34392', '#8a348a']}
+                  colors={['#A34392', '#00a3b6']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={styles.buttonGradient}
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#8a348a',
     textAlign: 'center',
   },
   formContainer: {
