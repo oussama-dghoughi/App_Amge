@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -6,157 +6,223 @@ import {
   StyleSheet,
   Animated,
   Text,
+  Alert,
+  Modal,
+  Pressable,
   Platform,
-  Dimensions,
-  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+const MENU_WIDTH = 300;
 
-const Header = ({ navigation, openMenu }) => {
+const Header = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [userData, setUserData] = useState(null);
-  const slideAnim = useRef(new Animated.Value(-300)).current;
+
+  const slideAnim = useRef(new Animated.Value(-MENU_WIDTH)).current;
+  const overlayAnim = useRef(new Animated.Value(0)).current;
+
+  // We use this flag so the animation starts ONLY when Modal is truly shown (iOS fix)
+  const shouldAnimateOpenRef = useRef(false);
 
   useEffect(() => {
-    loadUserData();
+    (async () => {
+      try {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (userDataString) setUserData(JSON.parse(userDataString));
+      } catch (error) {
+        console.error('Erreur lors du chargement des données utilisateur:', error);
+      }
+    })();
   }, []);
 
-  const loadUserData = async () => {
-    try {
-      const userDataString = await AsyncStorage.getItem('userData');
-      if (userDataString) {
-        const userData = JSON.parse(userDataString);
-        setUserData(userData);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des données utilisateur:', error);
-    }
-  };
+  const resetAnimValues = useCallback(() => {
+    overlayAnim.setValue(0);
+    slideAnim.setValue(-MENU_WIDTH);
+  }, [overlayAnim, slideAnim]);
 
-  const handleLogout = async () => {
-    Alert.alert(
-      "Déconnexion",
-      "Êtes-vous sûr de vouloir vous déconnecter ?",
-      [
-        {
-          text: "Annuler",
-          style: "cancel"
-        },
-        {
-          text: "Oui", 
-          onPress: async () => {
-            try {
-              await AsyncStorage.multiRemove(['userToken', 'userData']);
-              setUserData(null);
-              navigation.replace('Login');
-            } catch (error) {
-              console.error('Erreur lors de la déconnexion:', error);
-            }
-          }
-        }
-      ]
-    );
-  };
-
-  const handleMenuPress = () => {
-    setMenuVisible((prevState) => {
-      const newState = !prevState;
+  const runOpenAnim = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(overlayAnim, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
       Animated.spring(slideAnim, {
-        toValue: newState ? 0 : -300,
-        duration: 300,
+        toValue: 0,
         friction: 8,
         tension: 65,
         useNativeDriver: true,
-      }).start();
-      return newState;
+      }),
+    ]).start();
+  }, [overlayAnim, slideAnim]);
+
+  const runCloseAnim = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(overlayAnim, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: -MENU_WIDTH,
+        friction: 8,
+        tension: 65,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) setMenuVisible(false);
     });
+  }, [overlayAnim, slideAnim]);
+
+  const openLocalMenu = () => {
+    resetAnimValues();
+    shouldAnimateOpenRef.current = true;
+    setMenuVisible(true); // animation starts in Modal.onShow (important on iOS)
+  };
+
+  const closeLocalMenu = () => {
+    shouldAnimateOpenRef.current = false;
+    runCloseAnim();
+  };
+
+  const handleMenuPress = () => {
+    if (isMenuVisible) return closeLocalMenu();
+    openLocalMenu();
+  };
+
+  const goTo = (routeName) => {
+    closeLocalMenu();
+    navigation.navigate(routeName);
+  };
+
+  const handleLogout = async () => {
+    Alert.alert('Déconnexion', 'Êtes-vous sûr de vouloir vous déconnecter ?', [
+      { text: 'Annuler', style: 'cancel' },
+      {
+        text: 'Oui',
+        onPress: async () => {
+          try {
+            await AsyncStorage.multiRemove(['userToken', 'userData']);
+            setUserData(null);
+            closeLocalMenu();
+            navigation.replace('Login');
+          } catch (error) {
+            console.error('Erreur lors de la déconnexion:', error);
+          }
+        },
+      },
+    ]);
   };
 
   return (
     <>
-      {/* Header */}
+      {/* Header bar */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.iconContainer} onPress={openMenu ? openMenu : handleMenuPress}>
+        <TouchableOpacity style={styles.iconContainer} onPress={handleMenuPress} activeOpacity={0.7}>
           <Ionicons name="menu" size={24} color="#7E57C2" />
         </TouchableOpacity>
 
-        <Image
-          source={require('../../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" />
 
-        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Notifs')}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => navigation.navigate('Notifs')}
+          activeOpacity={0.7}
+        >
           <Ionicons name="notifications-outline" size={24} color="#7E57C2" />
         </TouchableOpacity>
       </View>
 
-      {/* Menu Container */}
-      <View style={[
-        styles.menuWrapper,
-        { display: isMenuVisible ? 'flex' : 'none' }
-      ]}>
-        {/* Overlay */}
-        <TouchableOpacity 
-          style={styles.overlay} 
-          activeOpacity={1} 
-          onPress={handleMenuPress}
-        />
-        
-        {/* Sidebar Menu */}
-        <Animated.View 
-          style={[
-            styles.sidebarMenu,
-            { transform: [{ translateX: slideAnim }] }
-          ]}
-        >
-          <View style={styles.menuContent}>
-            {/* Logo et titre en haut du menu */}
-            <View style={{ alignItems: 'center', marginBottom: 24 }}>
-              <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
-              <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
-            </View>
+      <Modal
+        transparent
+        visible={isMenuVisible}
+        animationType="none"
+        presentationStyle="overFullScreen"
+        onRequestClose={closeLocalMenu}
+        onShow={() => {
+          // ✅ iOS: safe-area is correct only when Modal is shown
+          if (shouldAnimateOpenRef.current) runOpenAnim();
+        }}
+        statusBarTranslucent={Platform.OS === 'android'}
+      >
+        <View style={styles.modalRoot}>
+          {/* Overlay */}
+          <Animated.View style={[styles.overlay, { opacity: overlayAnim }]}>
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={closeLocalMenu} />
+          </Animated.View>
 
-            {/* Menu Items */}
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
-              <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Paramètres</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('CompanyList')}>
-              <Icon name="building" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Entreprises</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Plan')}>
-              <Icon name="map" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Plan du salon</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
-              <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Localisation</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('GuideForum')}>
-              <Icon name="compass" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Guide Forum</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FAQ')}>
-              <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>FAQ</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
-              <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>À propos</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Contact')}>
-              <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Contactez-nous</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      </View>
+          {/* Sidebar */}
+          <Animated.View style={[styles.sidebarMenu, { transform: [{ translateX: slideAnim }] }]}>
+            {/* ✅ Use insets.top directly (no “first time safe area” bug) */}
+            <View style={[styles.sidebarInner, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }]}>
+              <View style={styles.menuTop}>
+                <Image
+                  source={require('../../assets/logo.png')}
+                  style={styles.menuTopLogo}
+                  resizeMode="cover"
+                />
+                <Text style={styles.menuTopTitle}>Forum Horizons Maroc</Text>
+                {userData?.name ? (
+                  <Text style={styles.menuTopUser} numberOfLines={1}>
+                    {userData.name}
+                  </Text>
+                ) : null}
+              </View>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Settings')}>
+                <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Paramètres</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('CompanyList')}>
+                <Icon name="office-building" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Entreprises</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Plan')}>
+                <Icon name="map" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Plan du salon</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Localisation')}>
+                <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Localisation</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('GuideForum')}>
+                <Icon name="compass" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Guide Forum</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('FAQ')}>
+                <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>FAQ</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('About')}>
+                <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>À propos</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Contact')}>
+                <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Contactez-nous</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={handleLogout}>
+                <Icon name="logout" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Déconnexion</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -169,48 +235,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: '#fff',
-    paddingTop: 0,
   },
-  iconContainer: {
-    padding: 10,
-    marginTop: 27,
-  },
+  iconContainer: { padding: 10 },
+
+  // Bigger logo (edit as you like)
   logo: {
-    height: 40,
-    flex: 1,
-    marginHorizontal: 10,
+    width: 220,
+    height: 70,
+    alignSelf: 'center',
   },
-  menuWrapper: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    left: 0,
-    top: 0,
-    zIndex: 999999,
-    elevation: 999999,
-  },
+
+  modalRoot: { flex: 1, backgroundColor: 'transparent' },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },
+
   sidebarMenu: {
     position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
-    width: 300,
+    width: MENU_WIDTH,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'ios' ? 60 : 50,
-    paddingHorizontal: 20,
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 25,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 5, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 999999,
-    zIndex: 999999,
-    borderTopRightRadius: 25,
-    borderBottomRightRadius: 25,
+    elevation: 20,
   },
-  menuContent: {
+  sidebarInner: {
     flex: 1,
-    justifyContent: 'flex-start',
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
+
+  menuTop: { alignItems: 'center', marginBottom: 24 },
+  menuTopLogo: { width: 70, height: 70, borderRadius: 35, marginBottom: 8 },
+  menuTopTitle: { color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' },
+  menuTopUser: { marginTop: 6, color: '#8a348a', opacity: 0.7, fontSize: 13, maxWidth: 240 },
+
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -220,21 +284,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: 'rgba(138, 52, 138, 0.05)',
   },
-  menuIcon: {
-    marginRight: 15,
-    color: '#8a348a',
-  },
-  menuText: {
-    fontSize: 16,
-    color: '#8a348a',
-    fontWeight: '500',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    zIndex: 999998,
-    elevation: 999998,
-  },
+  logoutItem: { marginTop: 10 },
+  menuIcon: { marginRight: 15 },
+  menuText: { fontSize: 16, color: '#8a348a', fontWeight: '500' },
 });
 
 export default Header;
