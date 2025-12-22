@@ -162,12 +162,13 @@ const Header = ({ navigation }) => {
             {/* ✅ Use insets.top directly (no “first time safe area” bug) */}
             <View style={[styles.sidebarInner, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }]}>
               <View style={styles.menuTop}>
+                {/* DateDisplay removed as it is not defined */}
                 <Image
-                  source={require('../../assets/logo.png')}
+                  source={require('../../assets/Logo_2026.png')}
                   style={styles.menuTopLogo}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
-                <Text style={styles.menuTopTitle}>Forum Horizons Maroc</Text>
+                {/* Text 'Forum Horizons Maroc' removed */}
                 {userData?.name ? (
                   <Text style={styles.menuTopUser} numberOfLines={1}>
                     {userData.name}
@@ -176,47 +177,47 @@ const Header = ({ navigation }) => {
               </View>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Settings')}>
-                <Icon name="cog" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="cog" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Paramètres</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('CompanyList')}>
-                <Icon name="office-building" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="office-building" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Entreprises</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Plan')}>
-                <Icon name="map" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="map" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Plan du salon</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Localisation')}>
-                <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="map-marker" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Localisation</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('GuideForum')}>
-                <Icon name="compass" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="compass" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Guide Forum</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('FAQ')}>
-                <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="help-circle-outline" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>FAQ</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('About')}>
-                <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="information-outline" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>À propos</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => goTo('Contact')}>
-                <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="phone" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Contactez-nous</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={handleLogout}>
-                <Icon name="logout" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="logout" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Déconnexion</Text>
               </TouchableOpacity>
             </View>
@@ -270,23 +271,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  menuTop: { alignItems: 'center', marginBottom: 24 },
-  menuTopLogo: { width: 70, height: 70, borderRadius: 35, marginBottom: 8 },
-  menuTopTitle: { color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' },
+  menuTop: { alignItems: 'center', marginBottom: 40 },
+  menuTopLogo: { width: 80, height: 70, marginBottom: 8 },
+  // menuTopTitle removed or hidden
   menuTopUser: { marginTop: 6, color: '#8a348a', opacity: 0.7, fontSize: 13, maxWidth: 240 },
 
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    marginVertical: 2,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
     borderRadius: 12,
-    paddingHorizontal: 15,
-    backgroundColor: 'rgba(138, 52, 138, 0.05)',
+    backgroundColor: '#F2F3F5',
   },
   logoutItem: { marginTop: 10 },
-  menuIcon: { marginRight: 15 },
-  menuText: { fontSize: 16, color: '#8a348a', fontWeight: '500' },
+  menuIcon: {
+    // marginRight handled by text marginLeft if needed, or keep here.
+    // Spec says text marginLeft: 12. I'll remove marginRight here and add marginLeft to text to be precise, 
+    // or keep it if it fits visual. 
+    // Spec: "Texte ... marginLeft: 12". 
+    // So usually Icon doesn't have margin if Text has marginLeft.
+  },
+  menuText: { fontSize: 14.5, color: '#8a348a', fontWeight: '600', marginLeft: 12 },
 });
 
 export default Header;

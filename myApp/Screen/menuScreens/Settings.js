@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../../components/HomeScreen/Header';
+import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -97,7 +97,7 @@ const Settings = ({ navigation }) => {
       <View style={styles.mainContainer}>
         {/* ✅ Keep header inside a SafeAreaView instead of hardcoded marginTop */}
         <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeHeader}>
-          <Header navigation={navigation} />
+          <HeaderMenu navigation={navigation} />
         </SafeAreaView>
 
         <ImageBackground

@@ -62,52 +62,51 @@ const HeaderMenu = (props) => {
       >
         <View style={styles.menuWrapper}>
           {/* Overlay */}
-          <TouchableOpacity 
-            style={styles.overlay} 
-            activeOpacity={1} 
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
             onPress={handleMenuPress}
           />
           {/* Sidebar Menu */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.sidebarMenu,
               { transform: [{ translateX: slideAnim }] }
             ]}
           >
             <View style={styles.menuContent}>
-              <View style={{ alignItems: 'center', marginBottom: 24 }}>
-                <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
-                <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
+              <View style={{ alignItems: 'center', marginBottom: 40 }}>
+                <Image source={require('../../assets/Logo_2026.png')} style={{ width: 80, height: 70, marginBottom: 8 }} resizeMode="contain" />
               </View>
 
               {/* Menu Items */}
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-                <Icon name="home" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="home" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Accueil</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('GuideForum')}>
-                <Icon name="book-open-variant" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="book-open-variant" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Guide Forum</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
-                <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="map-marker" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Localisation</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FAQ')}>
-                <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="help-circle-outline" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>FAQ</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
-                <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="information-outline" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>À propos</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Contact')}>
-                <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
+                <Icon name="phone" size={22} color="#8a348a" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Contactez-nous</Text>
               </TouchableOpacity>
             </View>
@@ -172,19 +171,20 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    marginVertical: 2,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
     borderRadius: 12,
-    paddingHorizontal: 15,
-    backgroundColor: 'rgba(138, 52, 138, 0.05)',
+    backgroundColor: '#F2F3F5',
   },
   menuIcon: {
-    marginRight: 15,
+    // marginRight: 15, // replaced by text marginLeft
   },
   menuText: {
-    fontSize: 16,
+    fontSize: 14.5,
     color: '#8a348a',
-    fontWeight: '500',
+    fontWeight: '600',
+    marginLeft: 12
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
