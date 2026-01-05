@@ -13,7 +13,7 @@ import Header from '../../components/HomeScreen/Header.js';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar.js';
 import { offres } from '../../data/offres.js';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -21,20 +21,23 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 const OffreScreen = ({ navigation, openMenu }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTitle, setSelectedTitle] = useState('Toutes les offres');
+  const [selectedSecteur, setSelectedSecteur] = useState('Toutes les offres');
+  const [showSecteurModal, setShowSecteurModal] = useState(false);
   const [selectedOffre, setSelectedOffre] = useState(null);
   
   // État pour les favoris (stocke les IDs) ---
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
-  const titles = ['Toutes les offres', ...new Set(offres.map((offer) => offer.title))];
+  const secteurs = ['Toutes les offres', ...new Set(offres.map((offer) => offer.secteur))];
 
   // LOGIQUE DE FILTRAGE MISE À JOUR
   const filteredOffres = offres.filter((offer) => {
     const matchesSearch = offer.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         offer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         offer.secteur.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          offer.companyId.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTitle = selectedTitle === 'Toutes les offres' || offer.title === selectedTitle;
+    const matchesTitle = selectedSecteur === 'Toutes les offres' || offer.secteur === selectedSecteur;
     const matchesFavorites = showOnlyFavorites ? favorites.includes(offer.id) : true;
     
     return matchesSearch && matchesTitle && matchesFavorites;
@@ -51,8 +54,8 @@ const OffreScreen = ({ navigation, openMenu }) => {
   };
 
   const getFieldIcon = (field) => {
-    const icons = { 'Banking': 'bank', 'Technology': 'laptop', 'Consulting': 'briefcase' };
-    return icons[field] || 'office-building';
+    const icons = { 'Banking': 'bank', 'Technology': 'laptop', 'Consulting': 'briefcase', 'Insurance': 'safety'};
+    return icons[field] || 'briefcase';
   };
 
   //  RENDERS 
@@ -63,7 +66,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
       <TouchableOpacity
         onPress={() => {
             setShowOnlyFavorites(!showOnlyFavorites);
-            setSelectedTitle('Toutes les offres');
+            setSelectedSecteur('Toutes les offres');
         }}
         style={[styles.chip, showOnlyFavorites && styles.chipFavoriteSelected]}
       >
@@ -76,18 +79,6 @@ const OffreScreen = ({ navigation, openMenu }) => {
           Favoris
         </Text>
       </TouchableOpacity>
-
-      {titles.map((title) => (
-        <TouchableOpacity
-          key={title}
-          onPress={() => {setSelectedTitle(title); setShowOnlyFavorites(false);}}
-          style={[styles.chip, selectedTitle === title && !showOnlyFavorites && styles.chipSelected]}
-        >
-          <Text style={[styles.chipText, selectedTitle === title && !showOnlyFavorites && styles.chipTextSelected]}>
-            {title}
-          </Text>
-        </TouchableOpacity>
-      ))}
     </ScrollView>
   );
 
@@ -147,7 +138,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
             <ScrollView bounces={false}>
               <LinearGradient colors={['#8a348a', '#C76B98']} style={styles.detailHeaderGradient}>
                 <View style={styles.detailIconCircle}>
-                   <Icon name={getFieldIcon(selectedOffre.title)} size={50} color="#8a348a" />
+                   <Icon name={getFieldIcon(selectedOffre.secteur)} size={50} color="#8a348a" />
                 </View>
                 <Text style={styles.detailCompany}>{selectedOffre.companyId}</Text>
                 <Text style={styles.detailSubtitle}>{selectedOffre.title}</Text>
@@ -177,10 +168,17 @@ const OffreScreen = ({ navigation, openMenu }) => {
                 <TextInput
                   style={styles.newInput}
                   placeholder="Rechercher..."
+                  placeholderTextColor={'#666'}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                 />
               </View>
+              <TouchableOpacity
+                style={styles.filterButton}
+                onPress={() => setShowSecteurModal(true)}
+              >
+                <Icon name="filter-variant" size={24} color="#fff" />
+              </TouchableOpacity>
             </View>
 
             {renderCategoryChips()}
@@ -201,6 +199,52 @@ const OffreScreen = ({ navigation, openMenu }) => {
             />
           </ImageBackground>
         )}
+
+        <Modal
+          transparent={true}
+          visible={showSecteurModal}
+          animationType="slide"
+          onRequestClose={() => setShowSecteurModal(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Filtrer par secteur</Text>
+              <ScrollView style={styles.fieldsList}>
+                {secteurs.map((secteur, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.fieldItem,
+                      selectedSecteur === secteur && styles.fieldItemSelected
+                    ]}
+                    onPress={() => {
+                      setSelectedSecteur(secteur === 'Tous les secteurs' ? '' : secteur);
+                      setShowSecteurModal(false);
+                    }}
+                  >
+                    <Icon 
+                      name={secteur === 'Tous les secteurs' ? 'view-grid' : getFieldIcon(secteur)} 
+                      size={24} 
+                      color={selectedSecteur === secteur ? '#fff' : '#8a348a'} 
+                    />
+                    <Text style={[
+                      styles.fieldItemText,
+                      selectedSecteur === secteur && styles.fieldItemTextSelected
+                    ]}>
+                      {secteur}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeModalButton}
+                onPress={() => setShowSecteurModal(false)}
+              >
+                <Text style={styles.closeModalText}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <BottomNavigationBar navigation={navigation} />
       </View>
     </SafeAreaProvider>
@@ -212,16 +256,16 @@ const styles = StyleSheet.create({
   background: { flex: 1 },
   
   // Search & Chips
-  searchSection: { flexDirection: 'row', padding: 15, paddingBottom: 5 },
+  searchSection: { flexDirection: 'row', padding: 15, paddingBottom: 5, gap:10 },
   searchWrapper: { 
     flex: 1, flexDirection: 'row', alignItems: 'center', 
-    backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12,
+    backgroundColor: '#fff', borderRadius: 25, paddingHorizontal: 12,
     height: 45, elevation: 2
   },
   newInput: { flex: 1, marginLeft: 10, fontSize: 15 },
-  chipsContainer: { paddingLeft: 15, marginVertical: 15, maxHeight: 45 },
+  chipsContainer: { paddingLeft: 15, marginVertical: 15, maxHeight: 45, paddingBottom: 15 },
   chip: { 
-    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, 
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15,
     height: 35, borderRadius: 18, backgroundColor: '#fff', marginRight: 10, 
     borderWidth: 1, borderColor: '#eee' 
   },
@@ -267,7 +311,75 @@ const styles = StyleSheet.create({
   applyButton: { backgroundColor: '#8a348a', padding: 16, borderRadius: 12, marginTop: 30, alignItems: 'center' },
   applyButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   emptyState: { alignItems: 'center', marginTop: 80 },
-  emptyText: { color: '#999', marginTop: 10 }
+  emptyText: { color: '#999', marginTop: 10 },
+  //filtre
+  filterButton: {
+    backgroundColor: '#8a348a',
+    width: 45,
+    height: 45,
+    borderRadius: 23,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: width * 0.9,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    maxHeight: height * 0.8,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#8a348a',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  fieldsList: {
+    maxHeight: 400,
+  },
+  fieldItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 12,
+    backgroundColor: 'rgba(138, 52, 138, 0.1)',
+  },
+  fieldItemSelected: {
+    backgroundColor: '#8a348a',
+  },
+  fieldItemText: {
+    fontSize: 16,
+    color: '#8a348a',
+    marginLeft: 15,
+  },
+  fieldItemTextSelected: {
+    color: '#fff',
+  },
+  closeModalButton: {
+    backgroundColor: '#8a348a',
+    padding: 15,
+    borderRadius: 25,
+    marginTop: 20,
+  },
+  closeModalText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  }
 });
 
 export default OffreScreen;

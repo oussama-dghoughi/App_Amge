@@ -29,9 +29,9 @@ const BottomNavigationBar = () => {
 
       <TouchableOpacity 
         style={styles.iconContainer}
-        onPress={() => navigation.navigate('CompanyList')}
+        onPress={() => navigation.navigate('Offres')}
       >
-        <Icon name="notebook" size={24} color="#9b59b6" />
+        <Icon name="briefcase" size={24} color="#9b59b6" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('PlanningFHM')}>

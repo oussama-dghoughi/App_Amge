@@ -1,5 +1,6 @@
 export const offres = [
-  { id: '1', title: 'offre1', description: 'Leading bank in Morocco offering a wide range of financial services.', salary: '10000', companyId: '1', website: 'https://www.forumhorizonsmaroc.com/exposants-2024'},
-  { id: '2', title: 'offre', description: 'Global insurance firm providing life, health, and property insurance solutions.', salary: '10000', companyId: '2', website: 'https://www.forumhorizonsmaroc.com/exposants-2024' },
-  { id: '3', title: 'offre3', description: 'Software solutions provider focusing on digital transformation.', salary: '10000', companyId: '3', website: 'https://www.forumhorizonsmaroc.com/exposants-2024'},
+  { id: '1', title: 'Consultant(e) Juriste Senior', description: 'Forvis Mazars Global Limited est un réseau mondial de référence de services professionnels.', salary: '10000 €', companyId: '1', secteur: 'Consulting', website: 'https://horizonsmaroc.com/Offre/consultante-juriste-senior-2/'},
+  { id: '2', title: 'Responsable Régional des Ventes', description: 'Rattaché au Directeur Commercial, vous aurez pour mission d’animer la région affectée sur les axes produits, marques, communication et veille concurrentielle pour développer les parts de marché et le positionnement de l’entreprise.', salary: '20000 €', companyId: '2', secteur: 'Insurance', website: 'https://horizonsmaroc.com/Offre/responsable-regional-des-ventes/' },
+  { id: '3', title: 'offre3', description: 'Software solutions provider focusing on digital transformation.', salary: '10000 €', companyId: '3', secteur: 'Technology',   website: 'https://horizonsmaroc.com/Offre/consultante-juriste-senior-2/'},
+  { id: '4', title: 'offre4', description: 'Software solutions provider focusing on digital transformation.', salary: '10000 €', companyId: '4', secteur: 'IT Services',  website: 'https://horizonsmaroc.com/Offre/consultante-juriste-senior-2/'},
 ];

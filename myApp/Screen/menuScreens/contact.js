@@ -59,9 +59,9 @@ const Contact = ({ navigation }) => {
         </View>
 
         <ImageBackground
-          source={require('../../assets/BackGround.jpeg')}
+          source={require('../../assets/Contact_BG.png')}
           style={styles.background}
-          imageStyle={{ opacity: 0.15 }}
+          imageStyle={{ opacity: 0.50 }}
         >
           <ScrollView 
             contentContainerStyle={styles.scrollContent}
