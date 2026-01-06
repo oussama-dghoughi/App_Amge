@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import IntroScreen from "./Screen/IntroScreen";
 import HomeScreen from "./Screen/HomeScreen";
 import CompanyListScreen from "./Screen/CompaniesScreens/CompanyListScreen";
-import Localisation from "./Screen/menuScreens/localisation.index";
+import Localisation from "./Screen/menuScreens/localisation";
 import Contact from "./Screen/menuScreens/contact";
 import FAQ from "./Screen/menuScreens/FAQ";
 import About from "./Screen/menuScreens/About.js";
