@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
+import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
