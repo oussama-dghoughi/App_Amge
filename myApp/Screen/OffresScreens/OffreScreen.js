@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, StatusBar, ImageBackground, FlatList,
   TextInput, TouchableOpacity, Modal, ScrollView, Linking,
-  Dimensions, Platform, LayoutAnimation, UIManager
+  Dimensions, Platform, LayoutAnimation, UIManager, ActivityIndicator, RefreshControl
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +11,9 @@ import { Ionicons, MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 // Components
 import Header from '../../components/HomeScreen/Header.js';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar.js';
-import { offres } from '../../data/offres.js';
+
+// API Service
+import { offerService } from '../../services/api.js'; 
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,53 +22,87 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const OffreScreen = ({ navigation, openMenu }) => {
+  // --- ÉTATS (UI + API) ---
+  const [offres, setOffres] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSecteur, setSelectedSecteur] = useState('Toutes les offres');
   const [showSecteurModal, setShowSecteurModal] = useState(false);
   const [selectedOffre, setSelectedOffre] = useState(null);
-  
-  // État pour les favoris (stocke les IDs) ---
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
-  const secteurs = ['Toutes les offres', ...new Set(offres.map((offer) => offer.secteur))];
+  // --- LOGIQUE DES ICÔNES (CORRIGÉE) ---
+  const getFieldIcon = (field) => {
+    const icons = { 
+        'Banking': 'bank', 
+        'Technology': 'laptop', 
+        'Consulting': 'briefcase', 
+        'Insurance': 'shield-check' 
+    };
+    // Correction: on utilise 'office-building' pour éviter le warning "building"
+    return icons[field] || 'office-building';
+  };
 
-  // LOGIQUE DE FILTRAGE MISE À JOUR
-  const filteredOffres = offres.filter((offer) => {
-    const matchesSearch = offer.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         offer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         offer.secteur.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         offer.companyId.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTitle = selectedSecteur === 'Toutes les offres' || offer.secteur === selectedSecteur;
-    const matchesFavorites = showOnlyFavorites ? favorites.includes(offer.id) : true;
-    
-    return matchesSearch && matchesTitle && matchesFavorites;
-  });
-
-  // FONCTION TOGGLE FAVORIS 
-  const toggleFavorite = (id) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    if (favorites.includes(id)) {
-      setFavorites(favorites.filter(favId => favId !== id));
-    } else {
-      setFavorites([...favorites, id]);
+  // --- CHARGEMENT DES DONNÉES DEPUIS L'API ---
+  const fetchOffres = async () => {
+    try {
+      setLoading(true);
+      const response = await offerService.getOffers();
+      // On gère le format de réponse { success: true, data: [...] }
+      const data = response.data || response;
+      setOffres(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.log("Erreur API Offres:", e.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const getFieldIcon = (field) => {
-    const icons = { 'Banking': 'bank', 'Technology': 'laptop', 'Consulting': 'briefcase', 'Insurance': 'safety'};
-    return icons[field] || 'briefcase';
+  useEffect(() => {
+    fetchOffres();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchOffres();
   };
 
-  //  RENDERS 
+  // --- LOGIQUE DYNAMIQUE DES SECTEURS ---
+  const secteurs = ['Toutes les offres', ...new Set(offres.map((offer) => offer.secteur))];
+
+  // --- LOGIQUE DE FILTRAGE ---
+  const filteredOffres = offres.filter((offer) => {
+    const itemId = offer.id || offer._id;
+    const matchesSearch = 
+        offer.description?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        offer.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        offer.companyId?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesSecteur = selectedSecteur === 'Toutes les offres' || offer.secteur === selectedSecteur;
+    const matchesFavorites = showOnlyFavorites ? favorites.includes(itemId) : true;
+    
+    return matchesSearch && matchesSecteur && matchesFavorites;
+  });
+
+  // --- FONCTION TOGGLE FAVORIS ---
+  const toggleFavorite = (id) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
+
+  // --- RENDERS ---
 
   const renderCategoryChips = () => (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsContainer}>
-      {/* Chip Spécial Favoris */}
       <TouchableOpacity
         onPress={() => {
             setShowOnlyFavorites(!showOnlyFavorites);
-            setSelectedSecteur('Toutes les offres');
+            if (!showOnlyFavorites) setSelectedSecteur('Toutes les offres');
         }}
         style={[styles.chip, showOnlyFavorites && styles.chipFavoriteSelected]}
       >
@@ -79,25 +115,32 @@ const OffreScreen = ({ navigation, openMenu }) => {
           Favoris
         </Text>
       </TouchableOpacity>
+
+      {/* Affichage du secteur sélectionné s'il y en a un */}
+      {selectedSecteur !== 'Toutes les offres' && (
+        <View style={[styles.chip, styles.chipSelected]}>
+            <Text style={[styles.chipText, styles.chipTextSelected]}>{selectedSecteur}</Text>
+        </View>
+      )}
     </ScrollView>
   );
 
   const renderOffreItem = ({ item }) => {
-    const isFav = favorites.includes(item.id);
+    const itemId = item.id || item._id;
+    const isFav = favorites.includes(itemId);
+
     return (
       <TouchableOpacity style={styles.newCard} onPress={() => setSelectedOffre(item)} activeOpacity={0.9}>
         <View style={styles.cardInfo}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.iconBox}>
-               <Icon name={getFieldIcon(item.title)} size={24} color="#8a348a" />
+               <Icon name={getFieldIcon(item.secteur)} size={24} color="#8a348a" />
             </View>
             <View style={styles.titleContainer}>
               <Text style={styles.companyTitle}>{item.companyId}</Text>
               <Text style={styles.jobType}>{item.title}</Text>
             </View>
-            
-            {/* BOUTON CŒUR SUR LA CARTE */}
-            <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.heartButton}>
+            <TouchableOpacity onPress={() => toggleFavorite(itemId)} style={styles.heartButton}>
                 <Ionicons name={isFav ? "heart" : "heart-outline"} size={24} color={isFav ? "#FF4B4B" : "#ccc"} />
             </TouchableOpacity>
           </View>
@@ -105,7 +148,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
           <Text style={styles.descriptionSnippet} numberOfLines={2}>{item.description}</Text>
 
           <View style={styles.cardFooterRow}>
-            <View style={styles.salaryBadge}><Text style={styles.salaryText}>{item.salary}</Text></View>
+            <View style={styles.salaryBadge}><Text style={styles.salaryText}>{item.salary || "N/A"}</Text></View>
             <Text style={styles.detailsLink}>Voir plus <Icon name="chevron-right" size={14} /></Text>
           </View>
         </View>
@@ -125,12 +168,11 @@ const OffreScreen = ({ navigation, openMenu }) => {
                 <TouchableOpacity onPress={() => setSelectedOffre(null)} style={styles.circleBtn}>
                     <Ionicons name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
-                {/* CŒUR DANS LES DÉTAILS */}
-                <TouchableOpacity onPress={() => toggleFavorite(selectedOffre.id)} style={styles.circleBtn}>
+                <TouchableOpacity onPress={() => toggleFavorite(selectedOffre.id || selectedOffre._id)} style={styles.circleBtn}>
                     <Ionicons 
-                        name={favorites.includes(selectedOffre.id) ? "heart" : "heart-outline"} 
+                        name={favorites.includes(selectedOffre.id || selectedOffre._id) ? "heart" : "heart-outline"} 
                         size={24} 
-                        color={favorites.includes(selectedOffre.id) ? "#FF4B4B" : "#fff"} 
+                        color={favorites.includes(selectedOffre.id || selectedOffre._id) ? "#FF4B4B" : "#fff"} 
                     />
                 </TouchableOpacity>
              </View>
@@ -148,7 +190,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
                 <View style={styles.infoRow}>
                     <View style={styles.infoItem}>
                         <Icon name="cash" size={20} color="#8a348a" />
-                        <Text style={styles.infoText}>{selectedOffre.salary}</Text>
+                        <Text style={styles.infoText}>{selectedOffre.salary || "N/A"}</Text>
                     </View>
                 </View>
                 <Text style={styles.detailSectionTitle}>À propos de l'offre</Text>
@@ -167,7 +209,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
                 <Icon name="magnify" size={22} color="#8a348a" />
                 <TextInput
                   style={styles.newInput}
-                  placeholder="Rechercher..."
+                  placeholder="Rechercher une offre..."
                   placeholderTextColor={'#666'}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
@@ -183,20 +225,27 @@ const OffreScreen = ({ navigation, openMenu }) => {
 
             {renderCategoryChips()}
 
-            <FlatList
-              data={filteredOffres}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderOffreItem}
-              contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 15 }}
-              ListEmptyComponent={
-                <View style={styles.emptyState}>
-                  <Icon name={showOnlyFavorites ? "heart-broken" : "magnify-close"} size={60} color="#ccc" />
-                  <Text style={styles.emptyText}>
-                    {showOnlyFavorites ? "Vous n'avez pas encore de favoris." : "Aucun résultat."}
-                  </Text>
-                </View>
-              }
-            />
+            {loading && !refreshing ? (
+              <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#8a348a" />
+              </View>
+            ) : (
+              <FlatList
+                data={filteredOffres}
+                keyExtractor={(item) => (item.id || item._id).toString()}
+                renderItem={renderOffreItem}
+                contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 15 }}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                ListEmptyComponent={
+                  <View style={styles.emptyState}>
+                    <Icon name={showOnlyFavorites ? "heart-broken" : "magnify-close"} size={60} color="#ccc" />
+                    <Text style={styles.emptyText}>
+                      {showOnlyFavorites ? "Vous n'avez pas encore de favoris." : "Aucune offre trouvée."}
+                    </Text>
+                  </View>
+                }
+              />
+            )}
           </ImageBackground>
         )}
 
@@ -218,12 +267,13 @@ const OffreScreen = ({ navigation, openMenu }) => {
                       selectedSecteur === secteur && styles.fieldItemSelected
                     ]}
                     onPress={() => {
-                      setSelectedSecteur(secteur === 'Tous les secteurs' ? '' : secteur);
+                      setSelectedSecteur(secteur);
+                      setShowOnlyFavorites(false);
                       setShowSecteurModal(false);
                     }}
                   >
                     <Icon 
-                      name={secteur === 'Tous les secteurs' ? 'view-grid' : getFieldIcon(secteur)} 
+                      name={secteur === 'Toutes les offres' ? 'view-grid' : getFieldIcon(secteur)} 
                       size={24} 
                       color={selectedSecteur === secteur ? '#fff' : '#8a348a'} 
                     />
@@ -245,6 +295,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
             </View>
           </View>
         </Modal>
+        
         <BottomNavigationBar navigation={navigation} />
       </View>
     </SafeAreaProvider>
@@ -254,6 +305,7 @@ const OffreScreen = ({ navigation, openMenu }) => {
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F8F9FA' },
   background: { flex: 1 },
+  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   
   // Search & Chips
   searchSection: { flexDirection: 'row', padding: 15, paddingBottom: 5, gap:10 },
@@ -263,11 +315,11 @@ const styles = StyleSheet.create({
     height: 45, elevation: 2
   },
   newInput: { flex: 1, marginLeft: 10, fontSize: 15 },
-  chipsContainer: { paddingLeft: 15, marginVertical: 15, maxHeight: 45, paddingBottom: 15 },
+  chipsContainer: { paddingLeft: 15, marginVertical: 15, maxHeight: 50 },
   chip: { 
     flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15,
     height: 35, borderRadius: 18, backgroundColor: '#fff', marginRight: 10, 
-    borderWidth: 1, borderColor: '#eee' 
+    borderWidth: 1, borderColor: '#eee', elevation: 1
   },
   chipSelected: { backgroundColor: '#8a348a', borderColor: '#8a348a' },
   chipFavoriteSelected: { backgroundColor: '#FF4B4B', borderColor: '#FF4B4B' },
@@ -277,7 +329,7 @@ const styles = StyleSheet.create({
   // Cards
   newCard: {
     backgroundColor: '#fff', borderRadius: 16, marginBottom: 12,
-    padding: 16, elevation: 2, shadowOpacity: 0.05
+    padding: 16, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5
   },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'flex-start' },
   iconBox: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#F3E5F5', justifyContent: 'center', alignItems: 'center' },
@@ -312,73 +364,43 @@ const styles = StyleSheet.create({
   applyButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   emptyState: { alignItems: 'center', marginTop: 80 },
   emptyText: { color: '#999', marginTop: 10 },
-  //filtre
+
+  // Modal
   filterButton: {
     backgroundColor: '#8a348a',
-    width: 45,
-    height: 45,
+    width: 45, height: 45,
     borderRadius: 23,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center', alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center', alignItems: 'center',
   },
   modalContainer: {
-    width: width * 0.9,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    maxHeight: height * 0.8,
+    width: width * 0.9, backgroundColor: '#fff',
+    borderRadius: 20, padding: 20, maxHeight: height * 0.8,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    textAlign: 'center',
-    marginBottom: 20,
+    fontSize: 20, fontWeight: 'bold',
+    color: '#8a348a', textAlign: 'center', marginBottom: 20,
   },
-  fieldsList: {
-    maxHeight: 400,
-  },
+  fieldsList: { maxHeight: 400 },
   fieldItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 12,
+    flexDirection: 'row', alignItems: 'center',
+    padding: 15, marginVertical: 5, borderRadius: 12,
     backgroundColor: 'rgba(138, 52, 138, 0.1)',
   },
-  fieldItemSelected: {
-    backgroundColor: '#8a348a',
-  },
-  fieldItemText: {
-    fontSize: 16,
-    color: '#8a348a',
-    marginLeft: 15,
-  },
-  fieldItemTextSelected: {
-    color: '#fff',
-  },
+  fieldItemSelected: { backgroundColor: '#8a348a' },
+  fieldItemText: { fontSize: 16, color: '#8a348a', marginLeft: 15 },
+  fieldItemTextSelected: { color: '#fff' },
   closeModalButton: {
-    backgroundColor: '#8a348a',
-    padding: 15,
-    borderRadius: 25,
-    marginTop: 20,
+    backgroundColor: '#8a348a', padding: 15,
+    borderRadius: 25, marginTop: 20,
   },
   closeModalText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#fff', fontSize: 16,
+    fontWeight: 'bold', textAlign: 'center',
   }
 });
 
