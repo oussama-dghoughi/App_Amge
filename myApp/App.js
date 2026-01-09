@@ -49,7 +49,7 @@ const App = () => {
               headerShown: false,
               gestureEnabled: Platform.OS !== "web",
             }}
-            initialRouteName="Login"
+            initialRouteName="Intro"
           >
             <Stack.Screen
               name="Login"
