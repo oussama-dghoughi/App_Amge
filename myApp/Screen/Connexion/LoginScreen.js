@@ -20,16 +20,17 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const goTo = (routeName) => {
+    navigation.navigate(routeName);
+  };
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
-
     setIsLoading(true);
     try {
-      const response = await axios.post('http://172.20.10.2:5000/api/auth/login', {
+      const response = await axios.post('http://192.168.1.127:5000/api/auth/login', {
         email,
         password
       });
@@ -72,20 +73,12 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleForgotAccount = () => {
-    navigation.navigate('FindAccount'); // Navigate to Find Account screen
-  };
-
-  const handleSignUp = () => {
-    navigation.navigate('Registration'); // Navigate to Registration screen
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Logo */}
         <Image
-          source={require('../../assets/logo.png')} // Replace with your actual logo
+          source={require('../../assets/Logo_2026.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -94,7 +87,9 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.loginBox}>
           <Text style={styles.header}>Se connecter</Text>
 
-          <Text style={styles.helpText}>Connectez-vous avec l'email et le mot de passe utilisés lors de l'inscription</Text>
+          <Text style={styles.helpText}>
+            Connectez-vous avec l'email et le mot de passe utilisés lors de l'inscription
+          </Text>
 
           {/* Email Input */}
           <View style={styles.inputContainer}>
@@ -136,11 +131,21 @@ const LoginScreen = ({ navigation }) => {
 
           {/* Footer Links */}
           <View style={styles.footerLinks}>
-            <TouchableOpacity onPress={() => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Home' }],
-            })}>
+            <TouchableOpacity 
+              onPress={() => navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              })}
+            >
               <Text style={styles.guestLinkText}>Continuer en mode invité</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Register Link */}
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>Vous n'avez pas de compte ? </Text>
+            <TouchableOpacity onPress={() => goTo('Register')}>
+              <Text style={styles.registerLinkText}>Inscrivez-vous</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -158,7 +163,7 @@ const LoginScreen = ({ navigation }) => {
       </ScrollView>
 
       {/* Bottom Navigation Bar */}
-      <BottomNavigationBar />
+      <BottomNavigationBar navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -166,13 +171,13 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff', // White background
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 80, // Add padding to avoid overlap with BottomNavigationBar
+    paddingBottom: 80,
   },
   logo: {
     width: 150,
@@ -182,9 +187,9 @@ const styles = StyleSheet.create({
   },
   loginBox: {
     width: '90%',
-    backgroundColor: '#f0f0f0', // Light gray background for the box
+    backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    padding: 30, // Increased padding for more space
+    padding: 30,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -202,70 +207,11 @@ const styles = StyleSheet.create({
     }),
   },
   header: {
-    fontSize: 26, // Larger font size for header
+    fontSize: 26,
     fontWeight: '600',
-    color: '#005f73', // Matching blue color for the title
-    marginBottom: 20, // Increased margin to add space
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Use system fonts for iOS and Android
-  },
-  input: {
-    width: '100%',
-    height: 45, // Increased height for better interaction
-    marginBottom: 20, // Increased margin for more space between input and button
-    paddingLeft: 15,
-    backgroundColor: '#eaf3f9', // Light blue input field background
-    borderRadius: 8,
-    fontSize: 15,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto', // Consistent with the header font
-  },
-  inputBorder: {
-    borderWidth: 0,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  loginButton: {
-    backgroundColor: '#005f73', // Deep blue button
-    borderRadius: 8,
-    paddingVertical: 12, // Added padding for a larger button
-    paddingHorizontal: 24, // Added padding for a larger button
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 20, // Increased margin for more spacing
-  },
-  loginButtonText: {
-    color: '#fff', // White text for button
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  footerLinks: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '100%',
-    marginTop: 20,
-  },
-  guestLinkText: {
     color: '#005f73',
-    fontSize: 16,
-    textDecorationLine: 'underline',
-    fontWeight: '500',
-  },
-  footer: {
-    alignItems: 'center',
-    marginTop: 20,
     marginBottom: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    marginBottom: 10,
-    color: '#333',
-  },
-  socialIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 150,
-  },
-  icon: {
-    marginHorizontal: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto',
   },
   helpText: {
     fontSize: 14,
@@ -284,8 +230,87 @@ const styles = StyleSheet.create({
     color: '#005f73',
     marginBottom: 5,
   },
+  input: {
+    width: '100%',
+    height: 45,
+    marginBottom: 20,
+    paddingLeft: 15,
+    backgroundColor: '#eaf3f9',
+    borderRadius: 8,
+    fontSize: 15,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto',
+  },
+  inputBorder: {
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  loginButton: {
+    backgroundColor: '#005f73',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   loginButtonDisabled: {
     backgroundColor: '#cccccc',
+  },
+  footerLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 20,
+  },
+  guestLinkText: {
+    color: '#005f73',
+    fontSize: 16,
+    textDecorationLine: 'underline',
+    fontWeight: '500',
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    width: '100%',
+  },
+  registerText: {
+    fontSize: 15,
+    color: '#666',
+  },
+  registerLinkText: {
+    fontSize: 15,
+    color: '#005f73',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  footer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  footerText: {
+    fontSize: 14,
+    marginBottom: 10,
+    color: '#333',
+  },
+  socialIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 150,
+  },
+  icon: {
+    marginHorizontal: 10,
   },
 });
 

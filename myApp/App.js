@@ -16,6 +16,7 @@ import PlanScreen from './Screen/PlanScreen';
 import GuideForumScreen from './Screen/GuideForumScreen';
 import PlanningFHM from './Screen/PlanningFHM';
 import LoginScreen from './Screen/Connexion/LoginScreen';
+import RegistrationScreen from './Screen/Connexion/RegistrationScreen.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,7 @@ const App = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Register" component={RegistrationScreen} options={{ headerShown: false }} />
             <Stack.Screen
               name="Home"
               options={{ headerShown: false }}
