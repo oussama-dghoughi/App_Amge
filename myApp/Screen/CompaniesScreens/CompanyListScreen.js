@@ -25,6 +25,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width, height } = Dimensions.get('window');
+const CARD_MARGIN = 12;
+const CARD_WIDTH = (width / 2) - (CARD_MARGIN * 3);
 
 const CompanyListScreen = ({ navigation, openMenu }) => { 
   const [searchQuery, setSearchQuery] = useState('');
@@ -74,40 +76,58 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
       style={styles.companyCard}
       onPress={() => setSelectedCompany(item)}
     >
+      <View style={styles.logoWrapper}>
+        <View style={styles.logoCircle}>
+          {item.logo ? (
+            <Image
+              source={item.logo}
+              style={styles.companyLogo}
+              resizeMode="contain"
+            />
+          ) : (
+            <Icon
+              name={getFieldIcon(item.field)}
+              size={24}
+              color="#9448b5"
+            />
+          )}
+        </View>
+      </View>
+
       <LinearGradient
-        colors={['#8a348a', '#C76B98']}
+        colors={['#fff', '#fff']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.cardGradient}
       >
-        <View style={styles.cardHeader}>
-            {item.logo ? (
-              <Image
-                source={item.logo}
-                style={styles.companyLogo}
-                resizeMode="contain"
-              />
-            ) : (
-              <Icon
-                name={getFieldIcon(item.field)}
-                size={30}
-                color="#fff"
-                style={styles.fieldIcon}
-              />
-            )}
 
-            <View style={styles.cardHeaderText}>
-              <Text style={styles.companyName}>{item.name}</Text>
-              <Text style={styles.fieldName}>{item.field}</Text>
+        <View style={styles.cardContent}>
+            <Text
+              style={styles.companyName}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {item.name}
+            </Text>
+
+            <LinearGradient
+              colors={['#9448b5', '#00a3b6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.fieldGradient}
+            >
+              <Text style={styles.fieldName}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                numberOfLines={1}
+              >
+                {item.field}
+              </Text>
+            </LinearGradient>
+
+            <View style={styles.cardFooter}>
+              <Text style={styles.viewMore}>Voir plus</Text>
             </View>
-          </View>
-
-        <Text style={styles.companyPreview} numberOfLines={2}>
-          {item.details}
-        </Text>
-        <View style={styles.cardFooter}>
-          <Text style={styles.viewMore}>Voir plus</Text>
-          <Icon name="chevron-right" size={20} color="#fff" />
         </View>
       </LinearGradient>
     </TouchableOpacity>
@@ -136,7 +156,7 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
       {selectedCompany ? (
         <ScrollView style={styles.detailsContainer}>
           <LinearGradient
-            colors={['#8a348a', '#C76B98']}
+            colors={['#9448b5', '#00a3b6']}
             style={styles.detailsHeader}
           >
             {selectedCompany.logo ? (
@@ -203,7 +223,7 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
               <Icon
                 name="magnify"
                 size={24}
-                color="#8a348a"
+                color="#9448b5"
                 style={styles.searchIcon}
               />
               <TextInput
@@ -228,6 +248,8 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
             renderItem={renderCompanyItem}
             contentContainerStyle={styles.companyList}
             showsVerticalScrollIndicator={false}
+            numColumns={2}
+            key={'two-columns'}
           />
         </>
       )}
@@ -263,7 +285,7 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
                         : getFieldIcon(field)
                     }
                     size={24}
-                    color={selectedField === field ? '#fff' : '#8a348a'}
+                    color={selectedField === field ? '#fff' : '#9448b5'}
                   />
                   <Text
                     style={[
@@ -339,7 +361,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   filterButton: {
-    backgroundColor: '#8a348a',
+    backgroundColor: '#9448b5',
     width: 45,
     height: 45,
     borderRadius: 23,
@@ -355,18 +377,31 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   companyCard: {
-    marginHorizontal: 10,
-    marginVertical: 8,
+    width: CARD_WIDTH,
+    height: 160,
+    margin: CARD_MARGIN,
     borderRadius: 15,
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    position: 'relative',
   },
   cardGradient: {
+    flex: 1,
     borderRadius: 15,
-    padding: 15,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    paddingTop: 30,
+  },
+  logoWrapper: {
+    position: 'absolute',
+    top: -21,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -380,14 +415,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   companyName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
+    color: '#9448b5',
+    textAlign: 'center',
+    marginTop: 10,
   },
   fieldName: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: '#fff',
+    fontWeight: 'bold',
+    includeFontPadding: false,
   },
   companyPreview: {
     fontSize: 14,
@@ -398,12 +436,17 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    borderRadius: 10,
+    borderColor: '#111',
+    borderWidth: 1,
+    width: 100,
   },
   viewMore: {
     fontSize: 14,
-    color: '#fff',
-    marginRight: 5,
+    color: '#9448b5',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   detailsContainer: {
     flex: 1,
@@ -439,7 +482,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#8a348a',
+    color: '#9448b5',
     marginBottom: 10,
   },
   detailsText: {
@@ -451,7 +494,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#8a348a',
+    backgroundColor: '#9448b5',
     padding: 15,
     borderRadius: 25,
     marginBottom: 15,
@@ -468,7 +511,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#C76B98',
+    backgroundColor: '#00a3b6',
     padding: 15,
     borderRadius: 25,
   },
@@ -496,7 +539,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#8a348a',
+    color: '#9448b5',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -512,18 +555,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(138, 52, 138, 0.1)',
   },
   fieldItemSelected: {
-    backgroundColor: '#8a348a',
+    backgroundColor: '#9448b5',
   },
   fieldItemText: {
     fontSize: 16,
-    color: '#8a348a',
+    color: '#9448b5',
     marginLeft: 15,
   },
   fieldItemTextSelected: {
     color: '#fff',
   },
   closeModalButton: {
-    backgroundColor: '#8a348a',
+    backgroundColor: '#9448b5',
     padding: 15,
     borderRadius: 25,
     marginTop: 20,
@@ -538,13 +581,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   companyLogo: {
-  width: 42,
-  height: 42,
-  marginRight: 10,
-  borderRadius: 8,
-  backgroundColor: '#fff', 
+    width: 42,
+    height: 42,
+    borderRadius: 8,
   },
-
   detailsLogo: {
     width: 80,
     height: 80,
@@ -552,6 +592,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
   },
+  cardContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logoCircle: {
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  backgroundColor: '#fff',
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+  elevation: 4,
+},
+fieldGradient: {
+  marginTop: 8,
+  width: 150,
+  paddingHorizontal: 12,
+  paddingVertical: 10,
+  borderRadius: 20,
+  alignItems: 'center',
+},
+
 });
 
 export default CompanyListScreen;
