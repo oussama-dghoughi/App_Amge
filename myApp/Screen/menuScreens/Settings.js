@@ -10,22 +10,21 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
+import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Settings = ({ navigation }) => {
   const [userData, setUserData] = useState({
-    name: 'Prénom',
-    surname: 'Nom',
-    email: 'utilisateur@email.com'
+    name: 'Invité',
+    surname: '',
+    email: ''
   });
+  const [isGuest, setIsGuest] = useState(true);
 
   useEffect(() => {
     loadUserData();
-    // Ajouter un listener pour recharger les données quand l'écran devient actif
     const unsubscribe = navigation.addListener('focus', () => {
       loadUserData();
     });
@@ -36,28 +35,30 @@ const Settings = ({ navigation }) => {
   const loadUserData = async () => {
     try {
       const userDataString = await AsyncStorage.getItem('userData');
-      const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-      
-      if (!isLoggedIn || !userDataString) {
-        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Login' }],
-        });
-        return;
-      }
+      const userToken = await AsyncStorage.getItem('userToken');
 
-      if (userDataString) {
+      if (userToken && userDataString) {
+        setIsGuest(false);
         const userDataObj = JSON.parse(userDataString);
         setUserData(userDataObj);
+      } else {
+        setIsGuest(true);
       }
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
-      Alert.alert('Erreur', 'Impossible de charger les données utilisateur');
     }
   };
 
   const handleLogout = async () => {
+    if (isGuest) {
+      // Si invité, on redirige vers Login pour se connecter
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+      return;
+    }
+
     Alert.alert(
       'Déconnexion',
       'Êtes-vous sûr de vouloir vous déconnecter ?',
@@ -70,16 +71,13 @@ const Settings = ({ navigation }) => {
           text: 'Déconnexion',
           onPress: async () => {
             try {
-              // Supprimer toutes les données de session
               await AsyncStorage.multiRemove(['userToken', 'userData', 'isLoggedIn']);
-              // Rediriger vers la page de connexion
               navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }],
               });
             } catch (error) {
               console.error('Erreur lors de la déconnexion:', error);
-              Alert.alert('Erreur', 'Impossible de se déconnecter');
             }
           },
           style: 'destructive'
@@ -88,18 +86,19 @@ const Settings = ({ navigation }) => {
     );
   };
 
-  const handleEditProfile = () => {
-    navigation.navigate('EditProfile', { userData });
-  };
-
   const handleNotifs = () => {
-    navigation.navigate('Notifs');
-  };
-  const handleChangePassword = () => {
-    navigation.navigate('ChangePassword');
-  };
-  const handleHome = () => {
-    navigation.navigate('Home');
+    if (isGuest) {
+      Alert.alert(
+        "Connexion requise",
+        "Vous devez être connecté pour gérer les notifications.",
+        [
+          { text: "Annuler", style: "cancel" },
+          { text: "Se connecter", onPress: () => navigation.replace('Login') }
+        ]
+      );
+    } else {
+      navigation.navigate('Notifs');
+    }
   };
 
   return (
@@ -115,11 +114,36 @@ const Settings = ({ navigation }) => {
           imageStyle={{ opacity: 0.15 }}
         >
           <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
-            {/* Settings List - uniquement Gérer les notifications */}
+            {/* Header Profile ou Guest */}
+            <View style={styles.header}>
+              <View style={styles.profileContainer}>
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={isGuest ? require('../../assets/logo.png') : require('../../assets/logo.png')} // Placeholder avatar
+                    style={styles.profileImage}
+                    resizeMode="cover"
+                  />
+                </View>
+                <View style={styles.profileInfo}>
+                  <Text style={styles.profileName}>
+                    {isGuest ? 'Mode Invité' : `${userData.name} ${userData.surname}`}
+                  </Text>
+                  {!isGuest && <Text style={styles.profileEmail}>{userData.email}</Text>}
+                </View>
+              </View>
+            </View>
+
+            {/* Settings List */}
             <View style={styles.settingsContainer}>
               <TouchableOpacity style={styles.settingItem} onPress={handleNotifs}>
                 <Icon name="bell-outline" size={24} color="#8a348a" style={styles.settingIcon} />
                 <Text style={styles.settingText}>Gérer les notifications</Text>
+              </TouchableOpacity>
+
+              {/* Bouton Connexion / Déconnexion */}
+              <TouchableOpacity style={[styles.settingItem, styles.logoutButton]} onPress={handleLogout}>
+                <Icon name={isGuest ? "login" : "logout"} size={24} color="white" style={styles.settingIcon} />
+                <Text style={styles.logoutText}>{isGuest ? "Se connecter" : "Se déconnecter"}</Text>
               </TouchableOpacity>
             </View>
 
@@ -153,39 +177,41 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 30,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    // Ombre retirée ici car gérée par ImageBackground ou pas nécessaire sur fond transparent
   },
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    backgroundColor: 'rgba(138, 52, 138, 0.8)', // Fond semi-transparent pour lisibilité
+    padding: 20,
+    borderRadius: 20,
+    marginHorizontal: 15,
   },
   imageContainer: {
     padding: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 45,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#fff',
   },
   profileInfo: {
     marginLeft: 15,
+    flex: 1,
   },
   profileName: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     marginBottom: 4,
   },
   profileEmail: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255, 255, 255, 0.9)',
   },
   settingsContainer: {
     width: '90%',

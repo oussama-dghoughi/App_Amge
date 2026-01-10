@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { api } from "../../utils/api";
+import axios from "axios";
 
 const RegistrationScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -23,6 +23,28 @@ const RegistrationScreen = ({ navigation }) => {
   const [track, setTrack] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Navigation handler like in Header component
+  const handleGoToLogin = () => {
+    try {
+      // Method 1: Try getParent
+      const parent = navigation.getParent?.();
+      if (parent) {
+        parent.navigate('Login');
+        return;
+      }
+      
+      // Method 2: Direct navigation
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Method 3: Reset fallback
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
+  };
 
   const handleSignUp = async () => {
     if (!isChecked) {
@@ -68,7 +90,7 @@ const RegistrationScreen = ({ navigation }) => {
     };
 
     try {
-      const response = await api.post("/auth/register", userData);
+      const response = await axios.post('http://192.168.1.127:5000/api/auth/register', userData);
       Alert.alert(
         "Succès",
         "Inscription réussie ! Vous pouvez maintenant vous connecter.",
@@ -77,9 +99,9 @@ const RegistrationScreen = ({ navigation }) => {
             text: "OK",
             onPress: () => {
               setIsLoading(false);
-              navigation.replace("Login");
-            },
-          },
+              handleGoToLogin(); // Use the navigation handler
+            }
+          }
         ]
       );
     } catch (error) {
@@ -111,7 +133,7 @@ const RegistrationScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Image
-          source={require("../../assets/logo.png")}
+          source={require('../../assets/Logo_2026.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -213,7 +235,7 @@ const RegistrationScreen = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.loginLink}
-            onPress={() => navigation.navigate("Login")}
+            onPress={handleGoToLogin}
             disabled={isLoading}
           >
             <Text style={styles.loginLinkText}>

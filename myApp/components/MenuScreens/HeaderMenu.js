@@ -22,17 +22,22 @@ const HeaderMenu = (props) => {
   const slideAnim = useRef(new Animated.Value(-300)).current;
 
   const handleMenuPress = () => {
-    setMenuVisible((prevState) => {
-      const newState = !prevState;
-      Animated.spring(slideAnim, {
-        toValue: newState ? 0 : -300,
-        duration: 300,
-        friction: 8,
-        tension: 65,
+    if (isMenuVisible) {
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 400,
         useNativeDriver: true,
+        easing: require('react-native').Easing.inOut(require('react-native').Easing.ease),
+      }).start(() => setMenuVisible(false));
+    } else {
+      setMenuVisible(true);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+        easing: require('react-native').Easing.inOut(require('react-native').Easing.ease),
       }).start();
-      return newState;
-    });
+    }
   };
 
   return (
@@ -44,7 +49,7 @@ const HeaderMenu = (props) => {
         </TouchableOpacity>
 
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/Logo_2026.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -62,54 +67,47 @@ const HeaderMenu = (props) => {
       >
         <View style={styles.menuWrapper}>
           {/* Overlay */}
-          <TouchableOpacity 
-            style={styles.overlay} 
-            activeOpacity={1} 
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
             onPress={handleMenuPress}
           />
           {/* Sidebar Menu */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.sidebarMenu,
               { transform: [{ translateX: slideAnim }] }
             ]}
           >
             <View style={styles.menuContent}>
-              <View style={{ alignItems: 'center', marginBottom: 24 }}>
-                <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
-                <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
+              <View style={{ alignItems: 'center', marginBottom: 32 }}>
+                <Image
+                  source={require('../../assets/Logo_2026.png')}
+                  style={{ width: 60, height: 50, marginBottom: 15 }}
+                  resizeMode="contain"
+                />
               </View>
 
               {/* Menu Items */}
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-                <Icon name="home" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>Accueil</Text>
-              </TouchableOpacity>
+              {(() => {
+                const MenuItem = ({ iconName, label, onPress }) => (
+                  <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+                    <Icon name={iconName} size={22} color="#8a348a" />
+                    <Text style={styles.menuText}>{label}</Text>
+                  </TouchableOpacity>
+                );
 
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('GuideForum')}>
-                <Icon name="book-open-variant" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>Guide Forum</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Localisation')}>
-                <Icon name="map-marker" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>Localisation</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FAQ')}>
-                <Icon name="help-circle-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>FAQ</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
-                <Icon name="information-outline" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>À propos</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Contact')}>
-                <Icon name="phone" size={24} color="#8a348a" style={styles.menuIcon} />
-                <Text style={styles.menuText}>Contactez-nous</Text>
-              </TouchableOpacity>
+                return (
+                  <>
+                    <MenuItem iconName="home" label="Accueil" onPress={() => navigation.navigate('Home')} />
+                    <MenuItem iconName="compass" label="Guide Forum" onPress={() => navigation.navigate('GuideForum')} />
+                    <MenuItem iconName="map-marker" label="Localisation" onPress={() => navigation.navigate('Localisation')} />
+                    <MenuItem iconName="help-circle-outline" label="FAQ" onPress={() => navigation.navigate('FAQ')} />
+                    <MenuItem iconName="information-outline" label="À propos" onPress={() => navigation.navigate('About')} />
+                    <MenuItem iconName="phone" label="Contactez-nous" onPress={() => navigation.navigate('Contact')} />
+                  </>
+                );
+              })()}
             </View>
           </Animated.View>
         </View>
@@ -172,19 +170,17 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    marginVertical: 2,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
     borderRadius: 12,
-    paddingHorizontal: 15,
-    backgroundColor: 'rgba(138, 52, 138, 0.05)',
-  },
-  menuIcon: {
-    marginRight: 15,
+    backgroundColor: '#F2F3F5',
   },
   menuText: {
-    fontSize: 16,
+    fontSize: 14.5,
     color: '#8a348a',
-    fontWeight: '500',
+    fontWeight: '600',
+    marginLeft: 12,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
