@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
     
     setIsLoading(true);
     try {
-      const response = await axios.post('http://192.168.1.127:5000/api/auth/login', {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password,
       });
@@ -151,7 +151,7 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.registerText}>Vous n'avez pas de compte ? </Text>
             <TouchableOpacity onPress={() => navigation.reset({
               index: 0,
-              routes: [{ name: 'Registration' }],
+              routes: [{ name: 'Register' }],
             })}>
               <Text style={styles.registerLinkText}>Inscrivez-vous</Text>
             </TouchableOpacity>

@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   iconContainer: { padding: 10 },
-  logo: { width: 70, height: 50, marginBottom: 8 },
+  logo: { width: 60, height: 40, marginBottom: 8 },
 
   modalRoot: { flex: 1, backgroundColor: 'transparent' },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },

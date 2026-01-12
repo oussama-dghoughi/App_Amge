@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, ImageBackground } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
+import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
 const NOTIFS = ({navigation}) => {

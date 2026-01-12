@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
+import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
 const AProposScreen = ({navigation}) => {

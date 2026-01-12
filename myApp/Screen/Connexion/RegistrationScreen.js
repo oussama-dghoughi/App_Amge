@@ -24,21 +24,16 @@ const RegistrationScreen = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Navigation handler like in Header component
   const handleGoToLogin = () => {
     try {
-      // Method 1: Try getParent
       const parent = navigation.getParent?.();
       if (parent) {
         parent.navigate('Login');
         return;
       }
-      
-      // Method 2: Direct navigation
       navigation.navigate('Login');
     } catch (error) {
       console.error('Navigation error:', error);
-      // Method 3: Reset fallback
       navigation.reset({
         index: 0,
         routes: [{ name: 'Login' }],
@@ -47,6 +42,7 @@ const RegistrationScreen = ({ navigation }) => {
   };
 
   const handleSignUp = async () => {
+    // ✅ Validation checks
     if (!isChecked) {
       Alert.alert(
         "Erreur",
@@ -55,20 +51,17 @@ const RegistrationScreen = ({ navigation }) => {
       return;
     }
 
-    // Vérification des champs obligatoires
     if (!name || !surname || !email || !password) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs obligatoires.");
       return;
     }
 
-    // Validation basique de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert("Erreur", "Veuillez entrer une adresse email valide.");
       return;
     }
 
-    // Validation du mot de passe (minimum 6 caractères)
     if (password.length < 6) {
       Alert.alert(
         "Erreur",
@@ -90,36 +83,54 @@ const RegistrationScreen = ({ navigation }) => {
     };
 
     try {
-      const response = await axios.post('http://192.168.1.127:5000/api/auth/register', userData);
+      console.log("[Registration] Sending data:", userData);
+      
+      // ✅ Add timeout to axios request
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/register', 
+        userData,
+        { timeout: 10000 } // 10 second timeout
+      );
+
+      console.log("[Registration] Success:", response.data);
+
+      // ✅ Set loading to false BEFORE showing alert
+      setIsLoading(false);
+
       Alert.alert(
         "Succès",
         "Inscription réussie ! Vous pouvez maintenant vous connecter.",
         [
           {
             text: "OK",
-            onPress: () => {
-              setIsLoading(false);
-              handleGoToLogin(); // Use the navigation handler
-            }
+            onPress: handleGoToLogin
           }
         ]
       );
+      
     } catch (error) {
+      // ✅ CRITICAL: Always set loading to false in catch block
       setIsLoading(false);
-      console.error("Erreur détaillée:", error);
+      
+      console.error("[Registration] Error:", error);
 
       let errorMessage = "Erreur lors de l'inscription";
+
       if (error.response) {
-        // La requête a été faite et le serveur a répondu avec un code d'état
-        errorMessage =
-          error.response.data.msg ||
-          `Erreur ${error.response.status}: ${error.response.data}`;
+        // Server responded with error
+        console.log("[Registration] Error response:", error.response.data);
+        console.log("[Registration] Error status:", error.response.status);
+        
+        errorMessage = error.response.data?.msg || 
+                      error.response.data?.message || 
+                      `Erreur ${error.response.status}`;
       } else if (error.request) {
-        // La requête a été faite mais aucune réponse n'a été reçue
-        errorMessage =
-          "Impossible de contacter le serveur. Vérifiez votre connexion.";
+        // Request made but no response
+        console.log("[Registration] No response received");
+        errorMessage = "Impossible de contacter le serveur. Vérifiez votre connexion et que le serveur est démarré.";
       } else {
-        // Une erreur s'est produite lors de la configuration de la requête
+        // Error in request setup
+        console.log("[Registration] Request setup error:", error.message);
         errorMessage = error.message;
       }
 
@@ -247,30 +258,10 @@ const RegistrationScreen = ({ navigation }) => {
         <View style={styles.contactBar}>
           <Text style={styles.contactText}>Contact</Text>
           <View style={styles.iconsContainer}>
-            <FontAwesome
-              name="instagram"
-              size={24}
-              color="#000"
-              style={styles.icon}
-            />
-            <FontAwesome
-              name="facebook"
-              size={24}
-              color="#000"
-              style={styles.icon}
-            />
-            <FontAwesome
-              name="envelope"
-              size={24}
-              color="#000"
-              style={styles.icon}
-            />
-            <FontAwesome
-              name="linkedin"
-              size={24}
-              color="#000"
-              style={styles.icon}
-            />
+            <FontAwesome name="instagram" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="facebook" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="envelope" size={24} color="#000" style={styles.icon} />
+            <FontAwesome name="linkedin" size={24} color="#000" style={styles.icon} />
           </View>
         </View>
       </ScrollView>

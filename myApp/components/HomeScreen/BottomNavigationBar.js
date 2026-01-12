@@ -29,7 +29,7 @@ const BottomNavigationBar = () => {
 
         <TouchableOpacity 
           style={styles.iconContainer}
-          onPress={() => navigation.navigate('Localisation')}
+          onPress={() => navigation.navigate('Plan')}
         >
           <Icon name="map-outline" size={28} color="#9b59b6" />
         </TouchableOpacity>
@@ -39,7 +39,7 @@ const BottomNavigationBar = () => {
 
         <TouchableOpacity 
           style={styles.iconContainer}
-          onPress={() => navigation.navigate('CompanyList')}
+          onPress={() => navigation.navigate('Offres')}
         >
           <View style={styles.searchIconWrapper}>
             <Icon name="briefcase-search-outline" size={30} color="#9b59b6" />

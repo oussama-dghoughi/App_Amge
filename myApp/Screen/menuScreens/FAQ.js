@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, ImageBackground, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
+import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
