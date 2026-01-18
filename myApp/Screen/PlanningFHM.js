@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Image,
   StatusBar,
   Dimensions,
 } from 'react-native';
@@ -16,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaskedView from '@react-native-masked-view/masked-view';
 
 import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
+import Header from '../components/HomeScreen/Header';  
 
 const { width } = Dimensions.get('window');
 
@@ -28,10 +28,6 @@ const COLORS = {
   lineColor: '#00ACC1',
   textGrey: '#546E7A',
   white: '#FFFFFF',
-};
-
-const ASSETS = {
-  logo: { uri: 'https://via.placeholder.com/150x50?text=Forum+Logo' },
 };
 
 const initialTimelineData = [
@@ -79,24 +75,6 @@ const GradientText = ({ text, style }) => {
     </MaskedView>
   );
 };
-
-
-const TopAppBar = ({ navigation }) => (
-  <View style={styles.topAppBar}>
-    <TouchableOpacity 
-      onPress={() => navigation.navigate('Settings')} 
-      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-    >
-      <Feather name="menu" size={26} color={COLORS.primaryPurple} />
-    </TouchableOpacity>
-    
-    <Image source={ASSETS.logo} style={styles.logoImage} resizeMode="contain" />
-    
-    <TouchableOpacity onPress={() => navigation.navigate('Notifs')}>
-      <Feather name="bell" size={24} color={COLORS.titleDark} />
-    </TouchableOpacity>
-  </View>
-);
 
 const CalendarWidget = ({ selectedDate, onSelectDate }) => {
   const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -186,7 +164,12 @@ const PlanningScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      <TopAppBar navigation={navigation} />
+      {/* === HEADER identique à OffreScreen === */}
+      <View style={styles.safeAreaHeader}>
+        <View style={styles.headerWrapper}>
+          <Header navigation={navigation} />
+        </View>
+      </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View style={styles.headerContainer}>
@@ -233,8 +216,15 @@ const PlanningScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white },
-  topAppBar: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' },
-  logoImage: { width: 120, height: 40 },
+
+  // <-- Ajout styles header identiques
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
+  },
+
   headerContainer: { flexDirection: 'row', alignItems: 'center', padding: 20 },
   headerTitle: { fontSize: 26, fontWeight: 'bold', color: COLORS.titleDark },
 
