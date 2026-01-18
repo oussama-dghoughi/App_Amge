@@ -15,7 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaskedView from '@react-native-masked-view/masked-view';
 
 import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
-import Header from '../components/HomeScreen/Header';  
+import Header from '../components/HomeScreen/Header';   // <-- Ajout
 
 const { width } = Dimensions.get('window');
 
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: { flexDirection: 'row', alignItems: 'center', padding: 20 },
-  headerTitle: { fontSize: 26, fontWeight: 'bold', color: COLORS.titleDark },
+  headerTitle: { fontSize: 26, fontWeight: 'bold', color: COLORS.primaryPurple},
 
   calendarContainer: { marginHorizontal: 20, marginBottom: 30 },
   calRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
