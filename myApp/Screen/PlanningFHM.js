@@ -1,88 +1,229 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StatusBar,
+  Dimensions,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Animatable from 'react-native-animatable';
-import { BlurView } from 'expo-blur';
-import Header from '../components/HomeScreen/Header';
-import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
+import MaskedView from '@react-native-masked-view/masked-view';
 
-const PLANNING_DATA = [
-  { time: "9h30 - 10h30", title: "Le Marché de l'Emploi en Afrique", type: "conférence", description: "Discussion sur les opportunités d'emploi et les tendances du marché dans les différents secteurs." },
-  { time: "10h30 - 12h00", title: "Rédiger un CV Impactant", type: "atelier", description: "Un atelier pour améliorer vos CV et les adapter aux exigences du marché." },  
-  { time: "17h00 - 18h00", title: "Clôture & Remerciements", type: "clôture", description: "Remerciements et clôture du Forum." },
+import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
+
+const { width } = Dimensions.get('window');
+
+const COLORS = {
+  primaryPurple: '#8E24AA',
+  primaryTeal: '#00B8D4',
+  titleDark: '#00838F',
+  gradientStart: '#9C27B0',
+  gradientEnd: '#00E5FF',
+  lineColor: '#00ACC1',
+  textGrey: '#546E7A',
+  white: '#FFFFFF',
+};
+
+const ASSETS = {
+  logo: { uri: 'https://via.placeholder.com/150x50?text=Forum+Logo' },
+};
+
+const initialTimelineData = [
+  {
+    id: 1,
+    day: 7,
+    time: '9h30',
+    title: "Le Marché de l'Emploi en Afrique",
+    category: 'Conférence',
+    description: "Discussion sur les opportunités d'emploi et les tendances du marché.",
+    isChecked: true,
+  },
+  {
+    id: 2,
+    day: 7,
+    time: '10h30',
+    title: "Rédiger un CV Impactant",
+    category: 'Atelier',
+    description: "Un atelier pour améliorer vos CV.",
+    isChecked: false,
+  },
+  {
+    id: 3,
+    day: 7,
+    time: '17h00',
+    title: "Clôture & Remerciements",
+    category: 'Conférence',
+    description: "Remerciements et clôture du Forum.",
+    isChecked: false,
+  },
 ];
 
-const PlanningTimelinePremium = () => (
-  <View style={styles.timelinePremiumContainer}>
-    <LinearGradient
-      colors={["#8a348a", "#c76b98"]}
-      style={styles.timelinePremiumLineVertical}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
-    />
-    {PLANNING_DATA.map((ev, idx) => {
-      const isLeft = idx % 2 === 0;
-      const isConf = ev.type === 'conférence';
-      const isAtelier = ev.type === 'atelier';
-      return (
-        <Animatable.View
-          key={ev.time}
-          animation={isLeft ? 'slideInLeft' : 'slideInRight'}
-          delay={idx * 120}
-          style={[styles.timelinePremiumRow, { flexDirection: isLeft ? 'row' : 'row-reverse', alignItems: 'center' }]}
-        >
-          {/* Badge horaire aligné */}
-          <LinearGradient
-            colors={["#8a348a", "#c76b98"]}
-            style={[styles.timelinePremiumBadgeGlow, { marginHorizontal: 18 }]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text style={styles.timelinePremiumBadgeTextBig} numberOfLines={1} adjustsFontSizeToFit>{ev.time.split(' - ')[0]}</Text>
-          </LinearGradient>
-          {/* Carte glassmorphism */}
-          <View style={[styles.timelinePremiumCardWrap, { alignItems: isLeft ? 'flex-end' : 'flex-start' }]}> 
-            <BlurView intensity={60} tint="light" style={styles.timelinePremiumGlassCard}>
-              <View style={{ paddingTop: 18, paddingBottom: 8, paddingHorizontal: 8 }}>
-                <Text style={styles.timelinePremiumTitle}>{ev.title}</Text>
-                {(isConf || isAtelier) && (
-                  <View style={[styles.timelineTypeBadge, isConf ? styles.timelineTypeConf : styles.timelineTypeAtelier]}>
-                    <Text style={styles.timelineTypeBadgeText}>{isConf ? '🎤 Conférence' : '🛠️ Atelier'}</Text>
-                  </View>
-                )}
-                <Text style={styles.timelinePremiumDesc}>{ev.description}</Text>
-              </View>
-            </BlurView>
-          </View>
-        </Animatable.View>
-      );
-    })}
+const GradientText = ({ text, style }) => {
+  return (
+    <MaskedView
+      maskElement={<Text style={[style, { backgroundColor: 'transparent' }]}>{text}</Text>}
+    >
+      <LinearGradient
+        colors={[COLORS.gradientStart, COLORS.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+      >
+        <Text style={[style, { opacity: 0 }]}>{text}</Text>
+      </LinearGradient>
+    </MaskedView>
+  );
+};
+
+
+const TopAppBar = ({ navigation }) => (
+  <View style={styles.topAppBar}>
+    <TouchableOpacity 
+      onPress={() => navigation.navigate('Settings')} 
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+    >
+      <Feather name="menu" size={26} color={COLORS.primaryPurple} />
+    </TouchableOpacity>
+    
+    <Image source={ASSETS.logo} style={styles.logoImage} resizeMode="contain" />
+    
+    <TouchableOpacity onPress={() => navigation.navigate('Notifs')}>
+      <Feather name="bell" size={24} color={COLORS.titleDark} />
+    </TouchableOpacity>
   </View>
 );
 
-const PlanningFHM = ({ navigation }) => {
+const CalendarWidget = ({ selectedDate, onSelectDate }) => {
+  const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  const row1 = [1, 2, 3, 4, 5, 6, 7];
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <Header navigation={navigation} />
-      <ImageBackground
-        source={require('../assets/BackGround.jpeg')}
-        style={styles.background}
-        imageStyle={{ opacity: 0.08 }}
-      >
-        <ScrollView contentContainerStyle={styles.container}>
-          <LinearGradient
-            colors={['#8a348a', '#C76B98']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.headerGradient}
-          >
-            <Text style={styles.headerTitle}>Planning Forum Horizons Maroc</Text>
+    <View style={styles.calendarContainer}>
+      <View style={styles.calRow}>
+        {days.map((d, i) => (
+          <View key={i} style={styles.calCellContainer}>
+            <Text style={styles.dayLabel}>{d}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.calRow}>
+        {row1.map((d) => {
+          const isSelected = d === selectedDate;
+          return (
+            <TouchableOpacity key={d} onPress={() => onSelectDate(d)} style={styles.calCellContainer}>
+              {isSelected ? (
+                <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.calCellSelectedContainer}>
+                   <Text style={[styles.calDateText, styles.textWhite]}>{d}</Text>
+                </LinearGradient>
+              ) : (
+                <View style={styles.calCell}>
+                   <Text style={styles.calDateText}>{d}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
+const TimelineItem = ({ data, isLast, onToggle }) => {
+  const { id, time, title, category, description, isChecked } = data;
+
+  return (
+    <View style={styles.tlItemContainer}>
+      <View style={styles.tlTimeContainer}>
+        <Text style={styles.tlTimeText}>{time}</Text>
+      </View>
+
+      <View style={styles.tlLineContainer}>
+        {!isLast && <View style={styles.tlVerticalLine} />}
+        <TouchableOpacity onPress={() => onToggle(id)} style={{ zIndex: 2 }}>
+          <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.nodeGradientBorder}>
+            <View style={styles.nodeWhiteBackground}>
+              {isChecked ? (
+                <MaterialCommunityIcons name="check" size={18} color={COLORS.primaryPurple} />
+              ) : (
+                <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.nodeUncheckedDot} />
+              )}
+            </View>
           </LinearGradient>
-          <Text style={styles.sectionTitle}></Text>
-          <PlanningTimelinePremium />
-        </ScrollView>
-      </ImageBackground>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.tlContentContainer}>
+        <GradientText text={title} style={styles.tlTitle} />
+        <LinearGradient
+          colors={[COLORS.gradientStart, COLORS.gradientEnd]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={styles.tlBadgeContainer}
+        >
+          <Text style={styles.tlBadgeText}>{category}</Text>
+        </LinearGradient>
+        <Text style={styles.tlDescription}>{description}</Text>
+      </View>
+    </View>
+  );
+};
+
+const PlanningScreen = ({ navigation }) => {
+  const [selectedDate, setSelectedDate] = useState(7);
+  const [events, setEvents] = useState(initialTimelineData);
+
+  const toggleEventCheck = (eventId) => {
+    setEvents(prev => prev.map(e => e.id === eventId ? { ...e, isChecked: !e.isChecked } : e));
+  };
+
+  const currentEvents = events.filter(i => i.day === selectedDate);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+
+      <TopAppBar navigation={navigation} />
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Feather name="arrow-left" size={28} color={COLORS.primaryPurple} style={{ marginRight: 10 }} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Planning FHM</Text>
+        </View>
+
+        <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+          <TouchableOpacity style={styles.monthSelectorBox}>
+            <Text style={styles.monthSelectorText}>Juin 2026</Text>
+            <Feather name="chevron-down" size={20} color={COLORS.primaryPurple} />
+          </TouchableOpacity>
+        </View>
+
+        <CalendarWidget selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+
+        <View style={{ paddingHorizontal: 20 }}>
+          {currentEvents.length === 0 ? (
+            <View style={styles.noEventContainer}>
+              <MaterialCommunityIcons name="calendar-blank" size={60} color="#E0E0E0" />
+              <Text style={styles.noEventText}>Aucun événement prévu ce jour-là</Text>
+            </View>
+          ) : (
+            currentEvents.map((item, index) => (
+              <TimelineItem
+                key={item.id}
+                data={item}
+                isLast={index === currentEvents.length - 1}
+                onToggle={toggleEventCheck}
+              />
+            ))
+          )}
+        </View>
+      </ScrollView>
+
       <View style={styles.bottomNavContainer}>
         <BottomNavigationBar navigation={navigation} />
       </View>
@@ -91,161 +232,50 @@ const PlanningFHM = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    backgroundColor: '#f8f6fc',
-  },
-  container: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  headerGradient: {
-    borderRadius: 18,
-    marginBottom: 25,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 1,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    marginTop: 30,
-    marginBottom: 10,
-    textAlign: 'center',
-    letterSpacing: 1,
-  },
-  // Styles premium timeline (repris de HomeScreen.js)
-  timelinePremiumContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginHorizontal: 10,
-    marginBottom: 30,
-    minHeight: 220,
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  timelinePremiumLineVertical: {
-    position: 'absolute',
-    left: '50%',
-    top: 0,
-    width: 4,
-    height: '100%',
-    zIndex: 0,
-    borderRadius: 2,
-    transform: [{ translateX: -2 }],
-  },
-  timelinePremiumRow: {
-    width: '100%',
-    minHeight: 90,
-    alignItems: 'center',
-    marginVertical: 18,
-    zIndex: 1,
-    position: 'relative',
-  },
-  timelinePremiumCardWrap: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    zIndex: 2,
-  },
-  timelinePremiumGlassCard: {
-    borderRadius: 22,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.55)',
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.13,
-    shadowRadius: 16,
-    elevation: 6,
-    minWidth: 180,
-    maxWidth: 260,
-  },
-  timelinePremiumTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#8a348a',
-    marginBottom: 8,
-    textAlign: 'left',
-  },
-  timelineTypeBadge: {
-    alignSelf: 'flex-start',
-    borderRadius: 16,
-    paddingVertical: 4,
-    paddingHorizontal: 14,
-    marginBottom: 8,
-    marginTop: -2,
-    flexDirection: 'column',
-    alignItems: 'center',
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  timelineTypeConf: {
-    backgroundColor: '#8a348a',
-  },
-  timelineTypeAtelier: {
-    backgroundColor: '#3a7bd5',
-  },
-  timelineTypeBadgeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 15,
-    letterSpacing: 0.5,
-  },
-  timelinePremiumDesc: {
-    fontSize: 15,
-    color: '#444',
-    marginTop: 2,
-    marginBottom: 2,
-    lineHeight: 21,
-  },
-  timelinePremiumBadgeGlow: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-    shadowColor: '#8a348a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  timelinePremiumBadgeTextBig: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    letterSpacing: 1,
-  },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  topAppBar: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' },
+  logoImage: { width: 120, height: 40 },
+  headerContainer: { flexDirection: 'row', alignItems: 'center', padding: 20 },
+  headerTitle: { fontSize: 26, fontWeight: 'bold', color: COLORS.titleDark },
+
+  calendarContainer: { marginHorizontal: 20, marginBottom: 30 },
+  calRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  calCellContainer: { width: (width - 40) / 7, alignItems: 'center' },
+  dayLabel: { color: COLORS.textGrey, fontSize: 14, fontWeight: '500' },
+  calCellSelectedContainer: { borderRadius: 16, alignItems: 'center', justifyContent: 'center', width: 36, height: 36 },
+  calCell: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center' },
+  calDateText: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  textWhite: { color: 'white' },
+  monthSelectorBox: { flexDirection: 'row', borderWidth: 1.5, borderColor: COLORS.primaryPurple, borderRadius: 20, padding: 8, alignSelf: 'flex-start' },
+  monthSelectorText: { fontSize: 16, fontWeight: '600', color: COLORS.primaryPurple, marginRight: 8 },
+
+  tlItemContainer: { flexDirection: 'row', marginBottom: 25, minHeight: 80 },
+  tlTimeContainer: { width: 55, alignItems: 'flex-end', marginRight: 15, paddingTop: 4 },
+  tlTimeText: { fontSize: 15, fontWeight: 'bold', color: COLORS.primaryTeal },
+  tlLineContainer: { width: 36, alignItems: 'center' },
+  tlVerticalLine: { position: 'absolute', top: 36, bottom: -30, width: 3, backgroundColor: COLORS.lineColor, borderRadius: 1.5, opacity: 0.5 },
+  nodeGradientBorder: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', padding: 2 },
+  nodeWhiteBackground: { flex: 1, width: '100%', borderRadius: 15, backgroundColor: COLORS.white, justifyContent: 'center', alignItems: 'center' },
+  nodeUncheckedDot: { width: 14, height: 14, borderRadius: 7 },
+  tlContentContainer: { flex: 1, marginLeft: 12 },
+  tlTitle: { fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
+  tlBadgeContainer: { alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 12, borderRadius: 12, marginBottom: 8 },
+  tlBadgeText: { color: 'white', fontSize: 12, fontWeight: 'bold' },
+  tlDescription: { fontSize: 14, color: COLORS.textGrey, lineHeight: 20 },
+
+  noEventContainer: { alignItems: 'center', marginTop: 50 },
+  noEventText: { textAlign: 'center', marginTop: 15, fontSize: 16, color: COLORS.textGrey, fontStyle: 'italic' },
+
   bottomNavContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 60,
+    height: 70,
     backgroundColor: '#fff',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#EEE',
   },
 });
 
-export default PlanningFHM; 
+export default PlanningScreen;
