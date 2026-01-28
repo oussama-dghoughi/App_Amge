@@ -54,16 +54,18 @@ const Contact = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <View style={styles.mainContainer}>
-        <View style={styles.headerContainer}>
-          <HeaderMenu navigation={navigation} />
-        </View>
+        <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+          <View style={styles.headerWrapper}>
+            <HeaderMenu navigation={navigation} />
+          </View>
+        </SafeAreaView>
 
         <ImageBackground
           source={require('../../assets/BackGround.jpeg')}
           style={styles.background}
           imageStyle={{ opacity: 0.50 }}
         >
-          <ScrollView 
+          <ScrollView
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
@@ -76,7 +78,7 @@ const Contact = ({ navigation }) => {
             >
               <View style={styles.logoContainer}>
                 <Image
-                  source={require('../../assets/logo.png')}
+                  source={require('../../assets/Logo_2026.png')}
                   style={styles.logo}
                   resizeMode="contain"
                 />
@@ -148,7 +150,7 @@ const Contact = ({ navigation }) => {
               {/* Contact Information */}
               <View style={styles.contactInfo}>
                 <Text style={styles.contactHeader}>Autres moyens de nous contacter</Text>
-                
+
                 <View style={styles.contactItem}>
                   <Icon name="email" size={24} color="#8a348a" />
                   <Text style={styles.contactText}>
@@ -170,10 +172,8 @@ const Contact = ({ navigation }) => {
         </ImageBackground>
 
         {/* Bottom Navigation Bar */}
-        <View style={styles.navBarContainer}>
-          <SafeAreaView edges={['bottom']}>
-            <BottomNavigationBar navigation={navigation} />
-          </SafeAreaView>
+        <View style={styles.bottomNavContainer}>
+          <BottomNavigationBar navigation={navigation} />
         </View>
       </View>
     </SafeAreaProvider>
@@ -185,8 +185,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  headerContainer: {
-    marginTop: Platform.OS === 'ios' ? 45 : 25,
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
   },
   background: {
     flex: 1,
@@ -302,19 +305,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#8a348a',
   },
-  navBarContainer: {
+  bottomNavContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: 60,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    elevation: 10,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
 });
 

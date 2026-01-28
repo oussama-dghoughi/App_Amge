@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const ChangePasswordScreen = ({navigation}) => {
+const ChangePasswordScreen = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -26,7 +26,7 @@ const ChangePasswordScreen = ({navigation}) => {
     <View style={styles.container}>
       {/* Logo */}
       <Image
-        source={require('../../assets/logo.png')} // Replace with your actual logo
+        source={require('../../assets/Logo_2026.png')} // Replace with your actual logo
         style={styles.logo}
         resizeMode="contain"
       />

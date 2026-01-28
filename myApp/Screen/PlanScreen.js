@@ -17,8 +17,10 @@ const PlanScreen = ({ navigation }) => {
 
       <View style={styles.mainContainer}>
         {/* ✅ Header with SafeAreaView */}
-        <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeHeader}>
-          <HeaderMenu navigation={navigation} />
+        <SafeAreaView edges={['top']} style={styles.safeHeader}>
+          <View style={styles.headerWrapper}>
+            <HeaderMenu navigation={navigation} />
+          </View>
         </SafeAreaView>
 
         {/* ✅ InteractiveMap content */}
@@ -45,6 +47,10 @@ const styles = StyleSheet.create({
 
   // ✅ Header safe area styling
   safeHeader: {
+    backgroundColor: '#fff',
+  },
+
+  headerWrapper: {
     backgroundColor: '#fff',
   },
 

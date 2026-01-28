@@ -26,7 +26,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width, height } = Dimensions.get('window');
 
-const CompanyListScreen = ({ navigation, openMenu }) => { 
+const CompanyListScreen = ({ navigation, openMenu }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedField, setSelectedField] = useState('');
   const [showFieldModal, setShowFieldModal] = useState(false);
@@ -42,7 +42,7 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
   });
 
   const handleWebsitePress = (url) => {
-    Linking.openURL(url).catch((err) => 
+    Linking.openURL(url).catch((err) =>
       console.error("Failed to open URL:", err)
     );
   };
@@ -81,26 +81,26 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
         style={styles.cardGradient}
       >
         <View style={styles.cardHeader}>
-            {item.logo ? (
-              <Image
-                source={item.logo}
-                style={styles.companyLogo}
-                resizeMode="contain"
-              />
-            ) : (
-              <Icon
-                name={getFieldIcon(item.field)}
-                size={30}
-                color="#fff"
-                style={styles.fieldIcon}
-              />
-            )}
+          {item.logo ? (
+            <Image
+              source={item.logo}
+              style={styles.companyLogo}
+              resizeMode="contain"
+            />
+          ) : (
+            <Icon
+              name={getFieldIcon(item.field)}
+              size={30}
+              color="#fff"
+              style={styles.fieldIcon}
+            />
+          )}
 
-            <View style={styles.cardHeaderText}>
-              <Text style={styles.companyName}>{item.name}</Text>
-              <Text style={styles.fieldName}>{item.field}</Text>
-            </View>
+          <View style={styles.cardHeaderText}>
+            <Text style={styles.companyName}>{item.name}</Text>
+            <Text style={styles.fieldName}>{item.field}</Text>
           </View>
+        </View>
 
         <Text style={styles.companyPreview} numberOfLines={2}>
           {item.details}
@@ -115,182 +115,184 @@ const CompanyListScreen = ({ navigation, openMenu }) => {
 
   return (
     <SafeAreaProvider>
-  <View style={{ flex: 1, backgroundColor: '#fff' }}>
-    {/* HEADER IN ITS OWN SAFE AREA */}
-    <SafeAreaView
-      style={styles.safeAreaHeader}
-      edges={['top', 'left', 'right']}
-    >
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-      <View style={styles.headerContainer}>
-        <Header navigation={navigation} openMenu={openMenu} />
-      </View>
-    </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        {/* HEADER IN ITS OWN SAFE AREA */}
+        <SafeAreaView
+          style={styles.safeAreaHeader}
+          edges={['top']}
+        >
+          <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+          <View style={styles.headerWrapper}>
+            <Header navigation={navigation} openMenu={openMenu} />
+          </View>
+        </SafeAreaView>
 
-    {/* REST OF THE SCREEN WITH BACKGROUND */}
-    <ImageBackground
-      source={require('../../assets/BackGround.jpeg')}
-      style={styles.background}
-      imageStyle={{ opacity: 0.3 }}
-    >
-      {selectedCompany ? (
-        <ScrollView style={styles.detailsContainer}>
-          <LinearGradient
-            colors={['#8a348a', '#C76B98']}
-            style={styles.detailsHeader}
-          >
-            {selectedCompany.logo ? (
-              <Image
-                source={selectedCompany.logo}
-                style={styles.detailsLogo}
-                resizeMode="contain"
-              />
-            ) : (
-              <Icon
-                name={getFieldIcon(selectedCompany.field)}
-                size={50}
-                color="#fff"
-              />
-            )}
-
-            <Text style={styles.detailsTitle}>{selectedCompany.name}</Text>
-            <Text style={styles.detailsField}>{selectedCompany.field}</Text>
-          </LinearGradient>
-
-          <View style={styles.detailsContent}>
-            <View style={styles.detailsSection}>
-              <Text style={styles.sectionTitle}>À propos</Text>
-              <Text style={styles.detailsText}>{selectedCompany.details}</Text>
-            </View>
-
-            {selectedCompany.website && (
-              <TouchableOpacity
-                style={styles.websiteButton}
-                onPress={() => handleWebsitePress(selectedCompany.website)}
+        {/* REST OF THE SCREEN WITH BACKGROUND */}
+        <ImageBackground
+          source={require('../../assets/BackGround.jpeg')}
+          style={styles.background}
+          imageStyle={{ opacity: 0.3 }}
+        >
+          {selectedCompany ? (
+            <ScrollView style={styles.detailsContainer}>
+              <LinearGradient
+                colors={['#8a348a', '#C76B98']}
+                style={styles.detailsHeader}
               >
-                <Icon
-                  name="web"
-                  size={24}
-                  color="#fff"
-                  style={styles.websiteIcon}
-                />
-                <Text style={styles.websiteButtonText}>
-                  Visiter le site web
-                </Text>
-              </TouchableOpacity>
-            )}
+                {selectedCompany.logo ? (
+                  <Image
+                    source={selectedCompany.logo}
+                    style={styles.detailsLogo}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <Icon
+                    name={getFieldIcon(selectedCompany.field)}
+                    size={50}
+                    color="#fff"
+                  />
+                )}
 
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => setSelectedCompany(null)}
-            >
-              <Icon
-                name="arrow-left"
-                size={24}
-                color="#fff"
-                style={styles.backIcon}
-              />
-              <Text style={styles.backButtonText}>
-                Retour à la liste
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      ) : (
-        <>
-          <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <Icon
-                name="magnify"
-                size={24}
-                color="#8a348a"
-                style={styles.searchIcon}
-              />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Rechercher une entreprise"
-                placeholderTextColor="#666"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-            </View>
-            <TouchableOpacity
-              style={styles.filterButton}
-              onPress={() => setShowFieldModal(true)}
-            >
-              <Icon name="filter-variant" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
+                <Text style={styles.detailsTitle}>{selectedCompany.name}</Text>
+                <Text style={styles.detailsField}>{selectedCompany.field}</Text>
+              </LinearGradient>
 
-          <FlatList
-            data={filteredCompanies}
-            keyExtractor={(item) => item.id}
-            renderItem={renderCompanyItem}
-            contentContainerStyle={styles.companyList}
-            showsVerticalScrollIndicator={false}
-          />
-        </>
-      )}
+              <View style={styles.detailsContent}>
+                <View style={styles.detailsSection}>
+                  <Text style={styles.sectionTitle}>À propos</Text>
+                  <Text style={styles.detailsText}>{selectedCompany.details}</Text>
+                </View>
 
-      <Modal
-        transparent={true}
-        visible={showFieldModal}
-        animationType="slide"
-        onRequestClose={() => setShowFieldModal(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Filtrer par secteur</Text>
-            <ScrollView style={styles.fieldsList}>
-              {fields.map((field, index) => (
+                {selectedCompany.website && (
+                  <TouchableOpacity
+                    style={styles.websiteButton}
+                    onPress={() => handleWebsitePress(selectedCompany.website)}
+                  >
+                    <Icon
+                      name="web"
+                      size={24}
+                      color="#fff"
+                      style={styles.websiteIcon}
+                    />
+                    <Text style={styles.websiteButtonText}>
+                      Visiter le site web
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.fieldItem,
-                    selectedField === field && styles.fieldItemSelected,
-                  ]}
-                  onPress={() => {
-                    setSelectedField(
-                      field === 'Toutes les catégories' ? '' : field
-                    );
-                    setShowFieldModal(false);
-                  }}
+                  style={styles.backButton}
+                  onPress={() => setSelectedCompany(null)}
                 >
                   <Icon
-                    name={
-                      field === 'Toutes les catégories'
-                        ? 'view-grid'
-                        : getFieldIcon(field)
-                    }
+                    name="arrow-left"
                     size={24}
-                    color={selectedField === field ? '#fff' : '#8a348a'}
+                    color="#fff"
+                    style={styles.backIcon}
                   />
-                  <Text
-                    style={[
-                      styles.fieldItemText,
-                      selectedField === field &&
-                        styles.fieldItemTextSelected,
-                    ]}
-                  >
-                    {field}
+                  <Text style={styles.backButtonText}>
+                    Retour à la liste
                   </Text>
                 </TouchableOpacity>
-              ))}
+              </View>
             </ScrollView>
-            <TouchableOpacity
-              style={styles.closeModalButton}
-              onPress={() => setShowFieldModal(false)}
-            >
-              <Text style={styles.closeModalText}>Fermer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+          ) : (
+            <>
+              <View style={styles.searchContainer}>
+                <View style={styles.searchInputContainer}>
+                  <Icon
+                    name="magnify"
+                    size={24}
+                    color="#8a348a"
+                    style={styles.searchIcon}
+                  />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Rechercher une entreprise"
+                    placeholderTextColor="#666"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                  />
+                </View>
+                <TouchableOpacity
+                  style={styles.filterButton}
+                  onPress={() => setShowFieldModal(true)}
+                >
+                  <Icon name="filter-variant" size={24} color="#fff" />
+                </TouchableOpacity>
+              </View>
 
-      <BottomNavigationBar navigation={navigation} />
-    </ImageBackground>
-  </View>
-</SafeAreaProvider>
+              <FlatList
+                data={filteredCompanies}
+                keyExtractor={(item) => item.id}
+                renderItem={renderCompanyItem}
+                contentContainerStyle={styles.companyList}
+                showsVerticalScrollIndicator={false}
+              />
+            </>
+          )}
+
+          <Modal
+            transparent={true}
+            visible={showFieldModal}
+            animationType="slide"
+            onRequestClose={() => setShowFieldModal(false)}
+          >
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Filtrer par secteur</Text>
+                <ScrollView style={styles.fieldsList}>
+                  {fields.map((field, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.fieldItem,
+                        selectedField === field && styles.fieldItemSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedField(
+                          field === 'Toutes les catégories' ? '' : field
+                        );
+                        setShowFieldModal(false);
+                      }}
+                    >
+                      <Icon
+                        name={
+                          field === 'Toutes les catégories'
+                            ? 'view-grid'
+                            : getFieldIcon(field)
+                        }
+                        size={24}
+                        color={selectedField === field ? '#fff' : '#8a348a'}
+                      />
+                      <Text
+                        style={[
+                          styles.fieldItemText,
+                          selectedField === field &&
+                          styles.fieldItemTextSelected,
+                        ]}
+                      >
+                        {field}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+                <TouchableOpacity
+                  style={styles.closeModalButton}
+                  onPress={() => setShowFieldModal(false)}
+                >
+                  <Text style={styles.closeModalText}>Fermer</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          <View style={styles.bottomNavContainer}>
+            <BottomNavigationBar navigation={navigation} />
+          </View>
+        </ImageBackground>
+      </View>
+    </SafeAreaProvider>
 
   );
 };
@@ -299,15 +301,24 @@ const styles = StyleSheet.create({
   safeAreaHeader: {
     backgroundColor: '#fff',
   },
+  headerWrapper: {
+    backgroundColor: '#fff',
+  },
+  bottomNavContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
   background: {
     flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  headerContainer: {
-    width: '100%',
-    backgroundColor: '#fff',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -538,11 +549,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   companyLogo: {
-  width: 42,
-  height: 42,
-  marginRight: 10,
-  borderRadius: 8,
-  backgroundColor: '#fff', 
+    width: 42,
+    height: 42,
+    marginRight: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
   },
 
   detailsLogo: {

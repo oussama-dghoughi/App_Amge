@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, TouchableOpacity, View , Text, Image } from 'react-native';
+import { Animated, TouchableOpacity, View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -43,34 +43,34 @@ const Menu = ({ isMenuVisible, slideAnim, handleMenuPress }) => {
         <View style={styles.menuContent}>
           {/* Logo et titre en haut du menu */}
           <View style={{ alignItems: 'center', marginBottom: 24 }}>
-            <Image source={require('../../assets/logo.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
+            <Image source={require('../../assets/Logo_2026.png')} style={{ width: 70, height: 70, borderRadius: 35, marginBottom: 8 }} />
             <Text style={{ color: '#8a348a', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>Forum Horizons Maroc</Text>
           </View>
 
           {/* Menu Items */}
           <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('Settings'); handleMenuPress && handleMenuPress(); }}>
-              <Icon name="cog" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Paramètres</Text>
+            <Icon name="cog" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>Paramètres</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={handleLocalisation}>
-              <Icon name="map-marker" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Localisation</Text>
+            <Icon name="map-marker" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>Localisation</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={() => { navigation.navigate('GuideForum'); handleMenuPress && handleMenuPress(); }}>
-              <Icon name="book-open-variant" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Guide Forum</Text>
+            <Icon name="book-open-variant" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>Guide Forum</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={handleFAQ}>
-              <Icon name="help-circle-outline" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>FAQ</Text>
+            <Icon name="help-circle-outline" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>FAQ</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}  onPress={handleAbout}>
-              <Icon name="information-outline" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>À propos</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={handleAbout}>
+            <Icon name="information-outline" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>À propos</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem} onPress={handleContact}>
-              <Icon name="phone" size={24} color="#333" style={styles.menuIcon} />
-              <Text style={styles.menuText}>Contactez-nous</Text>
+            <Icon name="phone" size={24} color="#333" style={styles.menuIcon} />
+            <Text style={styles.menuText}>Contactez-nous</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

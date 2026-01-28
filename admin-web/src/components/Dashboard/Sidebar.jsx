@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { FiUsers, FiBarChart2, FiLogOut, FiCalendar, FiBriefcase, FiFileText, FiMap } from "react-icons/fi";
+import { FiUsers, FiBarChart2, FiLogOut, FiCalendar, FiBriefcase, FiFileText, FiMap, FiHelpCircle } from "react-icons/fi";
 import "./Sidebar.css";
 
 const Sidebar = ({ activePage }) => {
@@ -25,6 +25,7 @@ const Sidebar = ({ activePage }) => {
     { id: "offers", label: "Offres", icon: FiFileText, path: "/offers" },
     { id: "events", label: "Événements", icon: FiCalendar, path: "/events" },
     { id: "plans", label: "Plans Interactifs", icon: FiMap, path: "/plans" },
+    { id: "faq", label: "FAQ", icon: FiHelpCircle, path: "/faq" }, // ✅ Nouveau menu FAQ
   ];
 
   return (

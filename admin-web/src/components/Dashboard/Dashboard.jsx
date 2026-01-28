@@ -9,6 +9,7 @@ import Companies from "../Companies/Companies";
 import Offers from "../Offers/Offers";
 import Events from "../Events/Events";
 import Plans from "../Plans/Plans";
+import FaqList from "../FAQ/FaqList"; // ✅ Import FAQ
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -23,6 +24,7 @@ const Dashboard = () => {
     if (location.pathname.startsWith("/offers")) return "offers";
     if (location.pathname.startsWith("/events")) return "events";
     if (location.pathname.startsWith("/plans")) return "plans";
+    if (location.pathname.startsWith("/faq")) return "faq"; // ✅ Active Menu
     return "users";
   };
 
@@ -40,6 +42,7 @@ const Dashboard = () => {
             <Route path="/companies/*" element={<Companies />} />
             <Route path="/offers/*" element={<Offers />} />
             <Route path="/plans/*" element={<Plans />} />
+            <Route path="/faq" element={<FaqList />} /> {/* ✅ Route FAQ */}
           </Routes>
         </div>
       </div>

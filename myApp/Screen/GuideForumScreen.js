@@ -1,9 +1,11 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated, Easing, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Animated, Easing, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../components/HomeScreen/Header';
 import BottomNavigationBar from '../components/HomeScreen/BottomNavigationBar';
+import Svg, { Circle } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 
@@ -11,22 +13,27 @@ const STEPS = [
   {
     icon: 'target',
     title: 'Cible ta boîte',
-    punch: 'Vise les entreprises qui te font rêver !',
+    punch: 'Vise les entreprises qui \nte font rêver !',
   },
   {
     icon: 'magnify',
     title: 'Renseigne-toi',
-    punch: 'Sois incollable sur leurs actus.',
+    punch: 'Vise les entreprises\nqui te font rêver !',
   },
   {
     icon: 'file-account',
     title: 'Prépare ton CV',
-    punch: 'Un CV à jour, c\'est la base !',
+    punch: 'Un CV à jour, \nc\'est la base !',
   },
   {
     icon: 'account-voice',
     title: 'Prépare ton pitch',
-    punch: 'Sois prêt à te présenter en 30s.',
+    punch: 'Sois prêt à te présenter\nen 30s.',
+  },
+  {
+    icon: 'calendar-star',
+    title: 'Le jour J',
+    punch: 'C\'est ton moment, donne\nle meilleur de toi-même !',
   },
 ];
 
@@ -51,86 +58,139 @@ const GuideForumScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f7f7fb' }}>
-      <Header navigation={navigation} />
-      <LinearGradient
-        colors={["#f7f7fb", "#f3e6fa", "#f7f7fb"]}
-        style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      />
-      <ScrollView contentContainerStyle={{ paddingBottom: 90 }}>
-        {/* Bloc d'intro */}
-        <Animated.View style={[styles.introBlock, { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }) }] }]}> 
-          <Text style={styles.introTitle}>Prépare ta réussite au Forum !</Text>
-          <Text style={styles.introText}>Découvre les étapes clés pour maximiser ta participation et décrocher des opportunités.</Text>
-        </Animated.View>
-
-        {/* Bloc Conseil du jour */}
-        <Animated.View style={[styles.tipBlock, { opacity: fadeAnim, transform: [{ scale: fadeAnim }] }]}> 
-          <View style={styles.tipIconCircle}>
-            <Icon name="lightbulb-on-outline" size={34} color="#fff" />
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+        <View style={styles.headerWrapper}>
+          <Header navigation={navigation} />
+        </View>
+      </SafeAreaView>
+      <ImageBackground
+        source={require('../assets/BackGround.jpeg')}
+        style={{ flex: 1 }}
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <ScrollView contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 20 }}>
+          {/* Header avec flèche retour + titre */}
+          <View style={styles.headerSection}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Icon name="arrow-left" size={24} color="#8E4DA6" />
+            </TouchableOpacity>
+            <Text style={styles.pageTitle}>Guide Forum</Text>
           </View>
-          <Text style={styles.tipTitle}>Conseil du jour</Text>
-          <Text style={styles.tipText}>
-            Prépare une présentation courte et percutante de toi-même (le fameux "pitch").
-            Entraîne-toi à te présenter en 30 secondes pour marquer les esprits dès le premier contact !
-          </Text>
-        </Animated.View>
 
-        {/* Timeline verticale */}
-        <View style={styles.timelineContainer}>
-          <LinearGradient
-            colors={["#8a348a", "#e94057"]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.timelineLine}
-          />
-          {STEPS.map((step, idx) => {
-            const isLeft = idx % 2 === 0;
-            return (
-              <Animated.View
-                key={idx}
-                style={[
-                  styles.timelineRow,
-                  { flexDirection: isLeft ? 'row' : 'row-reverse' },
-                  { opacity: stepAnims[idx], transform: [{ translateY: stepAnims[idx].interpolate({ inputRange: [0, 1], outputRange: [40, 0] }) }] },
-                ]}
-              >
-                <View style={styles.timelineCardWrap}>
-                  <View style={styles.timelineCard}>
-                    <View style={styles.timelineIconCircle}>
-                      <Icon name={step.icon} size={26} color="#fff" />
-                    </View>
-                    <Text style={styles.timelineTitle}>{step.title}</Text>
-                    <Text style={styles.timelinePunch}>{step.punch}</Text>
+
+          {/* NOUVELLE TIMELINE */}
+          <View style={styles.newTimelineContainer}>
+            {/* Demi-cercle pointillé SVG */}
+            <Svg
+              height="430"
+              width="430"
+              style={{ position: 'absolute', left: -280, top: '6%', zIndex: 0 }}
+            >
+              <Circle
+                cx="215"
+                cy="215"
+                r="212"
+                stroke="#26C6DA"
+                strokeWidth="4"
+                strokeDasharray="10, 10"
+                fill="none"
+              />
+            </Svg>
+
+
+            {STEPS.map((step, index) => {
+              // Positions précalculées pour suivre l'arc du cercle
+              const positions = [
+                { top: 35, left: 8 },   // Cible ta boîte (haut)
+                { top: 110, left: 80 },  // Renseigne-toi
+                { top: 215, left: 110 },  // Prépare ton CV (milieu)
+                { top: 322, left: 80 },  // Prépare ton pitch
+                { top: 400, left: 8 },  // Le jour J (bas)
+              ];
+
+              return (
+                <View
+                  key={index}
+                  style={[
+                    styles.stepRow,
+                    {
+                      position: 'absolute',
+                      top: positions[index].top,
+                      left: positions[index].left,
+                    }
+                  ]}
+                >
+                  {/* Grand cercle avec gradient */}
+                  <LinearGradient
+                    colors={['#5E35B1', '#26C6DA']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.stepCircle}
+                  >
+                    <Icon name={step.icon} size={28} color="#fff" />
+                  </LinearGradient>
+
+                  {/* Texte à droite */}
+                  <View style={styles.stepTextContainer}>
+                    <Text style={styles.stepTitle}>{step.title}</Text>
+                    <Text style={styles.stepDescription}>{step.punch}</Text>
                   </View>
                 </View>
-                <View style={styles.timelineDotWrap}>
-                  <View style={styles.timelineDot} />
-                </View>
-              </Animated.View>
-            );
-          })}
-        </View>
+              );
+            })}
 
-        {/* Bloc Le Jour J */}
-        <Animated.View style={[styles.jourJBlock, { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }) }] }]}> 
-          <View style={styles.jourJIconCircle}>
-            <Icon name="calendar-check" size={38} color="#fff" />
           </View>
-          <Text style={styles.jourJTitle}>Le Jour J</Text>
-          <Text style={styles.jourJText}>C'est ton moment, donne le meilleur de toi-même !</Text>
-        </Animated.View>
-      </ScrollView>
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-        <BottomNavigationBar navigation={navigation} />
-      </View>
+
+        </ScrollView>
+
+        <View style={styles.bottomNavContainer}>
+          <BottomNavigationBar navigation={navigation} />
+        </View>
+      </ImageBackground>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
+  },
+  bottomNavContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  headerSection: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginTop: 5,
+    marginBottom: 15,
+  },
+  backButton: {
+    padding: 5,
+    marginBottom: 2,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#8E4DA6',
+    marginBottom: 5,
+  },
   introBlock: {
     alignItems: 'center',
     marginTop: 24,
@@ -182,6 +242,62 @@ const styles = StyleSheet.create({
     color: '#e94057',
     marginBottom: 6,
     textAlign: 'center',
+  },
+  newTimelineContainer: {
+    flex: 1,
+    marginTop: 20,
+    paddingBottom: 40,
+    position: 'relative',
+    overflow: 'hidden',
+    minHeight: 600,
+  },
+  dashedLine: {
+    position: 'absolute',
+    left: -200,
+    top: '10%',
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    borderWidth: 4,
+    borderColor: '#26C6DA',
+    borderStyle: 'dashed',
+    zIndex: 0,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  stepCircle: {
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#5E35B1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  stepTextContainer: {
+    flex: 1,
+    marginLeft: 12,
+    flexWrap: 'wrap',
+    maxWidth: 250,
+  },
+  stepTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#8E4DA6',
+    marginBottom: 0,
+  },
+  stepDescription: {
+    fontSize: 12,
+    color: '#666',
+    lineHeight: 17,
+    flexWrap: 'wrap',
+    flexShrink: 1,
   },
   tipText: {
     color: '#444',

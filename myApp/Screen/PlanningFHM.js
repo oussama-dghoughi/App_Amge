@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PLANNING_DATA = [
   { time: "9h30 - 10h30", title: "Le Marché de l'Emploi en Afrique", type: "conférence", description: "Discussion sur les opportunités d'emploi et les tendances du marché dans les différents secteurs." },
-  { time: "10h30 - 12h00", title: "Rédiger un CV Impactant", type: "atelier", description: "Un atelier pour améliorer vos CV et les adapter aux exigences du marché." },  
+  { time: "10h30 - 12h00", title: "Rédiger un CV Impactant", type: "atelier", description: "Un atelier pour améliorer vos CV et les adapter aux exigences du marché." },
   { time: "17h00 - 18h00", title: "Clôture & Remerciements", type: "clôture", description: "Remerciements et clôture du Forum." },
 ];
 
@@ -42,7 +42,7 @@ const PlanningTimelinePremium = () => (
             <Text style={styles.timelinePremiumBadgeTextBig} numberOfLines={1} adjustsFontSizeToFit>{ev.time.split(' - ')[0]}</Text>
           </LinearGradient>
           {/* Carte glassmorphism */}
-          <View style={[styles.timelinePremiumCardWrap, { alignItems: isLeft ? 'flex-end' : 'flex-start' }]}> 
+          <View style={[styles.timelinePremiumCardWrap, { alignItems: isLeft ? 'flex-end' : 'flex-start' }]}>
             <BlurView intensity={60} tint="light" style={styles.timelinePremiumGlassCard}>
               <View style={{ paddingTop: 18, paddingBottom: 8, paddingHorizontal: 8 }}>
                 <Text style={styles.timelinePremiumTitle}>{ev.title}</Text>
@@ -63,8 +63,12 @@ const PlanningTimelinePremium = () => (
 
 const PlanningFHM = ({ navigation }) => {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <Header navigation={navigation} />
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+        <View style={styles.headerWrapper}>
+          <Header navigation={navigation} />
+        </View>
+      </SafeAreaView>
       <ImageBackground
         source={require('../assets/BackGround.jpeg')}
         style={styles.background}
@@ -86,11 +90,17 @@ const PlanningFHM = ({ navigation }) => {
       <View style={styles.bottomNavContainer}>
         <BottomNavigationBar navigation={navigation} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
+  },
   background: {
     flex: 1,
     backgroundColor: '#f8f6fc',

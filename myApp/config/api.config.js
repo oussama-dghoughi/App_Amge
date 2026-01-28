@@ -1,20 +1,25 @@
 // Configuration API pour myApp
-const ENV = {
-    dev: {
-        // IMPORTANT: Utilisez localhost pour web, IP pour mobile
-        // Pour trouver votre IP: cmd > ipconfig > IPv4 Address
-        apiUrl: 'http://localhost:5000/api', // Backend local - IP du PC
-    },
-    prod: {
-        apiUrl: 'https://your-production-backend.com/api', // Production (à définir)
+import { Platform } from 'react-native';
+
+const getApiUrl = () => {
+    // 1. Priorité au .env
+    if (process.env.EXPO_PUBLIC_API_URL) {
+        return `${process.env.EXPO_PUBLIC_API_URL}/api`;
+        // Note: Assurez-vous que EXPO_PUBLIC_API_URL ne contient pas déjà "/api" à la fin dans le .env
+    }
+
+    // 2. Fallbacks automatiques selon l'OS si pas de .env
+    if (Platform.OS === 'android') {
+        return 'http://10.0.2.2:5000/api'; // Émulateur Android
+    } else {
+        return 'http://localhost:5000/api'; // iOS Simulator & Web
     }
 };
 
-const getEnvVars = () => {
-    if (__DEV__) {
-        return ENV.dev;
-    }
-    return ENV.prod;
+const config = {
+    apiUrl: getApiUrl()
 };
 
-export default getEnvVars();
+export default config;
+
+

@@ -185,19 +185,22 @@ const PlanList = () => {
                         <div className="step-card">
                             <div className="step-number">3️⃣</div>
                             <div className="step-content">
-                                <h3>Extraire les positions des stands (VGG ou manuel)</h3>
-                                <p><strong>Option A : Utiliser VGG (Vision/IA)</strong></p>
+                                <h3>Extraire les positions des stands</h3>
+                                <p><strong>Utiliser VIA (Vision/IA)</strong></p>
                                 <ul>
-                                    <li>Utilisez un outil d'annotation d'images (VGG Image Annotator, LabelImg, etc.)</li>
+                                    <li>Utilisez l'outil d'annotation :
+                                        <a
+                                            href="https://www.robots.ox.ac.uk/~vgg/software/via/app/via_image_annotator.html"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ marginLeft: '8px', color: '#007bff', textDecoration: 'none', fontWeight: '600' }}
+                                        >
+                                            🔗 VIA Image Annotator
+                                        </a>
+                                    </li>
                                     <li>Dessinez des rectangles autour de chaque stand</li>
                                     <li>Notez les coordonnées <code>(x, y, width, height)</code> en pixels</li>
                                     <li>Exportez en format JSON → convertir en CSV</li>
-                                </ul>
-                                <p style={{ marginTop: '12px' }}><strong>Option B : Mesure manuelle</strong></p>
-                                <ul>
-                                    <li>Ouvrez l'image dans un éditeur (Photoshop, GIMP, etc.)</li>
-                                    <li>Utilisez l'outil Sélection pour chaque stand</li>
-                                    <li>Notez : position X, Y, largeur, hauteur</li>
                                 </ul>
                             </div>
                         </div>
