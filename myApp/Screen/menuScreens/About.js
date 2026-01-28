@@ -15,20 +15,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
-const AProposScreen = ({navigation}) => {
+const AProposScreen = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <View style={styles.mainContainer}>
-        <View style={styles.headerContainer}>
-          <HeaderMenu navigation={navigation} />
-        </View>
+        <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+          <View style={styles.headerWrapper}>
+            <HeaderMenu navigation={navigation} />
+          </View>
+        </SafeAreaView>
 
         <ImageBackground
-          source={require('../../assets/BackGround.jpeg')} 
+          source={require('../../assets/BackGround.jpeg')}
           style={styles.background}
           imageStyle={{ opacity: 0.15 }}
         >
-          <ScrollView 
+          <ScrollView
             contentContainerStyle={styles.scrollContainer}
             showsVerticalScrollIndicator={false}
           >
@@ -41,7 +43,7 @@ const AProposScreen = ({navigation}) => {
             >
               <View style={styles.logoContainer}>
                 <Image
-                  source={require('../../assets/logo.png')}
+                  source={require('../../assets/Logo_2026.png')}
                   style={styles.logo}
                   resizeMode="contain"
                 />
@@ -90,7 +92,7 @@ const AProposScreen = ({navigation}) => {
             <View style={styles.associationBox}>
               <View style={styles.associationLogoRow}>
                 <Image
-                  source={require('../../assets/logo.png')}
+                  source={require('../../assets/Logo_2026.png')}
                   style={styles.associationLogo}
                   resizeMode="contain"
                 />
@@ -113,10 +115,8 @@ const AProposScreen = ({navigation}) => {
         </ImageBackground>
 
         {/* Bottom Navigation Bar */}
-        <View style={styles.navBarContainer}>
-          <SafeAreaView edges={['bottom']}>
-            <BottomNavigationBar navigation={navigation} />
-          </SafeAreaView>
+        <View style={styles.bottomNavContainer}>
+          <BottomNavigationBar navigation={navigation} />
         </View>
       </View>
     </SafeAreaProvider>
@@ -128,8 +128,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  headerContainer: {
-    marginTop: Platform.OS === 'ios' ? 45 : 25,
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
   },
   background: {
     flex: 1,
@@ -242,19 +245,18 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
     color: '#333',
   },
-  navBarContainer: {
+  bottomNavContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: 60,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    elevation: 10,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
 });
 

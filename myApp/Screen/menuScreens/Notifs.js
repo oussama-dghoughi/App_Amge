@@ -4,7 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HeaderMenu from '../../components/HomeScreen/Header';
 import BottomNavigationBar from '../../components/HomeScreen/BottomNavigationBar';
 
-const NOTIFS = ({navigation}) => {
+const NOTIFS = ({ navigation }) => {
   const [toggleStates, setToggleStates] = useState({
     notifications: false,
     notes: false,
@@ -27,9 +27,11 @@ const NOTIFS = ({navigation}) => {
         imageStyle={{ opacity: 0.35 }}
       >
         <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
-          <HeaderMenu navigation={navigation} />
-        </SafeAreaView>
+          <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+            <View style={styles.headerWrapper}>
+              <HeaderMenu navigation={navigation} />
+            </View>
+          </SafeAreaView>
           <ScrollView contentContainerStyle={styles.contentContainer}>
             {/* Rectangle 1 */}
             <View style={styles.rectangle}>
@@ -88,7 +90,7 @@ const NOTIFS = ({navigation}) => {
               </View>
             )}
           </ScrollView>
-          <BottomNavigationBar />
+          <BottomNavigationBar navigation={navigation} />
         </SafeAreaView>
       </ImageBackground>
     </SafeAreaProvider>
@@ -103,6 +105,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     zIndex: 2,
     elevation: 2,
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -119,8 +124,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    elevation: 2, 
-    shadowColor: '#000', 
+    elevation: 2,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -132,13 +137,13 @@ const styles = StyleSheet.create({
   },
   sectionTitleContainer: {
     padding: 10,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#8A2BE2', 
-    textAlign: 'left', 
+    color: '#8A2BE2',
+    textAlign: 'left',
   },
 });
 

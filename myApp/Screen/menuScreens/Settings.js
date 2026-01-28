@@ -104,9 +104,11 @@ const Settings = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <View style={styles.mainContainer}>
-        <View style={styles.headerContainer}>
-          <HeaderMenu navigation={navigation} />
-        </View>
+        <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+          <View style={styles.headerWrapper}>
+            <HeaderMenu navigation={navigation} />
+          </View>
+        </SafeAreaView>
 
         <ImageBackground
           source={require('../../assets/BackGround.jpeg')}
@@ -119,7 +121,7 @@ const Settings = ({ navigation }) => {
               <View style={styles.profileContainer}>
                 <View style={styles.imageContainer}>
                   <Image
-                    source={isGuest ? require('../../assets/logo.png') : require('../../assets/logo.png')} // Placeholder avatar
+                    source={isGuest ? require('../../assets/Logo_2026.png') : require('../../assets/Logo_2026.png')} // Placeholder avatar
                     style={styles.profileImage}
                     resizeMode="cover"
                   />
@@ -162,8 +164,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  headerContainer: {
-    marginTop: Platform.OS === 'ios' ? 45 : 25,
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
   },
   background: {
     flex: 1,

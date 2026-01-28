@@ -56,6 +56,7 @@ app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/plans', require('./routes/planRoutes'));
 app.use('/api/stands', require('./routes/standRoutes')); // Routes pour les stands
 app.use('/api/offers', require('./routes/offersRoutes'));
+app.use('/api/faqs', require('./routes/faqRoutes')); // ✅ Routes FAQ
 
 // Route de test
 app.get('/', (req, res) => {
@@ -93,7 +94,7 @@ const startServer = async () => {
     await connectDB();
 
     // Démarrer le serveur Express
-    app.listen(PORT,'0.0.0.0', () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Serveur démarré sur le port ${PORT}`);
       console.log(`📝 Environnement: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🌐 API disponible sur: http://localhost:${PORT}`);

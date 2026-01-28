@@ -55,11 +55,11 @@ const StandRect = ({
             };
         }
 
-        // 5️⃣ Default: light gray so it's clearly clickable
+        // 5️⃣ Default: Medium gray border, transparent background
         return {
-            backgroundColor: 'rgba(200, 200, 200, 0.35)',
+            backgroundColor: 'transparent',
             borderWidth: 1,
-            borderColor: '#CCCCCC',
+            borderColor: '#A0A0A0', // Gris moyen plus doux
         };
     };
 

@@ -26,7 +26,7 @@ const FindAccountScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Logo */}
         <Image
-          source={require('../../assets/logo.png')} // Replace with your actual logo
+          source={require('../../assets/Logo_2026.png')} // Replace with your actual logo
           style={styles.logo}
           resizeMode="contain"
         />

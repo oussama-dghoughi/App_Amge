@@ -19,10 +19,10 @@ import HeaderMenu from '../../components/MenuScreens/HeaderMenu';
 
 const EditProfile = ({ route, navigation }) => {
   const { userData: initialUserData } = route.params;
-  
+
   // Ajouter un console.log pour déboguer
   console.log('userData reçu:', initialUserData);
-  
+
   const [formData, setFormData] = useState({
     name: initialUserData?.name || '',
     surname: initialUserData?.surname || '',
@@ -67,9 +67,11 @@ const EditProfile = ({ route, navigation }) => {
   return (
     <SafeAreaProvider>
       <View style={styles.mainContainer}>
-        <View style={styles.headerContainer}>
-          <HeaderMenu navigation={navigation} />
-        </View>
+        <SafeAreaView edges={['top']} style={styles.safeAreaHeader}>
+          <View style={styles.headerWrapper}>
+            <HeaderMenu navigation={navigation} />
+          </View>
+        </SafeAreaView>
 
         <ImageBackground
           source={require('../../assets/BackGround.jpeg')}
@@ -176,8 +178,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  headerContainer: {
-    marginTop: Platform.OS === 'ios' ? 45 : 25,
+  safeAreaHeader: {
+    backgroundColor: '#fff',
+  },
+  headerWrapper: {
+    backgroundColor: '#fff',
   },
   background: {
     flex: 1,
